@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\AdvertismentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,7 @@ Route::controller(RegisteredUserController::class)->group(function () {
 Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('city', CityController::class);
 });
+Route::apiResource('ads', AdvertismentController::class);
 
 
 // Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
