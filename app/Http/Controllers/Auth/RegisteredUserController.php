@@ -75,6 +75,29 @@ class RegisteredUserController extends Controller
         return $this->getUserWithToken($token);
     }
 
+    #logout
+    public function logout(Request $request)
+    {
+        try {
+            $user = auth()->user()->id;
+            if ($user) {
+                // auth()->logout();
+                Auth::logout();
+                return response()->json([
+                    'message' => 'Logged Out Successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Login First',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function getUserWithToken($token)
     {
         return [
