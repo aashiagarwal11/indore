@@ -19,16 +19,19 @@ class AdvertismentController extends Controller
             // $medias =  Media::where('user_id', $id)->first();
             $advertisment =  Advertisment::all()->toArray();
             if (!empty($advertisment)) {
-                foreach ($advertisment as $ads) {
-                    $data['id'] = $ads['id'];
-                    $data['exe_img'] = explode('|', $ads['ads_image']);
-                    $data['created_at'] = $ads['created_at'];
-                    $data['updated_at'] = $ads['updated_at'];
-                }
-
+                // $emarr = [];
+                // foreach ($advertisment as $ads) {
+                // $data['id'] = $ads['id'];
+                // $advertisment['exe_img'] = explode('|', $ads['ads_image']);
+                // $data['created_at'] = $ads['created_at'];
+                // $data['updated_at'] = $ads['updated_at'];
+                // dump($advertisment);
+                // $allData =  array_push($emarr, $data);
+                // }
+                // dd($allData);
                 return response()->json([
                     'message' => 'All Ads List',
-                    'data' => $data,
+                    'data' => $advertisment,
                 ]);
             } else {
                 return response()->json([
@@ -36,7 +39,7 @@ class AdvertismentController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'message' => $e->getMessage(),
             ]);
         }
@@ -47,8 +50,6 @@ class AdvertismentController extends Controller
      */
     public function store(Request $request)
     {
-        // $id = auth()->user()->id;
-        // if (!empty($auth_user_id)) {
         $validator =  Validator::make($request->all(), [
             'ads_image' => ['required'],
         ]);
@@ -58,8 +59,6 @@ class AdvertismentController extends Controller
         }
         try {
             $chkads = Advertisment::where('ads_image', $request->ads_image)->first();
-            // $mediacount = explode('|', $query->media_image);
-            // $total_count = count($mediacount);
             if (empty($chkads)) {
                 $images = array();
                 if ($files = $request->file('ads_image')) {
@@ -70,7 +69,6 @@ class AdvertismentController extends Controller
                         $upload_path = 'public/adsImage/';
                         $img_url = $upload_path . $img_full_name;
                         $file->move($upload_path, $img_full_name);
-
                         array_push($images, $img_url);
                     }
                 }
@@ -111,11 +109,8 @@ class AdvertismentController extends Controller
                     'data' => $adsmedia,
                 ]);
             }
-            // } else {
-            //     return ApiResponse::error('User Not Authanticated');
-            // }
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'message' => $e->getMessage(),
             ]);
         }
@@ -126,22 +121,160 @@ class AdvertismentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $advertisment = Advertisment::find($id);
+            $exdata = $advertisment->ads_image;
+            $advertisment['exe_img'] = explode('|', $exdata);
+            unset($advertisment->ads_image);
+            return response()->json([
+                'message' => 'Advertisment',
+                'data' => $advertisment,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $validator =  Validator::make($request->all(), [
+            'ads_image' => ['required'],
+            'key' => ['required', 'numeric'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+        try {
+            $user_ads = Advertisment::where('id', $id)->first();
+            if (!empty($user_ads)) {
+                $explode = explode('|', $user_ads->ads_image);
+                if (isset($explode[$request->key])) {
+                    $keyimg = $explode[$request->key];
+
+
+                    if ($files = $request->file('ads_image')[0]) {
+                        $imgname = md5(rand('1000', '10000'));
+                        $extension = strtolower($files->getClientOriginalExtension());
+                        $img_full_name = $imgname . '.' . $extension;
+                        $upload_path = 'public/adsImage/';
+                        $img_url = $upload_path . $img_full_name;
+                        $files->move($upload_path, $img_full_name);
+
+                        // if (!empty($explode[$request->key])) {
+                        //     unlink($explode[$request->key]);
+                        // }
+                        $explode[$request->key] = $img_url;
+                    }
+                    $imp_image =  implode('|', $explode);
+
+                    $verified['ads_image'] = $imp_image;
+                    $media = Advertisment::where('id', $id)->update($verified);
+                    $verified['exp_image'] =  explode('|', $imp_image);
+                    $mediadata = Advertisment::where('id', $id)->first();
+
+                    $mediadata['id'] = $mediadata->id;
+                    $mediadata['ads_image'] = $explode;
+                    $mediadata['created_at'] = $mediadata->created_at;
+                    $mediadata['updated_at'] = $mediadata->updated_at;
+                    return response()->json([
+                        'message' => 'Ads Updated Successfully',
+                        'data' => $mediadata,
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'No Ads Found',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, $id)
     {
-        //
+        // dd($request->all());
+        $validator =  Validator::make($request->all(), [
+            'key' => ['required', 'numeric'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+        try {
+            $user_media_delete = Advertisment::where('id', $id)->first();
+            if(!empty($user_media_delete)){
+                $imagearr = $user_media_delete->ads_image;
+                $expimagearr = explode('|', $imagearr);
+                // dd($expimagearr);
+                if (isset($expimagearr[$request->key])) {
+                    $delkeyimg = $expimagearr[$request->key];
+
+                }
+
+            }
+            $images = explode("|", $user_media_delete->media_image);
+            if (isset($images[$d_id])) {
+                unlink($images[$d_id]);
+                unset($images[$d_id]);
+                $arr = implode('|', $images);
+                $verified['media_image'] = $arr;
+                $media = Media::where('user_id', $id)->update($verified);
+                $deleted_media = Media::where('user_id', $id)->first();
+                DB::commit();
+                $user_media = new MediaResource($deleted_media);
+                return ApiResponse::ok(
+                    'Media Deleted Successfully',
+                    $this->mediaimages($user_media)
+                );
+            }
+            return response()->json([
+                'message' => 'Record Deleted Successfully',
+                'data' => $ads_delete,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
+
+    // public function delrecord()
+    // {
+    //     dd('sdfhsdfdhfd');
+    //     try {
+    //         $id = auth()->user()->id;
+    //         $user_media_delete = Advertisment::where('user_id', $id)->first();
+    //         $images = explode("|", $user_media_delete->media_image);
+    //         if (isset($images[$d_id])) {
+    //             unlink($images[$d_id]);
+    //             unset($images[$d_id]);
+    //             $arr = implode('|', $images);
+    //             $verified['media_image'] = $arr;
+    //             $media = Media::where('user_id', $id)->update($verified);
+    //             $deleted_media = Media::where('user_id', $id)->first();
+    //             DB::commit();
+    //             $user_media = new MediaResource($deleted_media);
+    //             return ApiResponse::ok(
+    //                 'Media Deleted Successfully',
+    //                 $this->mediaimages($user_media)
+    //             );
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 }

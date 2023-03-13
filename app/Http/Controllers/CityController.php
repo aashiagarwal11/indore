@@ -27,7 +27,7 @@ class CityController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'message' => $e->getMessage(),
             ]);
         }
@@ -61,7 +61,7 @@ class CityController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'message' => $e->getMessage(),
             ]);
             // return ApiResponse::error($e->getMessage());
@@ -105,7 +105,7 @@ class CityController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'message' => $e->getMessage(),
             ]);
         }
@@ -130,7 +130,7 @@ class CityController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'message' => $e->getMessage(),
             ]);
         }
