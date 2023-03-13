@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\AdvertismentController;
+use App\Http\Controllers\NewsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,13 +23,23 @@ Route::controller(RegisteredUserController::class)->group(function () {
     Route::post('register', 'register'); # registration api
     Route::post('login', 'login'); # login api
 });
+
+
 // });
 
 
 Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('city', CityController::class);
+    Route::apiResource('ads', AdvertismentController::class);
+    Route::apiResource('news', NewsController::class);
+    Route::controller(NewsController::class)->group(function () {
+        Route::post('acceptDeny', 'acceptDeny');
+        Route::post('newsViaAdmin', 'newsViaAdmin');
+    });
+    // Route::controller(AdvertismentController::class)->group(function () {
+    //     Route::any('delrecord', 'delrecord');
+    // });
 });
-Route::apiResource('ads', AdvertismentController::class);
 
 
 // Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {

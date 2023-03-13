@@ -50,7 +50,7 @@ class RegisteredUserController extends Controller
                 'data' => $user,
             ]);
         } catch (\Exception $e) {
-            response()->json([
+            return response()->json([
                 'message' => $e->getMessage(),
             ]);
         }
