@@ -204,7 +204,6 @@ class AdvertismentController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        // dd($request->all());
         $validator =  Validator::make($request->all(), [
             'key' => ['required', 'numeric'],
         ]);
@@ -214,67 +213,33 @@ class AdvertismentController extends Controller
         }
         try {
             $user_media_delete = Advertisment::where('id', $id)->first();
-            if(!empty($user_media_delete)){
-                $imagearr = $user_media_delete->ads_image;
-                $expimagearr = explode('|', $imagearr);
-                // dd($expimagearr);
-                if (isset($expimagearr[$request->key])) {
-                    $delkeyimg = $expimagearr[$request->key];
+            $images = explode("|", $user_media_delete->ads_image);
 
-                }
-
-            }
-            $images = explode("|", $user_media_delete->media_image);
-            if (isset($images[$d_id])) {
-                unlink($images[$d_id]);
-                unset($images[$d_id]);
+            if (isset($images[$request->key])) {
+                // unlink($images[$request->key]);
+                unset($images[$request->key]);
                 $arr = implode('|', $images);
-                $verified['media_image'] = $arr;
-                $media = Media::where('user_id', $id)->update($verified);
-                $deleted_media = Media::where('user_id', $id)->first();
-                DB::commit();
-                $user_media = new MediaResource($deleted_media);
-                return ApiResponse::ok(
-                    'Media Deleted Successfully',
-                    $this->mediaimages($user_media)
-                );
+                // dd($arr);
+                $verified['ads_image'] = $arr;
+
+                $getadsimg = Advertisment::where('id', $id)->update($verified);
+                $deleted_media = Advertisment::where('id', $id)->first();
+
+                $deleted_media['ads_image'] = explode('|', $deleted_media->ads_image);
+
+                return response()->json([
+                    'message' => 'Ads Deleted Successfully',
+                    'data' => $deleted_media,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Key Not Found',
+                ]);
             }
-            return response()->json([
-                'message' => 'Record Deleted Successfully',
-                'data' => $ads_delete,
-            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
             ]);
         }
     }
-
-    // public function delrecord()
-    // {
-    //     dd('sdfhsdfdhfd');
-    //     try {
-    //         $id = auth()->user()->id;
-    //         $user_media_delete = Advertisment::where('user_id', $id)->first();
-    //         $images = explode("|", $user_media_delete->media_image);
-    //         if (isset($images[$d_id])) {
-    //             unlink($images[$d_id]);
-    //             unset($images[$d_id]);
-    //             $arr = implode('|', $images);
-    //             $verified['media_image'] = $arr;
-    //             $media = Media::where('user_id', $id)->update($verified);
-    //             $deleted_media = Media::where('user_id', $id)->first();
-    //             DB::commit();
-    //             $user_media = new MediaResource($deleted_media);
-    //             return ApiResponse::ok(
-    //                 'Media Deleted Successfully',
-    //                 $this->mediaimages($user_media)
-    //             );
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
 }

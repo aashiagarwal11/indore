@@ -29,6 +29,9 @@ Route::controller(RegisteredUserController::class)->group(function () {
 
 
 Route::middleware('jwt.verify')->group(function () {
+    Route::controller(RegisteredUserController::class)->group(function () {
+        Route::post('logout', 'logout'); # logout api
+    });
     Route::apiResource('city', CityController::class);
     Route::apiResource('ads', AdvertismentController::class);
     Route::apiResource('news', NewsController::class);
@@ -36,9 +39,6 @@ Route::middleware('jwt.verify')->group(function () {
         Route::post('acceptDeny', 'acceptDeny');
         Route::post('newsViaAdmin', 'newsViaAdmin');
     });
-    // Route::controller(AdvertismentController::class)->group(function () {
-    //     Route::any('delrecord', 'delrecord');
-    // });
 });
 
 
