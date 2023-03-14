@@ -15,20 +15,9 @@ class AdvertismentController extends Controller
     public function index()
     {
         try {
-            // $id = auth()->user()->id;
-            // $medias =  Media::where('user_id', $id)->first();
             $advertisment =  Advertisment::all()->toArray();
             if (!empty($advertisment)) {
-                // $emarr = [];
-                // foreach ($advertisment as $ads) {
-                // $data['id'] = $ads['id'];
-                // $advertisment['exe_img'] = explode('|', $ads['ads_image']);
-                // $data['created_at'] = $ads['created_at'];
-                // $data['updated_at'] = $ads['updated_at'];
-                // dump($advertisment);
-                // $allData =  array_push($emarr, $data);
-                // }
-                // dd($allData);
+                // dd($advertisment['ads_image']);
                 return response()->json([
                     'message' => 'All Ads List',
                     'data' => $advertisment,
@@ -73,13 +62,14 @@ class AdvertismentController extends Controller
                     }
                 }
 
-
                 $imp_image =  implode('|', $images);
                 $media = Advertisment::create([
                     'ads_image' => $imp_image,
                     'created_at' => \Carbon\Carbon::now(),
                     'updated_at' => \Carbon\Carbon::now(),
                 ]);
+
+                $media['ads_image'] = explode('|', $media->ads_image);
 
                 return response()->json([
                     'message' => 'Advertisment Added Successfully',
@@ -124,8 +114,7 @@ class AdvertismentController extends Controller
         try {
             $advertisment = Advertisment::find($id);
             $exdata = $advertisment->ads_image;
-            $advertisment['exe_img'] = explode('|', $exdata);
-            unset($advertisment->ads_image);
+            $advertisment['ads_image'] = explode('|', $exdata);
             return response()->json([
                 'message' => 'Advertisment',
                 'data' => $advertisment,
@@ -186,6 +175,10 @@ class AdvertismentController extends Controller
                         'message' => 'Ads Updated Successfully',
                         'data' => $mediadata,
                     ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Key Not Exist',
+                    ]);
                 }
             } else {
                 return response()->json([
@@ -213,27 +206,38 @@ class AdvertismentController extends Controller
         }
         try {
             $user_media_delete = Advertisment::where('id', $id)->first();
-            $images = explode("|", $user_media_delete->ads_image);
 
-            if (isset($images[$request->key])) {
-                // unlink($images[$request->key]);
-                unset($images[$request->key]);
-                $arr = implode('|', $images);
-                // dd($arr);
-                $verified['ads_image'] = $arr;
+            if (!empty($user_media_delete)) {
+                $images = explode("|", $user_media_delete->ads_image);
+                if (isset($images[$request->key])) {
 
-                $getadsimg = Advertisment::where('id', $id)->update($verified);
-                $deleted_media = Advertisment::where('id', $id)->first();
+                    $inarr =  in_array($images[$request->key], $images);
 
-                $deleted_media['ads_image'] = explode('|', $deleted_media->ads_image);
+                    if ($inarr == true) {
+                        unlink($images[$request->key]);
+                        unset($images[$request->key]);
+                    }
 
-                return response()->json([
-                    'message' => 'Ads Deleted Successfully',
-                    'data' => $deleted_media,
-                ]);
+                    $arr = implode('|', $images);
+                    $verified['ads_image'] = $arr;
+
+                    $getadsimg = Advertisment::where('id', $id)->update($verified);
+                    $deleted_media = Advertisment::where('id', $id)->first();
+
+                    $deleted_media['ads_image'] = explode('|', $deleted_media->ads_image);
+
+                    return response()->json([
+                        'message' => 'Ads Deleted Successfully',
+                        'data' => $deleted_media,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Key Not Exist',
+                    ]);
+                }
             } else {
                 return response()->json([
-                    'message' => 'Key Not Found',
+                    'message' => 'No Record Found',
                 ]);
             }
         } catch (\Exception $e) {
