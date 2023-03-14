@@ -81,8 +81,7 @@ class RegisteredUserController extends Controller
         try {
             $user = auth()->user()->id;
             if ($user) {
-                // auth()->logout();
-                Auth::logout();
+                auth('api')->logout();
                 return response()->json([
                     'message' => 'Logged Out Successfully',
                 ]);
