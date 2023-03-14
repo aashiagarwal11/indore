@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\City;
+use App\Models\Advertisment;
 
 
 class NewsController extends Controller
@@ -41,7 +42,7 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        ## store form details by user side
+        ## store news form details by user side
         $id = auth()->user()->id;
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string'],
@@ -53,50 +54,50 @@ class NewsController extends Controller
             return response()->json(['message' => $validator->errors()]);
         }
         try {
-            $news = News::where('title', $request->title)->first();
-            if (empty($news)) {
+            // $news = News::where('title', $request->title)->first();
+            // if (empty($news)) {
 
-                $images = array();
-                if ($files = $request->file('image')) {
-                    foreach ($files as $file) {
-                        $imgname = md5(rand('1000', '10000'));
-                        $extension = strtolower($file->getClientOriginalExtension());
-                        $img_full_name = $imgname . '.' . $extension;
-                        $upload_path = 'public/image/';
-                        $img_url = $upload_path . $img_full_name;
-                        $file->move($upload_path, $img_full_name);
-                        array_push($images, $img_url);
-                    }
+            $images = array();
+            if ($files = $request->file('image')) {
+                foreach ($files as $file) {
+                    $imgname = md5(rand('1000', '10000'));
+                    $extension = strtolower($file->getClientOriginalExtension());
+                    $img_full_name = $imgname . '.' . $extension;
+                    $upload_path = 'public/image/';
+                    $img_url = $upload_path . $img_full_name;
+                    $file->move($upload_path, $img_full_name);
+                    array_push($images, $img_url);
                 }
-
-
-                $imp_image =  implode('|', $images);
-
-                $news = News::create([
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'ads_id' => $request->ads_id ?? null,
-                    'user_id' => $id,
-                    'city_id' => $request->city_id ?? null,
-                    'image' => $imp_image,
-                ]);
-                $exp = explode('|',  $imp_image);
-
-                $data['title'] = $news->title;
-                $data['description'] = $news->description;
-                $data['image'] = $exp;
-                $data['created_at'] = $news->created_at;
-                $data['updated_at'] = $news->updated_at;
-
-                return response()->json([
-                    'message' => 'News Added Successfully',
-                    'data' => $data,
-                ]);
-            } else {
-                return response()->json([
-                    'error' => 'Duplicate Title',
-                ]);
             }
+
+
+            $imp_image =  implode('|', $images);
+
+            $news = News::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'ads_id' => $request->ads_id ?? null,
+                'user_id' => $id,
+                'city_id' => $request->city_id ?? null,
+                'image' => $imp_image,
+            ]);
+            $exp = explode('|',  $imp_image);
+
+            $data['title'] = $news->title;
+            $data['description'] = $news->description;
+            $data['image'] = $exp;
+            $data['created_at'] = $news->created_at;
+            $data['updated_at'] = $news->updated_at;
+
+            return response()->json([
+                'message' => 'News Added Successfully',
+                'data' => $data,
+            ]);
+            // } else {
+            //     return response()->json([
+            //         'error' => 'Duplicate Title',
+            //     ]);
+            // }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -109,7 +110,31 @@ class NewsController extends Controller
      */
     public function show(Request $request, $id)
     {
-        //
+        ## show specificnews by id
+        try {
+            // $specificnews = News::where('id', $id)->first();
+
+            $specificnews = News::where('news.id', $id)->where('news.status', 1)
+                ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.created_at', 'news.updated_at')
+                ->join('users', 'users.id', 'news.user_id')
+                ->join('cities', 'cities.id', 'news.city_id')
+                ->get();
+            if (!empty($specificnews)) {
+
+                return response()->json([
+                    'message' => 'News with particular Id',
+                    'data' => $specificnews,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'No Record Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -159,7 +184,23 @@ class NewsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $delete = News::where('id', $id)->first();
+            if (!empty($delete)) {
+                $getdeleterec = $delete->delete();
+                return response()->json([
+                    'message' => 'Record Deleted Successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function acceptDeny(Request $request)
@@ -215,10 +256,7 @@ class NewsController extends Controller
     {
         ## add news by admin
         $id = auth()->user()->id;
-
-
         try {
-
             $city = City::where('id', $request->city_id)->first();
             if (!empty($city)) {
                 $validator = Validator::make($request->all(), [
@@ -234,55 +272,123 @@ class NewsController extends Controller
                 }
 
                 $news = News::where('title', $request->title)->first();
-                if (empty($news)) {
+                // if (empty($news)) {
 
-                    $images = array();
-                    if ($files = $request->file('image')) {
-                        foreach ($files as $file) {
-                            $imgname = md5(rand('1000', '10000'));
-                            $extension = strtolower($file->getClientOriginalExtension());
-                            $img_full_name = $imgname . '.' . $extension;
-                            $upload_path = 'public/image/';
-                            $img_url = $upload_path . $img_full_name;
-                            $file->move($upload_path, $img_full_name);
-                            array_push($images, $img_url);
-                        }
+                $images = array();
+                if ($files = $request->file('image')) {
+                    foreach ($files as $file) {
+                        $imgname = md5(rand('1000', '10000'));
+                        $extension = strtolower($file->getClientOriginalExtension());
+                        $img_full_name = $imgname . '.' . $extension;
+                        $upload_path = 'public/image/';
+                        $img_url = $upload_path . $img_full_name;
+                        $file->move($upload_path, $img_full_name);
+                        array_push($images, $img_url);
                     }
-                    $imp_image =  implode('|', $images);
-                    $news = News::create([
-                        'title' => $request->title,
-                        'description' => $request->description,
-                        'ads_id' => $request->ads_id ?? null,
-                        'image' => $imp_image,
-                        'video_url' => $request->video_url,
-                        'user_id' => $id,
-                        'city_id' => $request->city_id ?? null,
-                        'status' => 1,
-                    ]);
-                    $exp = explode('|',  $imp_image);
-                    $data['title'] = $request->title;
-                    $data['description'] = $request->description;
-                    $data['city_id'] = $request->city_id;
-                    $data['image'] = $exp;
-                    $data['video_url'] = $request->video_url;
+                }
+                $imp_image =  implode('|', $images);
+                $news = News::create([
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'ads_id' => $request->ads_id ?? null,
+                    'image' => $imp_image,
+                    'video_url' => $request->video_url,
+                    'user_id' => $id,
+                    'city_id' => $request->city_id ?? null,
+                    'status' => 1,
+                ]);
+                $exp = explode('|',  $imp_image);
+                $data['title'] = $request->title;
+                $data['description'] = $request->description;
+                $data['city_id'] = $request->city_id;
+                $data['image'] = $exp;
+                $data['video_url'] = $request->video_url;
 
-                    $get = DB::table('news')
-                        ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
-                        ->where('title', $request->title)
-                        ->join('cities', 'news.city_id', 'cities.id')->get();
+                // $get = DB::table('news')
+                //     ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
+                //     ->where('title', $request->title)
+                //     ->join('cities', 'news.city_id', 'cities.id')->get();
 
+                return response()->json([
+                    'message' => 'News Added Successfully By Admin',
+                    'data' => $data,
+                ]);
+                // } else {
+                //     return response()->json([
+                //         'message' => 'Duplicate Title Not Allowed',
+                //     ]);
+                // }
+            } else {
+                return response()->json([
+                    'error' => 'City not exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function shownewsViacity(Request $request)
+    {
+        ## showing the news on the city basis
+        $validator = Validator::make($request->all(), [
+            'city' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+        $city_id = $request->city;
+        try {
+            $city = City::where('id', $city_id)->first();
+            if (!empty($city)) {
+                // $news = News::where('city_id', $city_id)->where('status', 1)->get();
+
+                $news = News::where('city_id', $city_id)->where('status', 1)
+                    ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.created_at', 'news.updated_at')
+                    ->join('users', 'users.id', 'news.user_id')
+                    ->join('cities', 'cities.id', 'news.city_id')
+                    ->get();
+                if (!empty($news)) {
                     return response()->json([
-                        'message' => 'News Added Successfully By Admin',
-                        'data' => $get,
+                        'message' => 'All News List On The City Basis',
+                        'data' => $news,
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'Duplicate Title Not Allowed',
+                        'error' => 'No News Found',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'error' => 'City not exist add city first',
+                    'message' => 'City Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function randomads()
+    {
+        ## random ads api
+        try {
+            $ads = Advertisment::all()->random(1);
+            if (!empty($ads)) {
+                $image = explode('|', $ads[0]->ads_image);
+                shuffle($image);
+                $ads[0]->ads_image = $image[0];
+                return response()->json([
+                    'message' => 'Ad',
+                    'data' => $ads,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'No Ads Exist',
                 ]);
             }
         } catch (\Exception $e) {

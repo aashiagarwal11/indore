@@ -38,6 +38,8 @@ Route::middleware('jwt.verify')->group(function () {
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptDeny', 'acceptDeny');
         Route::post('newsViaAdmin', 'newsViaAdmin');
+        Route::post('shownewsViacity', 'shownewsViacity');
+        Route::get('randomads', 'randomads');
     });
 });
 
