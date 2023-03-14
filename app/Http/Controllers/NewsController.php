@@ -6,6 +6,7 @@ use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Models\City;
 
 
 class NewsController extends Controller
@@ -214,63 +215,74 @@ class NewsController extends Controller
     {
         ## add news by admin
         $id = auth()->user()->id;
-        $validator = Validator::make($request->all(), [
-            'title' => ['required', 'string'],
-            'description' => ['required', 'string'],
-            'city_id' => ['required', 'numeric'],
-            'image' => ['required'],
-            'video_url' => ['required'],
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
+
         try {
-            $news = News::where('title', $request->title)->first();
-            if (empty($news)) {
 
-                $images = array();
-                if ($files = $request->file('image')) {
-                    foreach ($files as $file) {
-                        $imgname = md5(rand('1000', '10000'));
-                        $extension = strtolower($file->getClientOriginalExtension());
-                        $img_full_name = $imgname . '.' . $extension;
-                        $upload_path = 'public/image/';
-                        $img_url = $upload_path . $img_full_name;
-                        $file->move($upload_path, $img_full_name);
-                        array_push($images, $img_url);
-                    }
+            $city = City::where('id', $request->city_id)->first();
+            if (!empty($city)) {
+                $validator = Validator::make($request->all(), [
+                    'title' => ['required', 'string'],
+                    'description' => ['required', 'string'],
+                    'city_id' => ['required', 'numeric'],
+                    'image' => ['required'],
+                    'video_url' => ['required'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
                 }
-                $imp_image =  implode('|', $images);
-                $news = News::create([
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'ads_id' => $request->ads_id ?? null,
-                    'image' => $imp_image,
-                    'video_url' => $request->video_url,
-                    'user_id' => $id,
-                    'city_id' => $request->city_id ?? null,
-                    'status' => 1,
-                ]);
-                $exp = explode('|',  $imp_image);
-                $data['title'] = $request->title;
-                $data['description'] = $request->description;
-                $data['city_id'] = $request->city_id;
-                $data['image'] = $exp;
-                $data['video_url'] = $request->video_url;
 
-                $get = DB::table('news')
-                    ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
-                    ->where('title', $request->title)
-                    ->join('cities', 'news.city_id', 'cities.id')->get();
+                $news = News::where('title', $request->title)->first();
+                if (empty($news)) {
 
-                return response()->json([
-                    'message' => 'News Added Successfully By Admin',
-                    'data' => $get,
-                ]);
+                    $images = array();
+                    if ($files = $request->file('image')) {
+                        foreach ($files as $file) {
+                            $imgname = md5(rand('1000', '10000'));
+                            $extension = strtolower($file->getClientOriginalExtension());
+                            $img_full_name = $imgname . '.' . $extension;
+                            $upload_path = 'public/image/';
+                            $img_url = $upload_path . $img_full_name;
+                            $file->move($upload_path, $img_full_name);
+                            array_push($images, $img_url);
+                        }
+                    }
+                    $imp_image =  implode('|', $images);
+                    $news = News::create([
+                        'title' => $request->title,
+                        'description' => $request->description,
+                        'ads_id' => $request->ads_id ?? null,
+                        'image' => $imp_image,
+                        'video_url' => $request->video_url,
+                        'user_id' => $id,
+                        'city_id' => $request->city_id ?? null,
+                        'status' => 1,
+                    ]);
+                    $exp = explode('|',  $imp_image);
+                    $data['title'] = $request->title;
+                    $data['description'] = $request->description;
+                    $data['city_id'] = $request->city_id;
+                    $data['image'] = $exp;
+                    $data['video_url'] = $request->video_url;
+
+                    $get = DB::table('news')
+                        ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
+                        ->where('title', $request->title)
+                        ->join('cities', 'news.city_id', 'cities.id')->get();
+
+                    return response()->json([
+                        'message' => 'News Added Successfully By Admin',
+                        'data' => $get,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Duplicate Title Not Allowed',
+                    ]);
+                }
             } else {
                 return response()->json([
-                    'message' => 'Duplicate Title Not Allowed',
+                    'error' => 'City not exist add city first',
                 ]);
             }
         } catch (\Exception $e) {
