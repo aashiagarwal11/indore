@@ -19,11 +19,17 @@ class NewsController extends Controller
     {
         ## showing the news which is accepted by admin
         try {
-            $news = News::where('status', 1)->get();
+            $news = News::where('status', 1)->get()->toArray();
             if (!empty($news)) {
+                $newarr = [];
+
+                foreach ($news as $key => $new) {
+                    $new['image'] = explode('|', $new['image']);
+                    array_push($newarr, $new);
+                }
                 return response()->json([
                     'message' => 'All News',
-                    'data' => $news,
+                    'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
@@ -47,7 +53,7 @@ class NewsController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string'],
             'description' => ['required', 'string'],
-            'image' => ['required']
+            'image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg']
         ]);
 
         if ($validator->fails()) {
@@ -142,26 +148,49 @@ class NewsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        ## add city by admin and edit form from user side
+        ## add city by admin and edit form of user side
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string'],
             'description' => ['required', 'string'],
             'city_id' => ['required', 'numeric'],
+            'image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg'],
+
         ]);
 
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()]);
         }
+
         try {
             $news = News::where('id', $id)->first();
             if (!empty($news)) {
+                $images = array();
+                if ($files = $request->file('image')) {
+                    foreach ($files as $file) {
+                        $imgname = md5(rand('1000', '10000'));
+                        $extension = strtolower($file->getClientOriginalExtension());
+                        $img_full_name = $imgname . '.' . $extension;
+                        $upload_path = 'public/image/';
+                        $img_url = $upload_path . $img_full_name;
+                        $file->move($upload_path, $img_full_name);
+                        array_push($images, $img_url);
+                    }
+                }
+
+
+                $imp_image =  implode('|', $images);
+
                 $data['title'] = $request->title;
                 $data['description'] = $request->description;
                 $data['city_id'] = $request->city_id;
+                $data['image'] = $imp_image;
+                $data['video_url'] = $request->video_url ?? null;
                 $updatedata = $news->update($data);
 
-                $get = DB::table('news')->select('news.id', 'news.title', 'news.description', 'cities.*')
+                $get = DB::table('news')->where('news.id', $id)->select('news.id', 'news.title', 'news.description', 'news.image', 'news.video_url', 'cities.*')
                     ->join('cities', 'news.city_id', 'cities.id')->get();
+
+                $get[0]->image = explode('|', $data['image']);
 
                 return response()->json([
                     'message' => 'News Updated Successfully',
@@ -263,7 +292,7 @@ class NewsController extends Controller
                     'title' => ['required', 'string'],
                     'description' => ['required', 'string'],
                     'city_id' => ['required', 'numeric'],
-                    'image' => ['required'],
+                    'image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg'],
                     'video_url' => ['required'],
                 ]);
 
@@ -334,7 +363,7 @@ class NewsController extends Controller
     {
         ## showing the news on the city basis
         $validator = Validator::make($request->all(), [
-            'city' => ['required', 'string'],
+            'city' => ['required', 'numeric'],
         ]);
 
         if ($validator->fails()) {
