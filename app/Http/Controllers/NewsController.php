@@ -22,8 +22,8 @@ class NewsController extends Controller
             $news = News::where('status', 1)->get()->toArray();
             if (!empty($news)) {
                 $newarr = [];
-
                 foreach ($news as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
                     array_push($newarr, $new);
                 }
