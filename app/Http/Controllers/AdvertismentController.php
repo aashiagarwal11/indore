@@ -40,7 +40,7 @@ class AdvertismentController extends Controller
     public function store(Request $request)
     {
         $validator =  Validator::make($request->all(), [
-            'ads_image' => ['required'],
+            'ads_image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg'],
         ]);
 
         if ($validator->fails()) {
@@ -132,7 +132,7 @@ class AdvertismentController extends Controller
     public function update(Request $request, $id)
     {
         $validator =  Validator::make($request->all(), [
-            'ads_image' => ['required'],
+            'ads_image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg'],
             'key' => ['required', 'numeric'],
         ]);
 

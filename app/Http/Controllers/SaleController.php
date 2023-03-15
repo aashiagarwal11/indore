@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Models\City;
 
 
-class CityController extends Controller
+class SaleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,15 +15,15 @@ class CityController extends Controller
     public function index()
     {
         try {
-            $getcity = City::all();
-            if (!empty($getcity)) {
+            $getsale = Sale::all();
+            if (!empty($getsale)) {
                 return response()->json([
-                    'message' => 'All City Details',
-                    'data' => $getcity,
+                    'message' => 'All Sale Type List',
+                    'data' => $getsale,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No City Found In The List',
+                    'message' => 'No Sale Type Found In The List',
                 ]);
             }
         } catch (\Exception $e) {
@@ -40,7 +40,7 @@ class CityController extends Controller
     {
         $sa_id = auth()->user()->id;
         $validator = Validator::make($request->all(), [
-            'city_name' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'alpha', 'string', 'max:255'],
         ]);
 
         if ($validator->fails()) {
@@ -48,50 +48,64 @@ class CityController extends Controller
         }
         try {
             if ($sa_id == 1) {
-                $chkcityname = City::where('city_name', $request->city_name)->first();
-                if (empty($chkcityname)) {
-                    $city = City::create([
-                        'city_name' => $request->city_name,
+                $chksaletype = Sale::where('type', $request->type)->first();
+                if (empty($chksaletype)) {
+                    $saletype = Sale::create([
+                        'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'City Added Successfully',
-                        'data' => $city,
+                        'message' => 'Sale Type Added Successfully',
+                        'data' => $saletype,
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'City Already Exist',
+                        'message' => 'Sale Type Already Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add city',
+                    'message' => 'Only admin can add sale type',
                 ]);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
             ]);
-            // return ApiResponse::error($e->getMessage());
-            // logger($e->getMessage());
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        try {
+            $getsaleid = Sale::where('id', $id)->first();
+            if (!empty($getsaleid)) {
+                return response()->json([
+                    'message' => 'Details',
+                    'data' => $getsaleid,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Not exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $sa_id = auth()->user()->id;
         $validator = Validator::make($request->all(), [
-            'city_name' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'alpha', 'string', 'max:255'],
         ]);
 
         if ($validator->fails()) {
@@ -99,14 +113,14 @@ class CityController extends Controller
         }
         try {
             if ($sa_id == 1) {
-                $city = City::where('id', $id)->first();
-                if (!empty($city)) {
-                    $updatecity = $city->update([
-                        'city_name' => $request->city_name,
+                $sale = Sale::where('id', $id)->first();
+                if (!empty($sale)) {
+                    $updatesale = $sale->update([
+                        'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'City Updated Successfully',
-                        'data' => $city,
+                        'message' => 'Sale Type Updated Successfully',
+                        'data' => $sale,
                     ]);
                 } else {
                     return response()->json([
@@ -115,7 +129,7 @@ class CityController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can update city',
+                    'message' => 'Only admin can add sale type',
                 ]);
             }
         } catch (\Exception $e) {
@@ -128,19 +142,19 @@ class CityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         try {
-            $city = City::where('id', $id)->first();
-            if (!empty($city)) {
-                $delcity = $city->delete();
+            $sale = Sale::where('id', $id)->first();
+            if (!empty($sale)) {
+                $delsale = $sale->delete();
                 return response()->json([
-                    'message' => 'City Deleted Successfully',
-                    'data' => $city,
+                    'message' => 'Sale Type Deleted Successfully',
+                    'data' => $sale,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'City Not Exist',
+                    'message' => 'Type Not Exist',
                 ]);
             }
         } catch (\Exception $e) {
