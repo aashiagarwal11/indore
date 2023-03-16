@@ -8,6 +8,8 @@ use App\Http\Controllers\AdvertismentController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleSubCategoryController;
+use App\Http\Controllers\SaleSubCategoryProductController;
+use App\Http\Controllers\SaleProductListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,14 +39,20 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('news', NewsController::class);
     Route::apiResource('sale', SaleController::class);
     Route::apiResource('salesubcategory', SaleSubCategoryController::class);
+    Route::apiResource('salesubcategoryproduct', SaleSubCategoryProductController::class);
+    Route::apiResource('saleproduct', SaleProductListController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptDeny', 'acceptDeny');
         Route::post('newsViaAdmin', 'newsViaAdmin');
         Route::post('shownewsViacity', 'shownewsViacity');
         Route::get('randomads', 'randomads');
+        Route::get('showallnewsonadmin', 'showallnewsonadmin');
     });
     Route::controller(SaleSubCategoryController::class)->group(function () {
         Route::post('showSaleSubCategoryViaSaletype', 'showSaleSubCategoryViaSaletype');
+    });
+    Route::controller(SaleProductListController::class)->group(function () {
+        Route::post('showProductViasaleType', 'showProductViasaleType');
     });
 });
 

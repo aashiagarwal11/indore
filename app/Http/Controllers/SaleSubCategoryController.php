@@ -187,7 +187,6 @@ class SaleSubCategoryController extends Controller
 
     public function showSaleSubCategoryViaSaletype(Request $request)
     {
-        // dd('dfdh');
         $validator = Validator::make($request->all(), [
             'sale_id' => ['required', 'numeric'],
         ]);

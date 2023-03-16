@@ -17,7 +17,6 @@ class AdvertismentController extends Controller
         try {
             $advertisment =  Advertisment::all()->toArray();
             if (!empty($advertisment)) {
-                // dd($advertisment['ads_image']);
                 return response()->json([
                     'message' => 'All Ads List',
                     'data' => $advertisment,
