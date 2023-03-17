@@ -154,7 +154,6 @@ class NewsController extends Controller
             'description' => ['required', 'string'],
             'city_id' => ['required', 'numeric'],
             'image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg'],
-
         ]);
 
         if ($validator->fails()) {
@@ -223,55 +222,6 @@ class NewsController extends Controller
             } else {
                 return response()->json([
                     'message' => 'Record Not Exist',
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function acceptDeny(Request $request)
-    {
-        ## request accept and deny by the admin for user form 
-        $validator = Validator::make($request->all(), [
-            'status' => ['required', 'numeric', 'in:0,1'],
-            'id' => ['required'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
-        $getdata =  News::all();
-        $id = $request->id;
-        try {
-            if (!empty($getdata)) {
-                $eachnews = News::where('id', $id)->first();
-                if (!empty($eachnews)) {
-                    $updatecity = $eachnews->update([
-                        'status' => $request->status,
-                    ]);
-                    $all = News::where('id', $id)->first();
-                    if ($request->status == 1) {
-                        return response()->json([
-                            'message' => 'Accepted By Admin',
-                            'data' => $all,
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Deny By Admin',
-                            'data' => $all,
-                        ]);
-                    }
-                } else {
-                    return response()->json([
-                        'message' => 'Record Not Exist',
-                    ]);
-                }
-            } else {
-                return response()->json([
-                    'message' => 'No News Available',
                 ]);
             }
         } catch (\Exception $e) {
@@ -429,9 +379,9 @@ class NewsController extends Controller
 
     public function showallnewsonadmin()
     {
-        ## showing the news which have status 0
+        ## showing the news  on admin panel 
         try {
-            $news = News::where('status', 0)->get()->toArray();
+            $news = News::get()->toArray();
             if (!empty($news)) {
                 $newarr = [];
                 foreach ($news as $key => $new) {
@@ -446,6 +396,78 @@ class NewsController extends Controller
             } else {
                 return response()->json([
                     'error' => 'No News Found',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function acceptNews(Request $request)
+    {
+        ## request accept  by the admin for user news form 
+        $auth_id = auth()->user()->id;
+
+        $id = $request->id;
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $eachnews = News::where('id', $id)->first();
+            if (!empty($eachnews)) {
+                if ($eachnews->status == 0) {
+                    $eachnews->status = 1;
+                    $updateStatus = $eachnews->update();
+                    return response()->json([
+                        'message' => 'Accepted By Admin',
+                        'data' => $eachnews,
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function denyNews(Request $request)
+    {
+        ## request for reject  by the admin for user news form 
+        $auth_id = auth()->user()->id;
+
+        $id = $request->id;
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $eachnews = News::where('id', $id)->first();
+            if (!empty($eachnews)) {
+                if ($eachnews->status == 0) {
+                    $eachnews->status = 2;
+                    $updateStatus = $eachnews->update();
+                    return response()->json([
+                        'message' => 'Deny By Admin',
+                        'data' => $eachnews,
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
                 ]);
             }
         } catch (\Exception $e) {

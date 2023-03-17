@@ -108,7 +108,7 @@ class SaleProductListController extends Controller
         //
     }
 
-    public function showProductViasaleType(Request $request)
+    public function showProductViasellType(Request $request)
     {
         ## showing the news on the basis of sale type 
         $validator = Validator::make($request->all(), [
