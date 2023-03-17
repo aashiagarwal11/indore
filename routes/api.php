@@ -57,7 +57,9 @@ Route::middleware('jwt.verify')->group(function () {
     });
     Route::controller(SaleSubCategoryProductController::class)->group(function () {
         Route::get('sellFormListOfUser', 'sellFormListOfUser');
-        Route::post('acceptDenySell', 'acceptDenySell');
+        // Route::post('acceptDenySell', 'acceptDenySell');
+        Route::post('acceptSellProduct', 'acceptSellProduct');
+        Route::post('denySellProduct', 'denySellProduct');
 
     });
 });

@@ -40,7 +40,7 @@ class SaleController extends Controller
     {
         $sa_id = auth()->user()->id;
         $validator = Validator::make($request->all(), [
-            'type' => ['required', 'alpha', 'string', 'max:255'],
+            'type' => ['required', 'alpha', 'string', 'max:255','in:vehicle,property,other'],
         ]);
 
         if ($validator->fails()) {
@@ -62,7 +62,7 @@ class SaleController extends Controller
                         'message' => 'Sale Type Already Exist',
                     ]);
                 }
-            } else {
+            }else {
                 return response()->json([
                     'message' => 'Only admin can add sale type',
                 ]);

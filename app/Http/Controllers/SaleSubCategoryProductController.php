@@ -18,13 +18,18 @@ class SaleSubCategoryProductController extends Controller
     public function index()
     {
         ## all list of selling product form from user side which is accepted by admin we show this list on user panel.
-
         try {
             $sellingproduct = SaleSubCategoryProduct::where('status', 1)->get()->toArray();
             if (!empty($sellingproduct)) {
+                $newarr = [];
+                foreach ($sellingproduct as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+                    array_push($newarr, $new);
+                }
                 return response()->json([
                     'message' => 'List of product want to sell',
-                    'data' => $sellingproduct,
+                    'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
@@ -84,12 +89,29 @@ class SaleSubCategoryProductController extends Controller
                         'owner_or_broker'   => ['required', 'alpha', 'string', 'max:255', 'in:owner,broker'],
                         'property_location' => ['required', 'string', 'max:255'],
                         'price'             => ['required'],
+                        'image'             => ['required'],
+                        'image.*'           => ['mimes:jpeg,png,jpg,svg']
                     ]);
                     if ($validator->fails()) {
                         return response()->json(['message' => $validator->errors()]);
                     }
 
                     if (!empty($chksellid->type)) {
+                        $images = array();
+                        if ($files = $request->file('image')) {
+                            foreach ($files as $file) {
+                                $imgname = md5(rand('1000', '10000'));
+                                $extension = strtolower($file->getClientOriginalExtension());
+                                $img_full_name = $imgname . '.' . $extension;
+                                $upload_path = 'public/sellImage/';
+                                $img_url = $upload_path . $img_full_name;
+                                $file->move($upload_path, $img_full_name);
+                                array_push($images, $img_url);
+                            }
+                        }
+
+                        $imp_image =  implode('|', $images);
+
                         if ($chksellid->type == 'vehicle') {
                             $validator = Validator::make($request->all(), [
                                 'vehicle_sighting'  => ['required', 'string', 'max:255'],
@@ -122,7 +144,13 @@ class SaleSubCategoryProductController extends Controller
                                 'insurance_period' => $request->insurance_period,
                                 'color' => $request->color,
                                 'other_information' => $request->other_information ?? null,
+                                'image' => $imp_image,
                             ]);
+
+                            $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                            $exp = explode('|',  $imp_image);
+                            $sellproduct['image'] = $exp;
+
                             return response()->json([
                                 'message' => 'Product added successfully in sell list',
                                 'data' => $sellproduct,
@@ -143,7 +171,11 @@ class SaleSubCategoryProductController extends Controller
                                 'price' => $request->price,
                                 'size_length_width' => $request->size_length_width,
                                 'other_information' => $request->other_information ?? null,
+                                'image' => $imp_image,
                             ]);
+
+                            $exp = explode('|',  $imp_image);
+                            $sellproduct['image'] = $exp;
                             return response()->json([
                                 'message' => 'Product added successfully in sell list',
                                 'data' => $sellproduct,
@@ -199,11 +231,17 @@ class SaleSubCategoryProductController extends Controller
     {
         ## all list of selling product form from user side we show this list on admin panel so that admin can accept and deny the product.
         try {
-            $sellingproduct = SaleSubCategoryProduct::where('status', 0)->get()->toArray();
+            $sellingproduct = SaleSubCategoryProduct::get()->toArray();
             if (!empty($sellingproduct)) {
+                $newarr = [];
+                foreach ($sellingproduct as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+                    array_push($newarr, $new);
+                }
                 return response()->json([
                     'message' => 'List of product want to sell',
-                    'data' => $sellingproduct,
+                    'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
@@ -217,48 +255,33 @@ class SaleSubCategoryProductController extends Controller
         }
     }
 
-    public function acceptDenySell(Request $request)
+    public function acceptSellProduct(Request $request)
     {
-        dd('acceptdenyproduct');
-        ## request accept and deny by the admin for user sell form 
-        $validator = Validator::make($request->all(), [
-            'status' => ['required', 'numeric', 'in:0,1'],
-            'id' => ['required'],
-        ]);
+        ## request accept  by the admin for user sell product form 
+        $auth_id = auth()->user()->id;
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
-        $getdata =  SaleSubCategoryProduct::all(); ## all data with containing 0 and 1 status
-        dd($getdata);
         $id = $request->id;
         try {
-            if (!empty($getdata)) {
-                $eachnews = News::where('id', $id)->first();
-                if (!empty($eachnews)) {
-                    $updatecity = $eachnews->update([
-                        'status' => $request->status,
-                    ]);
-                    $all = News::where('id', $id)->first();
-                    if ($request->status == 1) {
-                        return response()->json([
-                            'message' => 'Accepted By Admin',
-                            'data' => $all,
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Deny By Admin',
-                            'data' => $all,
-                        ]);
-                    }
-                } else {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required', 'numeric'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
+            if (!empty($eachnews)) {
+                if ($eachnews->status == 0) {
+                    $eachnews->status = 1;
+                    $updateStatus = $eachnews->update();
                     return response()->json([
-                        'message' => 'Record Not Exist',
+                        'message' => 'Selling product request accepted By Admin',
+                        'data' => $eachnews,
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'No News Available',
+                    'message' => 'Record Not Exist',
                 ]);
             }
         } catch (\Exception $e) {
@@ -267,4 +290,99 @@ class SaleSubCategoryProductController extends Controller
             ]);
         }
     }
+
+    public function denySellProduct(Request $request)
+    {
+        ## request deny  by the admin for user sell product form 
+        $auth_id = auth()->user()->id;
+
+        $id = $request->id;
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required', 'numeric'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
+            if (!empty($eachnews)) {
+                if ($eachnews->status == 0) {
+                    $eachnews->status = 2;
+                    $updateStatus = $eachnews->update();
+                    return response()->json([
+                        'message' => 'Selling product request denied By Admin',
+                        'data' => $eachnews,
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+
+
+
+
+
+
+
+    // public function acceptDenySell(Request $request)
+    // {
+    //     dd('acceptdenyproduct');
+    //     ## request accept and deny by the admin for user sell form 
+    //     $validator = Validator::make($request->all(), [
+    //         'status' => ['required', 'numeric', 'in:0,1'],
+    //         'id' => ['required'],
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['message' => $validator->errors()]);
+    //     }
+    //     $getdata =  SaleSubCategoryProduct::all(); ## all data with containing 0 and 1 status
+    //     dd($getdata);
+    //     $id = $request->id;
+    //     try {
+    //         if (!empty($getdata)) {
+    //             $eachnews = News::where('id', $id)->first();
+    //             if (!empty($eachnews)) {
+    //                 $updatecity = $eachnews->update([
+    //                     'status' => $request->status,
+    //                 ]);
+    //                 $all = News::where('id', $id)->first();
+    //                 if ($request->status == 1) {
+    //                     return response()->json([
+    //                         'message' => 'Accepted By Admin',
+    //                         'data' => $all,
+    //                     ]);
+    //                 } else {
+    //                     return response()->json([
+    //                         'message' => 'Deny By Admin',
+    //                         'data' => $all,
+    //                     ]);
+    //                 }
+    //             } else {
+    //                 return response()->json([
+    //                     'message' => 'Record Not Exist',
+    //                 ]);
+    //             }
+    //         } else {
+    //             return response()->json([
+    //                 'message' => 'No News Available',
+    //             ]);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 }
