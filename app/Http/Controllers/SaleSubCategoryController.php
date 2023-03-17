@@ -185,7 +185,7 @@ class SaleSubCategoryController extends Controller
         }
     }
 
-    public function showSaleSubCategoryViaSaletype(Request $request)
+    public function showSellSubCategoryViaSelltype(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'sale_id' => ['required', 'numeric'],

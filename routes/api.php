@@ -37,22 +37,28 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('city', CityController::class);
     Route::apiResource('ads', AdvertismentController::class);
     Route::apiResource('news', NewsController::class);
-    Route::apiResource('sale', SaleController::class);
-    Route::apiResource('salesubcategory', SaleSubCategoryController::class);
-    Route::apiResource('salesubcategoryproduct', SaleSubCategoryProductController::class);
-    Route::apiResource('saleproduct', SaleProductListController::class);
+    Route::apiResource('sell', SaleController::class);
+    Route::apiResource('sellsubcategory', SaleSubCategoryController::class);
+    Route::apiResource('sellproduct', SaleProductListController::class);
+    Route::apiResource('sellsubcategoryproduct', SaleSubCategoryProductController::class);
     Route::controller(NewsController::class)->group(function () {
-        Route::post('acceptDeny', 'acceptDeny');
+        Route::post('acceptNews', 'acceptNews');
+        Route::post('denyNews', 'denyNews');
         Route::post('newsViaAdmin', 'newsViaAdmin');
         Route::post('shownewsViacity', 'shownewsViacity');
         Route::get('randomads', 'randomads');
         Route::get('showallnewsonadmin', 'showallnewsonadmin');
     });
     Route::controller(SaleSubCategoryController::class)->group(function () {
-        Route::post('showSaleSubCategoryViaSaletype', 'showSaleSubCategoryViaSaletype');
+        Route::post('showSellSubCategoryViaSelltype', 'showSellSubCategoryViaSelltype');
     });
     Route::controller(SaleProductListController::class)->group(function () {
-        Route::post('showProductViasaleType', 'showProductViasaleType');
+        Route::post('showProductViasellType', 'showProductViasellType');
+    });
+    Route::controller(SaleSubCategoryProductController::class)->group(function () {
+        Route::get('sellFormListOfUser', 'sellFormListOfUser');
+        Route::post('acceptDenySell', 'acceptDenySell');
+
     });
 });
 

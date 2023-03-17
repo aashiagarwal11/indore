@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('news', function (Blueprint $table) {
-            $table->string('status')->nullable()->default(0)->comment('0=>pending,1=>accept,2=>deny');
+        Schema::table('sale_sub_category_products', function (Blueprint $table) {
+            $table->integer('status')->nullable()->default(0)->comment('0=>deny,1=>accept');;
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('news', function (Blueprint $table) {
+        Schema::table('sale_sub_category_products', function (Blueprint $table) {
             $table->dropColumn('status');
         });
     }
