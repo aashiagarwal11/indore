@@ -53,7 +53,8 @@ class NewsController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string'],
             'description' => ['required', 'string'],
-            'image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg']
+            'image' => ['required'],
+            'image.*' => ['mimes:jpeg,png,jpg,svg']
         ]);
 
         if ($validator->fails()) {
@@ -87,6 +88,7 @@ class NewsController extends Controller
                 'city_id' => $request->city_id ?? null,
                 'image' => $imp_image,
             ]);
+            $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
             $exp = explode('|',  $imp_image);
 
             $data['title'] = $news->title;
@@ -126,10 +128,15 @@ class NewsController extends Controller
                 ->join('cities', 'cities.id', 'news.city_id')
                 ->get();
             if (!empty($specificnews)) {
-
+                $newarr = [];
+                foreach ($specificnews as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+                    array_push($newarr, $new);
+                }
                 return response()->json([
                     'message' => 'News with particular Id',
-                    'data' => $specificnews,
+                    'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
@@ -153,7 +160,9 @@ class NewsController extends Controller
             'title' => ['required', 'string'],
             'description' => ['required', 'string'],
             'city_id' => ['required', 'numeric'],
-            'image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg'],
+            'image' => ['required'],
+            'image.*' => ['mimes:jpeg,png,jpg,svg']
+            // 'video_url' => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -189,7 +198,9 @@ class NewsController extends Controller
                 $get = DB::table('news')->where('news.id', $id)->select('news.id', 'news.title', 'news.description', 'news.image', 'news.video_url', 'cities.*')
                     ->join('cities', 'news.city_id', 'cities.id')->get();
 
-                $get[0]->image = explode('|', $data['image']);
+
+                $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                $get[0]->image = explode('|', $imp_image);
 
                 return response()->json([
                     'message' => 'News Updated Successfully',
@@ -242,7 +253,8 @@ class NewsController extends Controller
                     'title' => ['required', 'string'],
                     'description' => ['required', 'string'],
                     'city_id' => ['required', 'numeric'],
-                    'image.*' => ['required', 'image', 'mimes:jpeg,png,jpg,svg'],
+                    'image' => ['required'],
+                    'image.*' => ['mimes:jpeg,png,jpg,svg'],
                     'video_url' => ['required'],
                 ]);
 
@@ -276,7 +288,8 @@ class NewsController extends Controller
                     'city_id' => $request->city_id ?? null,
                     'status' => 1,
                 ]);
-                $exp = explode('|',  $imp_image);
+                $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                $exp = explode('|', $imp_image);
                 $data['title'] = $request->title;
                 $data['description'] = $request->description;
                 $data['city_id'] = $request->city_id;
@@ -313,7 +326,8 @@ class NewsController extends Controller
     {
         ## showing the news on the city basis
         $validator = Validator::make($request->all(), [
-            'city' => ['required', 'numeric'],
+            // 'city' => ['required', 'numeric'],
+            'city' => ['numeric'],
         ]);
 
         if ($validator->fails()) {
@@ -321,29 +335,48 @@ class NewsController extends Controller
         }
         $city_id = $request->city;
         try {
-            $city = City::where('id', $city_id)->first();
-            if (!empty($city)) {
-                // $news = News::where('city_id', $city_id)->where('status', 1)->get();
+            if ($city_id == null) {
+                $news = News::where('status', 1)->get()->toArray();
+                $newarr = [];
+                foreach ($news as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+                    array_push($newarr, $new);
+                }
+                return response()->json([
+                    'message' => 'All News List On The City Basis',
+                    'data' => $newarr,
+                ]);
+            } else {
+                $city = City::where('id', $city_id)->first();
+                if (!empty($city)) {
 
-                $news = News::where('city_id', $city_id)->where('status', 1)
-                    ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.created_at', 'news.updated_at')
-                    ->join('users', 'users.id', 'news.user_id')
-                    ->join('cities', 'cities.id', 'news.city_id')
-                    ->get();
-                if (!empty($news)) {
-                    return response()->json([
-                        'message' => 'All News List On The City Basis',
-                        'data' => $news,
-                    ]);
+                    $news = News::where('city_id', $city_id)->where('status', 1)
+                        ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.created_at', 'news.updated_at')
+                        ->join('users', 'users.id', 'news.user_id')
+                        ->join('cities', 'cities.id', 'news.city_id')
+                        ->get();
+                    if (!empty($news)) {
+                        $newarr = [];
+                        foreach ($news as $key => $new) {
+                            $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                            $new['image'] = explode('|', $new['image']);
+                            array_push($newarr, $new);
+                        }
+                        return response()->json([
+                            'message' => 'All News List On The City Basis',
+                            'data' => $news,
+                        ]);
+                    } else {
+                        return response()->json([
+                            'error' => 'No News Found',
+                        ]);
+                    }
                 } else {
                     return response()->json([
-                        'error' => 'No News Found',
+                        'message' => 'City Not Exist',
                     ]);
                 }
-            } else {
-                return response()->json([
-                    'message' => 'City Not Exist',
-                ]);
             }
         } catch (\Exception $e) {
             return response()->json([
@@ -360,7 +393,9 @@ class NewsController extends Controller
             if (!empty($ads)) {
                 $image = explode('|', $ads[0]->ads_image);
                 shuffle($image);
+
                 $ads[0]->ads_image = $image[0];
+                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
                 return response()->json([
                     'message' => 'Ad',
                     'data' => $ads,
@@ -413,7 +448,7 @@ class NewsController extends Controller
         $id = $request->id;
         try {
             $validator = Validator::make($request->all(), [
-                'id' => ['required'],
+                'id' => ['required', 'numeric'],
             ]);
 
             if ($validator->fails()) {
@@ -449,7 +484,7 @@ class NewsController extends Controller
         $id = $request->id;
         try {
             $validator = Validator::make($request->all(), [
-                'id' => ['required'],
+                'id' => ['required', 'numeric'],
             ]);
 
             if ($validator->fails()) {
