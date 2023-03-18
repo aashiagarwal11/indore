@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sell;
 
+use App\Http\Controllers\Controller;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 
-class SaleController extends Controller
+class SellController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,15 +16,15 @@ class SaleController extends Controller
     public function index()
     {
         try {
-            $getsale = Sale::all();
-            if (!empty($getsale)) {
+            $getsell = Sale::all();
+            if (!empty($getsell)) {
                 return response()->json([
-                    'message' => 'All Sale Type List',
-                    'data' => $getsale,
+                    'message' => 'All Sell Type List',
+                    'data' => $getsell,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No Sale Type Found In The List',
+                    'message' => 'No Sell Type Found In The List',
                 ]);
             }
         } catch (\Exception $e) {
@@ -48,23 +49,23 @@ class SaleController extends Controller
         }
         try {
             if ($sa_id == 1) {
-                $chksaletype = Sale::where('type', $request->type)->first();
-                if (empty($chksaletype)) {
-                    $saletype = Sale::create([
+                $chkselltype = Sale::where('type', $request->type)->first();
+                if (empty($chkselltype)) {
+                    $selltype = Sale::create([
                         'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'Sale Type Added Successfully',
-                        'data' => $saletype,
+                        'message' => 'Sell Type Added Successfully',
+                        'data' => $selltype,
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'Sale Type Already Exist',
+                        'message' => 'Sell Type Already Exist',
                     ]);
                 }
             }else {
                 return response()->json([
-                    'message' => 'Only admin can add sale type',
+                    'message' => 'Only admin can add sell type',
                 ]);
             }
         } catch (\Exception $e) {
@@ -80,11 +81,11 @@ class SaleController extends Controller
     public function show($id)
     {
         try {
-            $getsaleid = Sale::where('id', $id)->first();
-            if (!empty($getsaleid)) {
+            $getsellid = Sale::where('id', $id)->first();
+            if (!empty($getsellid)) {
                 return response()->json([
                     'message' => 'Details',
-                    'data' => $getsaleid,
+                    'data' => $getsellid,
                 ]);
             } else {
                 return response()->json([
@@ -113,14 +114,14 @@ class SaleController extends Controller
         }
         try {
             if ($sa_id == 1) {
-                $sale = Sale::where('id', $id)->first();
-                if (!empty($sale)) {
-                    $updatesale = $sale->update([
+                $sell = Sale::where('id', $id)->first();
+                if (!empty($sell)) {
+                    $updatesell = $sell->update([
                         'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'Sale Type Updated Successfully',
-                        'data' => $sale,
+                        'message' => 'Sell Type Updated Successfully',
+                        'data' => $sell,
                     ]);
                 } else {
                     return response()->json([
@@ -129,7 +130,7 @@ class SaleController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add sale type',
+                    'message' => 'Only admin can add sell type',
                 ]);
             }
         } catch (\Exception $e) {
@@ -145,12 +146,12 @@ class SaleController extends Controller
     public function destroy($id)
     {
         try {
-            $sale = Sale::where('id', $id)->first();
-            if (!empty($sale)) {
-                $delsale = $sale->delete();
+            $sell = Sale::where('id', $id)->first();
+            if (!empty($sell)) {
+                $delsell = $sell->delete();
                 return response()->json([
-                    'message' => 'Sale Type Deleted Successfully',
-                    'data' => $sale,
+                    'message' => 'Sell Type Deleted Successfully',
+                    'data' => $sell,
                 ]);
             } else {
                 return response()->json([

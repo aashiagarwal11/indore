@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sell;
 
+use App\Http\Controllers\Controller;
 use App\Models\SaleSubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Sale;
 
 
-class SaleSubCategoryController extends Controller
+class SellSubCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,12 +22,12 @@ class SaleSubCategoryController extends Controller
 
             if (!empty($getsalesubcat)) {
                 return response()->json([
-                    'message' => 'Sale Sub Category List',
+                    'message' => 'Sell Sub Category List',
                     'data' => $getsalesubcat,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No sub categories for sale',
+                    'message' => 'No sub categories for sell',
                 ]);
             }
         } catch (\Exception $e) {
@@ -61,7 +62,7 @@ class SaleSubCategoryController extends Controller
                             'sub_type' => $request->sub_type,
                         ]);
                         return response()->json([
-                            'message' => 'Sale Sub Category Added Successfully',
+                            'message' => 'Sell Sub Category Added Successfully',
                             'data' => $sale_sub_type,
                         ]);
                     } else {
@@ -71,12 +72,12 @@ class SaleSubCategoryController extends Controller
                     }
                 } else {
                     return response()->json([
-                        'message' => 'Sale id not exist',
+                        'message' => 'Sell id not exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add sale sub category',
+                    'message' => 'Only admin can add sell sub category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -135,7 +136,7 @@ class SaleSubCategoryController extends Controller
                             'sub_type' => $request->sub_type,
                         ]);
                         return response()->json([
-                            'message' => 'Sale Sub Category Updated Successfully',
+                            'message' => 'Sell Sub Category Updated Successfully',
                             'data' => $chk_id,
                         ]);
                     } else {
@@ -145,12 +146,12 @@ class SaleSubCategoryController extends Controller
                     }
                 } else {
                     return response()->json([
-                        'message' => 'Sale id not exist',
+                        'message' => 'Sell id not exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add sale sub category',
+                    'message' => 'Only admin can add sell sub category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -170,7 +171,7 @@ class SaleSubCategoryController extends Controller
             if (!empty($saleSubCategory)) {
                 $delsaleSubCategory = $saleSubCategory->delete();
                 return response()->json([
-                    'message' => 'Sale Sub Category Deleted Successfully',
+                    'message' => 'Sell Sub Category Deleted Successfully',
                     'data' => $saleSubCategory,
                 ]);
             } else {
@@ -206,7 +207,7 @@ class SaleSubCategoryController extends Controller
                     ->get();
                 if (!empty($salesubcat)) {
                     return response()->json([
-                        'message' => 'Sales sub category list basis on sale type',
+                        'message' => 'Sells sub category list basis on sale type',
                         'data' => $salesubcat,
                     ]);
                 } else {
@@ -216,7 +217,7 @@ class SaleSubCategoryController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'Sale Type Not Exist',
+                    'message' => 'Sell Type Not Exist',
                 ]);
             }
         } catch (\Exception $e) {

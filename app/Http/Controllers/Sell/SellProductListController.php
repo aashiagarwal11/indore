@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sell;
 
+use App\Http\Controllers\Controller;
 use App\Models\SaleProductList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Sale;
-use App\Models\SaleSubCategoryProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 
-class SaleProductListController extends Controller
+class SellProductListController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -47,7 +47,7 @@ class SaleProductListController extends Controller
                         ]);
                     } else {
                         return response()->json([
-                            'message' => 'Column exist with same sale id',
+                            'message' => 'Column exist with same Sell id',
                         ]);
                     }
 
@@ -69,7 +69,7 @@ class SaleProductListController extends Controller
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'Sale id not exist',
+                        'message' => 'Sell id not exist',
                     ]);
                 }
             } else {
@@ -129,7 +129,7 @@ class SaleProductListController extends Controller
                     ->get();
                 if (!empty($productFieldList)) {
                     return response()->json([
-                        'message' => 'All Field List List On The Sale Type Basis',
+                        'message' => 'All Field List List On The Sell Type Basis',
                         'data' => $productFieldList,
                     ]);
                 } else {
@@ -139,7 +139,7 @@ class SaleProductListController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'sale type not found',
+                    'message' => 'sell type not found',
                 ]);
             }
         } catch (\Exception $e) {
