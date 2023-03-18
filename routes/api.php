@@ -3,13 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\CityController;
-use App\Http\Controllers\AdvertismentController;
-use App\Http\Controllers\NewsController;
-use App\Http\Controllers\SaleController;
-use App\Http\Controllers\SaleSubCategoryController;
-use App\Http\Controllers\SaleSubCategoryProductController;
-use App\Http\Controllers\SaleProductListController;
+use App\Http\Controllers\City\CityController;
+use App\Http\Controllers\Advertisment\AdvertismentController;
+use App\Http\Controllers\News\NewsController;
+use App\Http\Controllers\Sell\SellController;
+use App\Http\Controllers\Sell\SellSubCategoryController;
+use App\Http\Controllers\Sell\SellSubCategoryProductController;
+use App\Http\Controllers\Sell\SellProductListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,10 +37,10 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('city', CityController::class);
     Route::apiResource('ads', AdvertismentController::class);
     Route::apiResource('news', NewsController::class);
-    Route::apiResource('sell', SaleController::class);
-    Route::apiResource('sellsubcategory', SaleSubCategoryController::class);
-    Route::apiResource('sellproduct', SaleProductListController::class);
-    Route::apiResource('sellsubcategoryproduct', SaleSubCategoryProductController::class);
+    Route::apiResource('sell', SellController::class);
+    Route::apiResource('sellsubcategory', SellSubCategoryController::class);
+    Route::apiResource('sellproduct', SellProductListController::class);
+    Route::apiResource('sellsubcategoryproduct', SellSubCategoryProductController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptNews', 'acceptNews');
         Route::post('denyNews', 'denyNews');
@@ -49,13 +49,13 @@ Route::middleware('jwt.verify')->group(function () {
         Route::get('randomads', 'randomads');
         Route::get('showallnewsonadmin', 'showallnewsonadmin');
     });
-    Route::controller(SaleSubCategoryController::class)->group(function () {
+    Route::controller(SellSubCategoryController::class)->group(function () {
         Route::post('showSellSubCategoryViaSelltype', 'showSellSubCategoryViaSelltype');
     });
-    Route::controller(SaleProductListController::class)->group(function () {
+    Route::controller(SellProductListController::class)->group(function () {
         Route::post('showProductViasellType', 'showProductViasellType');
     });
-    Route::controller(SaleSubCategoryProductController::class)->group(function () {
+    Route::controller(SellSubCategoryProductController::class)->group(function () {
         Route::get('sellFormListOfUser', 'sellFormListOfUser');
         // Route::post('acceptDenySell', 'acceptDenySell');
         Route::post('acceptSellProduct', 'acceptSellProduct');

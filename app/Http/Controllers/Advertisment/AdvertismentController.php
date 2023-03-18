@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Advertisment;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Advertisment;
 use Illuminate\Support\Facades\Validator;
@@ -113,12 +114,18 @@ class AdvertismentController extends Controller
     {
         try {
             $advertisment = Advertisment::find($id);
-            $exdata = $advertisment->ads_image;
-            $advertisment['ads_image'] = explode('|', $exdata);
-            return response()->json([
-                'message' => 'Advertisment',
-                'data' => $advertisment,
-            ]);
+            if (!empty($advertisment)) {
+                $exdata = $advertisment->ads_image;
+                $advertisment['ads_image'] = explode('|', $exdata);
+                return response()->json([
+                    'message' => 'Advertisment',
+                    'data' => $advertisment,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Record '.$id .' not exist',
+                ]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -183,7 +190,7 @@ class AdvertismentController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'No Ads Found',
+                    'message' => 'Record '.$id .' not exist',
                 ]);
             }
         } catch (\Exception $e) {
@@ -238,7 +245,7 @@ class AdvertismentController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'No Record Found',
+                    'message' => 'Record '.$id .' not exist',
                 ]);
             }
         } catch (\Exception $e) {

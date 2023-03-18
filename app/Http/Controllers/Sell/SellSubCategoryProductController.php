@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Sell;
 
+use App\Http\Controllers\Controller;
 use App\Models\SaleProductList;
 use App\Models\SaleSubCategory;
 use App\Models\SaleSubCategoryProduct;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Sale;
 use Illuminate\Support\Facades\Schema;
 
-class SaleSubCategoryProductController extends Controller
+class SellSubCategoryProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -188,7 +189,7 @@ class SaleSubCategoryProductController extends Controller
                     }
                 } else {
                     return response()->json([
-                        'message' => 'Sale id not exist',
+                        'message' => 'Sell id not exist',
                     ]);
                 }
             } else {
