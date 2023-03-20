@@ -31,12 +31,12 @@ Route::controller(RegisteredUserController::class)->group(function () {
 
 
 Route::middleware('jwt.verify')->group(function () {
+    Route::apiResource('news', NewsController::class);
     Route::controller(RegisteredUserController::class)->group(function () {
         Route::post('logout', 'logout');
     });
     Route::apiResource('city', CityController::class);
     Route::apiResource('ads', AdvertismentController::class);
-    Route::apiResource('news', NewsController::class);
     Route::apiResource('sell', SellController::class);
     Route::apiResource('sellsubcategory', SellSubCategoryController::class);
     Route::apiResource('sellproduct', SellProductListController::class);
@@ -60,7 +60,8 @@ Route::middleware('jwt.verify')->group(function () {
         // Route::post('acceptDenySell', 'acceptDenySell');
         Route::post('acceptSellProduct', 'acceptSellProduct');
         Route::post('denySellProduct', 'denySellProduct');
-
+        Route::post('addSellProductViaAdmin', 'addSellProductViaAdmin');
+        Route::post('showSellProductViacity', 'showSellProductViacity');
     });
 });
 
