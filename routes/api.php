@@ -10,6 +10,7 @@ use App\Http\Controllers\Sell\SellController;
 use App\Http\Controllers\Sell\SellSubCategoryController;
 use App\Http\Controllers\Sell\SellSubCategoryProductController;
 use App\Http\Controllers\Sell\SellProductListController;
+use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,8 @@ use App\Http\Controllers\Sell\SellProductListController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::post('searchData',[SearchController::class, 'searchWordFromWholeDatabase']);
 
 // Route::group(['middleware' => 'api'], function ($routes) {
 Route::controller(RegisteredUserController::class)->group(function () {
