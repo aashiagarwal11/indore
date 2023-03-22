@@ -21,7 +21,7 @@ class NewsController extends Controller
     {
         ## showing the news which is accepted by admin
         try {
-            $news = News::where('status', 1)->get()->toArray();
+            $news = News::where('status', 1)->where('city_id', '!=', null)->get()->toArray();
             if (!empty($news)) {
                 $newarr = [];
                 foreach ($news as $key => $new) {
