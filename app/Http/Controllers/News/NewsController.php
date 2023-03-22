@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\City;
+use App\Models\User;
 use App\Models\Advertisment;
 
 
@@ -51,62 +52,68 @@ class NewsController extends Controller
     {
         ## store news form details by user side
         $id = auth()->user()->id;
-        $validator = Validator::make($request->all(), [
-            'title' => ['required', 'string'],
-            'description' => ['required', 'string'],
-            'image' => ['required'],
-            'image.*' => ['mimes:jpeg,png,jpg,svg']
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
+        $role_id = auth()->user()->role_id;
         try {
-            // $news = News::where('title', $request->title)->first();
-            // if (empty($news)) {
+            if (!empty($id)) {
+                if ($role_id != 1) {
+                    $validator = Validator::make($request->all(), [
+                        'title' => ['required', 'string'],
+                        'description' => ['required', 'string'],
+                        'image' => ['required'],
+                        'image.*' => ['mimes:jpeg,png,jpg,svg']
+                    ]);
 
-            $images = array();
-            if ($files = $request->file('image')) {
-                foreach ($files as $file) {
-                    $imgname = md5(rand('1000', '10000'));
-                    $extension = strtolower($file->getClientOriginalExtension());
-                    $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/image/';
-                    $img_url = $upload_path . $img_full_name;
-                    $file->move($upload_path, $img_full_name);
-                    array_push($images, $img_url);
+                    if ($validator->fails()) {
+                        return response()->json(['message' => $validator->errors()]);
+                    }
+
+                    $images = array();
+                    if ($files = $request->file('image')) {
+                        foreach ($files as $file) {
+                            $imgname = md5(rand('1000', '10000'));
+                            $extension = strtolower($file->getClientOriginalExtension());
+                            $img_full_name = $imgname . '.' . $extension;
+                            $upload_path = 'public/image/';
+                            $img_url = $upload_path . $img_full_name;
+                            $file->move($upload_path, $img_full_name);
+                            array_push($images, $img_url);
+                        }
+                    }
+
+
+                    $imp_image =  implode('|', $images);
+
+                    $news = News::create([
+                        'title' => $request->title,
+                        'description' => $request->description,
+                        'ads_id' => $request->ads_id ?? null,
+                        'user_id' => $id,
+                        'city_id' => $request->city_id ?? null,
+                        'image' => $imp_image,
+                    ]);
+                    $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                    $exp = explode('|',  $imp_image);
+
+                    $data['title'] = $news->title;
+                    $data['description'] = $news->description;
+                    $data['image'] = $exp;
+                    $data['created_at'] = $news->created_at;
+                    $data['updated_at'] = $news->updated_at;
+
+                    return response()->json([
+                        'message' => 'News Added Successfully',
+                        'data' => $data,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Login as user',
+                    ]);
                 }
+            } else {
+                return response()->json([
+                    'message' => 'Login as user',
+                ]);
             }
-
-
-            $imp_image =  implode('|', $images);
-
-            $news = News::create([
-                'title' => $request->title,
-                'description' => $request->description,
-                'ads_id' => $request->ads_id ?? null,
-                'user_id' => $id,
-                'city_id' => $request->city_id ?? null,
-                'image' => $imp_image,
-            ]);
-            $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
-            $exp = explode('|',  $imp_image);
-
-            $data['title'] = $news->title;
-            $data['description'] = $news->description;
-            $data['image'] = $exp;
-            $data['created_at'] = $news->created_at;
-            $data['updated_at'] = $news->updated_at;
-
-            return response()->json([
-                'message' => 'News Added Successfully',
-                'data' => $data,
-            ]);
-            // } else {
-            //     return response()->json([
-            //         'error' => 'Duplicate Title',
-            //     ]);
-            // }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
