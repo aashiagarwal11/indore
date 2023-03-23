@@ -29,6 +29,7 @@ Route::post('searchData',[SearchController::class, 'searchWordFromWholeDatabase'
 Route::controller(RegisteredUserController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::post('registerUserViaMobile', 'registerUserViaMobile');
 });
 // });
 
