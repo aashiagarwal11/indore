@@ -15,16 +15,23 @@ class SellController extends Controller
      */
     public function index()
     {
+        $sa_id = auth()->user()->id;
         try {
-            $getsell = Sale::all();
-            if (!empty($getsell)) {
-                return response()->json([
-                    'message' => 'All Sell Type List',
-                    'data' => $getsell,
-                ]);
+            if ($sa_id == 1) {
+                $getsell = Sale::all();
+                if (!empty($getsell)) {
+                    return response()->json([
+                        'message' => 'All Sell Category List',
+                        'data' => $getsell,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'No Sell Category Found In The List',
+                    ]);
+                }
             } else {
                 return response()->json([
-                    'message' => 'No Sell Type Found In The List',
+                    'message' => 'Only admin have access',
                 ]);
             }
         } catch (\Exception $e) {
@@ -40,32 +47,33 @@ class SellController extends Controller
     public function store(Request $request)
     {
         $sa_id = auth()->user()->id;
-        $validator = Validator::make($request->all(), [
-            'type' => ['required', 'alpha', 'string', 'max:255','in:vehicle,property,other'],
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
         try {
             if ($sa_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'type' => ['required', 'alpha', 'string', 'max:255', 'in:vehicle,property,other'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
+                }
                 $chkselltype = Sale::where('type', $request->type)->first();
                 if (empty($chkselltype)) {
                     $selltype = Sale::create([
                         'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'Sell Type Added Successfully',
+                        'message' => 'Sell Category Added Successfully',
                         'data' => $selltype,
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'Sell Type Already Exist',
+                        'message' => 'Sell Category Already Exist',
                     ]);
                 }
-            }else {
+            } else {
                 return response()->json([
-                    'message' => 'Only admin can add sell type',
+                    'message' => 'Only admin can add sell category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -80,16 +88,23 @@ class SellController extends Controller
      */
     public function show($id)
     {
+        $sa_id = auth()->user()->id;
         try {
-            $getsellid = Sale::where('id', $id)->first();
-            if (!empty($getsellid)) {
-                return response()->json([
-                    'message' => 'Details',
-                    'data' => $getsellid,
-                ]);
+            if ($sa_id == 1) {
+                $getsellid = Sale::where('id', $id)->first();
+                if (!empty($getsellid)) {
+                    return response()->json([
+                        'message' => 'Details',
+                        'data' => $getsellid,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Not exist',
+                    ]);
+                }
             } else {
                 return response()->json([
-                    'message' => 'Not exist',
+                    'message' => 'Only admin can add sell category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -105,22 +120,23 @@ class SellController extends Controller
     public function update(Request $request, $id)
     {
         $sa_id = auth()->user()->id;
-        $validator = Validator::make($request->all(), [
-            'type' => ['required', 'alpha', 'string', 'max:255'],
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
         try {
             if ($sa_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'type' => ['required', 'alpha', 'string', 'max:255'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
+                }
                 $sell = Sale::where('id', $id)->first();
                 if (!empty($sell)) {
                     $updatesell = $sell->update([
                         'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'Sell Type Updated Successfully',
+                        'message' => 'Sell Category Updated Successfully',
                         'data' => $sell,
                     ]);
                 } else {
@@ -130,7 +146,7 @@ class SellController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add sell type',
+                    'message' => 'Only admin can update sell category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -145,17 +161,24 @@ class SellController extends Controller
      */
     public function destroy($id)
     {
+        $sa_id = auth()->user()->id;
         try {
-            $sell = Sale::where('id', $id)->first();
-            if (!empty($sell)) {
-                $delsell = $sell->delete();
-                return response()->json([
-                    'message' => 'Sell Type Deleted Successfully',
-                    'data' => $sell,
-                ]);
+            if ($sa_id == 1) {
+                $sell = Sale::where('id', $id)->first();
+                if (!empty($sell)) {
+                    $delsell = $sell->delete();
+                    return response()->json([
+                        'message' => 'Sell Category Deleted Successfully',
+                        'data' => $sell,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Type Not Exist',
+                    ]);
+                }
             } else {
                 return response()->json([
-                    'message' => 'Type Not Exist',
+                    'message' => 'Only admin can add sell category',
                 ]);
             }
         } catch (\Exception $e) {

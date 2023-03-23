@@ -164,59 +164,64 @@ class NewsController extends Controller
     public function update(Request $request, $id)
     {
         ## add city by admin and edit form of user side
-        $validator = Validator::make($request->all(), [
-            'title' => ['required', 'string'],
-            'description' => ['required', 'string'],
-            'city_id' => ['required', 'numeric'],
-            'image' => ['required'],
-            'image.*' => ['mimes:jpeg,png,jpg,svg']
-            // 'video_url' => ['required'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
-
+        $auth_id = auth()->user()->id;
         try {
-            $news = News::where('id', $id)->first();
-            if (!empty($news)) {
-                $images = array();
-                if ($files = $request->file('image')) {
-                    foreach ($files as $file) {
-                        $imgname = md5(rand('1000', '10000'));
-                        $extension = strtolower($file->getClientOriginalExtension());
-                        $img_full_name = $imgname . '.' . $extension;
-                        $upload_path = 'public/image/';
-                        $img_url = $upload_path . $img_full_name;
-                        $file->move($upload_path, $img_full_name);
-                        array_push($images, $img_url);
-                    }
+            if ($auth_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'title' => ['required', 'string'],
+                    'description' => ['required', 'string'],
+                    'city_id' => ['required', 'numeric'],
+                    'image' => ['required'],
+                    'image.*' => ['mimes:jpeg,png,jpg,svg']
+                    // 'video_url' => ['required'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
                 }
 
+                $news = News::where('id', $id)->first();
+                if (!empty($news)) {
+                    $images = array();
+                    if ($files = $request->file('image')) {
+                        foreach ($files as $file) {
+                            $imgname = md5(rand('1000', '10000'));
+                            $extension = strtolower($file->getClientOriginalExtension());
+                            $img_full_name = $imgname . '.' . $extension;
+                            $upload_path = 'public/image/';
+                            $img_url = $upload_path . $img_full_name;
+                            $file->move($upload_path, $img_full_name);
+                            array_push($images, $img_url);
+                        }
+                    }
 
-                $imp_image =  implode('|', $images);
+                    $imp_image =  implode('|', $images);
 
-                $data['title'] = $request->title;
-                $data['description'] = $request->description;
-                $data['city_id'] = $request->city_id;
-                $data['image'] = $imp_image;
-                $data['video_url'] = $request->video_url ?? null;
-                $updatedata = $news->update($data);
+                    $data['title'] = $request->title;
+                    $data['description'] = $request->description;
+                    $data['city_id'] = $request->city_id;
+                    $data['image'] = $imp_image;
+                    $data['video_url'] = $request->video_url ?? null;
+                    $updatedata = $news->update($data);
 
-                $get = DB::table('news')->where('news.id', $id)->select('news.id', 'news.title', 'news.description', 'news.image', 'news.video_url', 'cities.*')
-                    ->join('cities', 'news.city_id', 'cities.id')->get();
+                    $get = DB::table('news')->where('news.id', $id)->select('news.id', 'news.title', 'news.description', 'news.image', 'news.video_url', 'cities.*')
+                        ->join('cities', 'news.city_id', 'cities.id')->get();
 
+                    $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                    $get[0]->image = explode('|', $imp_image);
 
-                $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
-                $get[0]->image = explode('|', $imp_image);
-
-                return response()->json([
-                    'message' => 'News Updated Successfully',
-                    'data' => $get,
-                ]);
+                    return response()->json([
+                        'message' => 'News Updated Successfully',
+                        'data' => $get,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Record Not Exist',
+                    ]);
+                }
             } else {
                 return response()->json([
-                    'message' => 'Record Not Exist',
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -255,8 +260,7 @@ class NewsController extends Controller
         ## add news by admin
         $id = auth()->user()->id;
         try {
-            $city = City::where('id', $request->city_id)->first();
-            if (!empty($city)) {
+            if ($id == 1) {
                 $validator = Validator::make($request->all(), [
                     'title' => ['required', 'string'],
                     'description' => ['required', 'string'],
@@ -270,57 +274,63 @@ class NewsController extends Controller
                     return response()->json(['message' => $validator->errors()]);
                 }
 
-                $news = News::where('title', $request->title)->first();
-                // if (empty($news)) {
-
-                $images = array();
-                if ($files = $request->file('image')) {
-                    foreach ($files as $file) {
-                        $imgname = md5(rand('1000', '10000'));
-                        $extension = strtolower($file->getClientOriginalExtension());
-                        $img_full_name = $imgname . '.' . $extension;
-                        $upload_path = 'public/image/';
-                        $img_url = $upload_path . $img_full_name;
-                        $file->move($upload_path, $img_full_name);
-                        array_push($images, $img_url);
+                $city = City::where('id', $request->city_id)->first();
+                if (!empty($city)) {
+                    // $news = News::where('title', $request->title)->first();
+                    // if (empty($news)) {
+                    $images = array();
+                    if ($files = $request->file('image')) {
+                        foreach ($files as $file) {
+                            $imgname = md5(rand('1000', '10000'));
+                            $extension = strtolower($file->getClientOriginalExtension());
+                            $img_full_name = $imgname . '.' . $extension;
+                            $upload_path = 'public/image/';
+                            $img_url = $upload_path . $img_full_name;
+                            $file->move($upload_path, $img_full_name);
+                            array_push($images, $img_url);
+                        }
                     }
+                    $imp_image =  implode('|', $images);
+                    $news = News::create([
+                        'title' => $request->title,
+                        'description' => $request->description,
+                        'ads_id' => $request->ads_id ?? null,
+                        'image' => $imp_image,
+                        'video_url' => $request->video_url,
+                        'user_id' => $id,
+                        'city_id' => $request->city_id ?? null,
+                        'status' => 1,
+                    ]);
+                    $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                    $exp = explode('|', $imp_image);
+                    $data['title'] = $request->title;
+                    $data['description'] = $request->description;
+                    $data['city_id'] = $request->city_id;
+                    $data['image'] = $exp;
+                    $data['video_url'] = $request->video_url;
+
+                    // $get = DB::table('news')
+                    //     ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
+                    //     ->where('title', $request->title)
+                    //     ->join('cities', 'news.city_id', 'cities.id')->get();
+
+                    return response()->json([
+                        'message' => 'News Added Successfully By Admin',
+                        'data' => $data,
+                    ]);
+                    // } else {
+                    //     return response()->json([
+                    //         'message' => 'Duplicate Title Not Allowed',
+                    //     ]);
+                    // }
+                } else {
+                    return response()->json([
+                        'error' => 'City not exist',
+                    ]);
                 }
-                $imp_image =  implode('|', $images);
-                $news = News::create([
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'ads_id' => $request->ads_id ?? null,
-                    'image' => $imp_image,
-                    'video_url' => $request->video_url,
-                    'user_id' => $id,
-                    'city_id' => $request->city_id ?? null,
-                    'status' => 1,
-                ]);
-                $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
-                $exp = explode('|', $imp_image);
-                $data['title'] = $request->title;
-                $data['description'] = $request->description;
-                $data['city_id'] = $request->city_id;
-                $data['image'] = $exp;
-                $data['video_url'] = $request->video_url;
-
-                // $get = DB::table('news')
-                //     ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
-                //     ->where('title', $request->title)
-                //     ->join('cities', 'news.city_id', 'cities.id')->get();
-
-                return response()->json([
-                    'message' => 'News Added Successfully By Admin',
-                    'data' => $data,
-                ]);
-                // } else {
-                //     return response()->json([
-                //         'message' => 'Duplicate Title Not Allowed',
-                //     ]);
-                // }
             } else {
                 return response()->json([
-                    'error' => 'City not exist',
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -452,29 +462,36 @@ class NewsController extends Controller
     {
         ## request accept  by the admin for user news form 
         $auth_id = auth()->user()->id;
+        $role_id = auth()->user()->role_id;
 
-        $id = $request->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($role_id == 1) {
+                $newsid = $request->news_id;
+                $validator = Validator::make($request->all(), [
+                    'news_id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
-            }
-            $eachnews = News::where('id', $id)->first();
-            if (!empty($eachnews)) {
-                if ($eachnews->status == 0) {
-                    $eachnews->status = 1;
-                    $updateStatus = $eachnews->update();
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
+                }
+                $eachnews = News::where('id', $newsid)->first();
+                if (!empty($eachnews)) {
+                    if ($eachnews->status == 0) {
+                        $eachnews->status = 1;
+                        $updateStatus = $eachnews->update();
+                        return response()->json([
+                            'message' => 'Accepted By Admin',
+                            'data' => $eachnews,
+                        ]);
+                    }
+                } else {
                     return response()->json([
-                        'message' => 'Accepted By Admin',
-                        'data' => $eachnews,
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Record Not Exist',
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -488,29 +505,35 @@ class NewsController extends Controller
     {
         ## request for reject  by the admin for user news form 
         $auth_id = auth()->user()->id;
-
-        $id = $request->id;
+        $role_id = auth()->user()->role_id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($role_id == 1) {
+                $newsid = $request->news_id;
+                $validator = Validator::make($request->all(), [
+                    'news_id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
-            }
-            $eachnews = News::where('id', $id)->first();
-            if (!empty($eachnews)) {
-                if ($eachnews->status == 0) {
-                    $eachnews->status = 2;
-                    $updateStatus = $eachnews->update();
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
+                }
+                $eachnews = News::where('id', $newsid)->first();
+                if (!empty($eachnews)) {
+                    if ($eachnews->status == 0) {
+                        $eachnews->status = 2;
+                        $updateStatus = $eachnews->update();
+                        return response()->json([
+                            'message' => 'Deny By Admin',
+                            'data' => $eachnews,
+                        ]);
+                    }
+                } else {
                     return response()->json([
-                        'message' => 'Deny By Admin',
-                        'data' => $eachnews,
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Record Not Exist',
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
