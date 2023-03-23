@@ -466,9 +466,9 @@ class NewsController extends Controller
 
         try {
             if ($role_id == 1) {
-                $newsid = $request->news_id;
+                $newsid = $request->id;
                 $validator = Validator::make($request->all(), [
-                    'news_id' => ['required', 'numeric'],
+                    'id' => ['required', 'numeric'],
                 ]);
 
                 if ($validator->fails()) {
@@ -508,9 +508,9 @@ class NewsController extends Controller
         $role_id = auth()->user()->role_id;
         try {
             if ($role_id == 1) {
-                $newsid = $request->news_id;
+                $newsid = $request->id;
                 $validator = Validator::make($request->all(), [
-                    'news_id' => ['required', 'numeric'],
+                    'id' => ['required', 'numeric'],
                 ]);
 
                 if ($validator->fails()) {
