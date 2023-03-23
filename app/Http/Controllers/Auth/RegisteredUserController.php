@@ -106,4 +106,43 @@ class RegisteredUserController extends Controller
             // 'user' => $user->userformat(),
         ];
     }
+
+    #registration via mobile
+    public function registerUserViaMobile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'    => ['required', 'numeric', 'digits:10', 'unique:users'],
+            'otp'      => ['nullable'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+
+        try {
+            $otp = 1234;
+
+            # Create User and store its Information
+            $user = User::create([
+                'phone'     => $request->phone,
+                'otp'  => $otp,
+                'role_id' => 2,
+                // 'added_by' => $request->added_by,
+            ]);
+            $data['id'] = $user->id;
+            $data['phone'] = $user->phone;
+            $data['role_id'] = $user->role_id;
+            $data['created_at'] = $user->created_at;
+            $data['updated_at'] = $user->updated_at;
+
+            return response()->json([
+                'message' => 'OTP has been sent on your mobile no ' . $request->phone,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
