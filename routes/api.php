@@ -32,6 +32,7 @@ Route::controller(RegisteredUserController::class)->group(function () {
     Route::post('registerUserViaMobile', 'registerUserViaMobile');
     Route::post('verifyOtp', 'verifyOtp');
     Route::post('resendOtp', 'resendOtp');
+    Route::post('registerAdminViaMobile', 'registerAdminViaMobile');
 });
 // });
 
