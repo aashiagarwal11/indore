@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -79,9 +80,16 @@ class RegisteredUserController extends Controller
     public function logout(Request $request)
     {
         try {
+            $authUser = auth()->user();
             $user = auth()->user()->id;
             if ($user) {
                 auth('api')->logout();
+                $phone = $authUser->phone;
+
+                $data['active_device_id'] = 0;
+
+                User::where('id', $user)->update($data);
+
                 return response()->json([
                     'message' => 'Logged Out Successfully',
                 ]);
@@ -90,6 +98,132 @@ class RegisteredUserController extends Controller
                     'message' => 'Login First',
                 ]);
             }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+
+    #registration via mobile
+    public function registerUserViaMobile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'    => ['required', 'numeric', 'digits:10', 'unique:users'],
+            'otp'      => ['nullable'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+
+        try {
+            // $otp = 1234;
+            $code['otp'] = $this->generateOTP();
+
+            # Create User and store its Information
+            $user = User::create([
+                'phone'     => $request->phone,
+                'otp'  => $code['otp'],
+                'role_id' => 2,
+            ]);
+            $data['id'] = $user->id;
+            $data['phone'] = $user->phone;
+            $data['role_id'] = $user->role_id;
+            $data['created_at'] = $user->created_at;
+            $data['updated_at'] = $user->updated_at;
+
+            return response()->json([
+                'message' => 'OTP has been sent on your mobile no ' . $request->phone,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+    #verify otp
+    public function verifyOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'     => ['required', 'numeric', 'digits:10'],
+            'otp'       => ['required', 'numeric'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+        try {
+            $user = User::where('phone', $request->phone)->first();
+            if (!empty($user)) {
+                if (!empty($user->otp)) {
+                    if ($user->otp == $request->otp) {
+                        $verified['otp'] = NULL;
+                        $verified['phone_verified'] = now();
+                        $verified['active_device_id'] = 1;
+                        User::where('id', $user->id)->update($verified);
+                        $token = JWTAuth::fromUser($user);
+                        return $this->getUserWithToken($token);
+                        if (!$token = JWTAuth::attempt($validator->validated())) {
+                            return response()->json([
+                                'error' => 'Unauthorized',
+                            ]);
+                        }
+                        return $this->getUserWithToken($token);
+                    } else {
+                        return response()->json([
+                            'message' => 'Please enter a valid OTP with 4 digit',
+                        ]);
+                    }
+                } else {
+                    return response()->json([
+                        'message' => 'OTP get expired!. Please resend',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Invalid Phone Number',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+    #resend otp
+    public function resendOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'         => ['required', 'numeric', 'digits:10'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+        try {
+            $user = User::where('phone', $request->phone)->where('phone_verified', '!=', NULL)->first();
+
+            # Get the User
+            if (!empty($user)) {
+                $code['otp'] = $this->generateOTP();
+                User::where('id', $user->id)->update($code);
+                return response()->json([
+                    'message' => 'OTP has been resent on your mobile no ' . $request->phone,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Invalid Phone Number',
+                ]);
+            }
+            # Return Resonse with Token
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -107,42 +241,8 @@ class RegisteredUserController extends Controller
         ];
     }
 
-    #registration via mobile
-    public function registerUserViaMobile(Request $request)
+    public function generateOTP()
     {
-        $validator = Validator::make($request->all(), [
-            'phone'    => ['required', 'numeric', 'digits:10', 'unique:users'],
-            'otp'      => ['nullable'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
-
-        try {
-            $otp = 1234;
-
-            # Create User and store its Information
-            $user = User::create([
-                'phone'     => $request->phone,
-                'otp'  => $otp,
-                'role_id' => 2,
-                // 'added_by' => $request->added_by,
-            ]);
-            $data['id'] = $user->id;
-            $data['phone'] = $user->phone;
-            $data['role_id'] = $user->role_id;
-            $data['created_at'] = $user->created_at;
-            $data['updated_at'] = $user->updated_at;
-
-            return response()->json([
-                'message' => 'OTP has been sent on your mobile no ' . $request->phone,
-                'data' => $data
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
+        return '1234';
     }
 }

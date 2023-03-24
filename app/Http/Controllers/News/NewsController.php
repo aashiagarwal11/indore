@@ -542,4 +542,110 @@ class NewsController extends Controller
             ]);
         }
     }
+
+    public function cityUpdate(Request $request, $news_id)
+    {
+        $auth_id = auth()->user()->id;
+        try {
+            if ($auth_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'news_id'     => ['required', 'numeric'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
+                }
+
+                $news = News::where('id', $news_id)->first();
+                if (!empty($news)) {
+                    $validator = Validator::make($request->all(), [
+                        'city_id'     => ['required', 'numeric'],
+                    ]);
+
+                    if ($validator->fails()) {
+                        return response()->json(['message' => $validator->errors()]);
+                    }
+                    $data['city_id'] = $request->city_id;
+                    $updatedata = $news->update($data);
+
+                    // $get = DB::table('news')->where('news.id', $news_id)->select('news.id', 'news.title', 'news.description', 'news.image', 'news.video_url', 'cities.*')
+                    //     ->join('cities', 'news.city_id', 'cities.id')->get();
+
+                    $getcity = DB::table('news')->where('news.id', $news_id)->select('news.id', 'cities.*')
+                        ->join('cities', 'news.city_id', 'cities.id')->get();
+
+                    return response()->json([
+                        'message' => 'City Updated Successfully In News',
+                        'data' => $getcity,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Record Not Exist',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Login as admin first',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function cityUpdateAcceptStatus(Request $request, $news_id)
+    {
+        $auth_id = auth()->user()->id;
+        try {
+            if ($auth_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'news_id'     => ['required', 'numeric'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
+                }
+
+                $news = News::where('id', $news_id)->first();
+                if (!empty($news)) {
+                    $validator = Validator::make($request->all(), [
+                        'city_id'     => ['required', 'numeric'],
+                    ]);
+
+                    if ($validator->fails()) {
+                        return response()->json(['message' => $validator->errors()]);
+                    }
+                    $data['city_id'] = $request->city_id;
+
+                    if ($news->status == 0) {
+                        $data['status']  = 1;
+                    }
+
+                    $updatedata = $news->update($data);
+
+                    $getcity = DB::table('news')->where('news.id', $news_id)->select('news.id', 'cities.*')
+                        ->join('cities', 'news.city_id', 'cities.id')->get();
+
+                    return response()->json([
+                        'message' => 'City Updated Successfully In News',
+                        'data' => $getcity,
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Record Not Exist',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Login as admin first',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
