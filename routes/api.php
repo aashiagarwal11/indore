@@ -23,13 +23,15 @@ use App\Http\Controllers\SearchController;
 |
 */
 
-Route::post('searchData',[SearchController::class, 'searchWordFromWholeDatabase']);
+Route::post('searchData', [SearchController::class, 'searchWordFromWholeDatabase']);
 
 // Route::group(['middleware' => 'api'], function ($routes) {
 Route::controller(RegisteredUserController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
     Route::post('registerUserViaMobile', 'registerUserViaMobile');
+    Route::post('verifyOtp', 'verifyOtp');
+    Route::post('resendOtp', 'resendOtp');
 });
 // });
 
@@ -52,6 +54,8 @@ Route::middleware('jwt.verify')->group(function () {
         Route::post('shownewsViacity', 'shownewsViacity');
         Route::get('randomads', 'randomads');
         Route::get('showallnewsonadmin', 'showallnewsonadmin');
+        Route::post('cityUpdate/{news_id}', 'cityUpdate'); // city update by admin for accept the news
+        Route::post('cityUpdateAcceptStatus/{news_id}', 'cityUpdateAcceptStatus'); // city update by admin for accept the news
     });
     Route::controller(SellSubCategoryController::class)->group(function () {
         Route::post('showSellSubCategoryViaSelltype', 'showSellSubCategoryViaSelltype');
