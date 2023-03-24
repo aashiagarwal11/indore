@@ -543,7 +543,7 @@ class NewsController extends Controller
         }
     }
 
-    public function cityUpdate(Request $request, $news_id)
+    public function cityUpdate(Request $request)
     {
         $auth_id = auth()->user()->id;
         try {
@@ -551,6 +551,7 @@ class NewsController extends Controller
                 $validator = Validator::make($request->all(), [
                     'news_id'     => ['required', 'numeric'],
                 ]);
+                $news_id = $request->news_id;
 
                 if ($validator->fails()) {
                     return response()->json(['message' => $validator->errors()]);
@@ -595,7 +596,7 @@ class NewsController extends Controller
         }
     }
 
-    public function cityUpdateAcceptStatus(Request $request, $news_id)
+    public function cityUpdateAcceptStatus(Request $request)
     {
         $auth_id = auth()->user()->id;
         try {
@@ -603,6 +604,7 @@ class NewsController extends Controller
                 $validator = Validator::make($request->all(), [
                     'news_id'     => ['required', 'numeric'],
                 ]);
+                $news_id = $request->news_id;
 
                 if ($validator->fails()) {
                     return response()->json(['message' => $validator->errors()]);
