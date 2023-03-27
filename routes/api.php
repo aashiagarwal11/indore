@@ -11,6 +11,7 @@ use App\Http\Controllers\Sell\SellSubCategoryController;
 use App\Http\Controllers\Sell\SellSubCategoryProductController;
 use App\Http\Controllers\Sell\SellProductListController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Rent\RentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,7 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('sellsubcategory', SellSubCategoryController::class);
     Route::apiResource('sellproduct', SellProductListController::class);
     Route::apiResource('sellsubcategoryproduct', SellSubCategoryProductController::class);
+    Route::apiResource('rent', RentController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptNews', 'acceptNews');
         Route::post('denyNews', 'denyNews');
@@ -71,6 +73,13 @@ Route::middleware('jwt.verify')->group(function () {
         Route::post('denySellProduct', 'denySellProduct');
         Route::post('addSellProductViaAdmin', 'addSellProductViaAdmin');
         Route::post('showSellProductViacity', 'showSellProductViacity');
+    });
+    Route::controller(RentController::class)->group(function () {
+        Route::post('addRentProductViaAdmin', 'addRentProductViaAdmin');
+        Route::get('rentFormListOfUser', 'rentFormListOfUser');
+        Route::post('acceptRentProduct', 'acceptRentProduct');
+        Route::post('denyRentProduct', 'denyRentProduct');
+        Route::get('showRentProductViacity', 'showRentProductViacity');
     });
 });
 

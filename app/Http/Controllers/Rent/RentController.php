@@ -1,36 +1,33 @@
 <?php
 
-namespace App\Http\Controllers\Sell;
+namespace App\Http\Controllers\Rent;
 
 use App\Http\Controllers\Controller;
-use App\Models\SaleProductList;
-use App\Models\SaleSubCategory;
-use App\Models\SaleSubCategoryProduct;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use App\Models\Sale;
-use Illuminate\Support\Facades\Schema;
+use App\Models\Rent;
 use App\Models\City;
 
-class SellSubCategoryProductController extends Controller
+class RentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        ## all list of selling product form from user side which is accepted by admin we show this list on user panel.
+        # Accepted list of rent product
         try {
-            $sellingproduct = SaleSubCategoryProduct::where('status', 1)->get()->toArray();
-            if (!empty($sellingproduct)) {
+            $rentingproduct = Rent::where('status', 1)->get()->toArray();
+            if (!empty($rentingproduct)) {
                 $newarr = [];
-                foreach ($sellingproduct as $key => $new) {
+                foreach ($rentingproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
                     array_push($newarr, $new);
                 }
                 return response()->json([
-                    'message' => 'List of product want to sell',
+                    'message' => 'List of product want to give on rent',
                     'data' => $newarr,
                 ]);
             } else {
@@ -50,28 +47,9 @@ class SellSubCategoryProductController extends Controller
      */
     public function store(Request $request)
     {
+        # rent request by user
         $auth_id = auth()->user()->id;
         $role_id = auth()->user()->role_id;
-
-
-        // $validator = Validator::make($request->all(), [
-        //     'sub_cat_id '       => ['required', 'numeric'],
-        //     'vendor_name'       => ['required', 'alpha', 'string', 'max:50'],
-        //     'owner_or_broker'   => ['required', 'alpha', 'string', 'max:255', 'in:owner,broker'],
-        //     'vehicle_sighting'  => ['required', 'string', 'max:255'],
-        //     'property_location' => ['required', 'string', 'max:255'],
-        //     'price'             => ['required'],
-        //     'brand'             => ['required', 'string', 'max:30'],
-        //     'model_name'        => ['required', 'string', 'max:30'],
-        //     'model_year'        => ['required', 'numeric', 'max:20'],
-        //     'fuel_type'         => ['required', 'string', 'max:20'],
-        //     'seater'            => ['required', 'numeric', 'max:30'],
-        //     'kilometer_running' => ['required', 'string', 'max:30'],
-        //     'insurance_period'  => ['required', 'string', 'max:20'],
-        //     'color'             => ['required', 'alpha', 'string', 'max:20'],
-        //     'other_information' => ['required', 'alpha', 'string', 'max:255'],
-        //     'size_length_width' => ['required', 'alpha', 'string', 'max:255'],
-        // ]);
         try {
             if (!empty($auth_id)) {
                 if ($role_id == 2) {
@@ -109,7 +87,7 @@ class SellSubCategoryProductController extends Controller
                                     $imgname = md5(rand('1000', '10000'));
                                     $extension = strtolower($file->getClientOriginalExtension());
                                     $img_full_name = $imgname . '.' . $extension;
-                                    $upload_path = 'public/sellImage/';
+                                    $upload_path = 'public/rentimage/';
                                     $img_url = $upload_path . $img_full_name;
                                     $file->move($upload_path, $img_full_name);
                                     array_push($images, $img_url);
@@ -133,7 +111,7 @@ class SellSubCategoryProductController extends Controller
                                 if ($validator->fails()) {
                                     return response()->json(['message' => $validator->errors()]);
                                 }
-                                $sellproduct = SaleSubCategoryProduct::create([
+                                $rent = Rent::create([
                                     'sale_id'           => $sell_id,
                                     'sub_cat_id'        => $request->sub_cat_id,
                                     'vendor_name'       => $request->vendor_name,
@@ -159,11 +137,11 @@ class SellSubCategoryProductController extends Controller
 
                                 $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                 $exp = explode('|',  $imp_image);
-                                $sellproduct['image'] = $exp;
+                                $rent['image'] = $exp;
 
                                 return response()->json([
-                                    'message' => 'Product added successfully in sell list',
-                                    'data' => $sellproduct,
+                                    'message' => 'Rent Product added successfully for vehicle',
+                                    'data' => $rent,
                                 ]);
                             } elseif ($chksellid->type == 'property') {
                                 $validator = Validator::make($request->all(), [
@@ -176,7 +154,7 @@ class SellSubCategoryProductController extends Controller
                                 if ($validator->fails()) {
                                     return response()->json(['message' => $validator->errors()]);
                                 }
-                                $sellproduct = SaleSubCategoryProduct::create([
+                                $rent = Rent::create([
                                     'sale_id'           => $sell_id,
                                     'sub_cat_id'        => $request->sub_cat_id,
                                     'vendor_name'       => $request->vendor_name,
@@ -197,20 +175,20 @@ class SellSubCategoryProductController extends Controller
                                 ]);
 
                                 $exp = explode('|',  $imp_image);
-                                $sellproduct['image'] = $exp;
+                                $rent['image'] = $exp;
                                 return response()->json([
-                                    'message' => 'Product for property added successfully',
-                                    'data' => $sellproduct,
+                                    'message' => 'Rent Product added successfully for property',
+                                    'data' => $rent,
                                 ]);
                             }
                         } else {
                             return response()->json([
-                                'message' => 'No sell type exist',
+                                'message' => 'Rent type not exist',
                             ]);
                         }
                     } else {
                         return response()->json([
-                            'message' => 'Sell id not exist',
+                            'message' => 'Rent id not exist',
                         ]);
                     }
                 } else {
@@ -233,24 +211,24 @@ class SellSubCategoryProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(string $id)
     {
         ## show specificnews by id
         try {
-            $specificnews = SaleSubCategoryProduct::where('sale_sub_category_products.id', $id)
-                ->select('sale_sub_category_products.*', 'users.name', 'cities.city_name')
-                ->join('users', 'users.id', 'sale_sub_category_products.user_id')
-                ->join('cities', 'cities.id', 'sale_sub_category_products.city_id')
+            $showRentid = Rent::where('rents.id', $id)
+                ->select('rents.*', 'users.name', 'cities.city_name')
+                ->join('users', 'users.id', 'rents.user_id')
+                ->join('cities', 'cities.id', 'rents.city_id')
                 ->get();
-            if (!empty($specificnews)) {
+            if (!empty($showRentid)) {
                 $newarr = [];
-                foreach ($specificnews as $key => $new) {
+                foreach ($showRentid as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
                     array_push($newarr, $new);
                 }
                 return response()->json([
-                    'message' => 'Selling Product with particular Id',
+                    'message' => 'Show the result of rent product with particular Id',
                     'data' => $newarr,
                 ]);
             } else {
@@ -270,14 +248,15 @@ class SellSubCategoryProductController extends Controller
      */
     public function update(Request $request, $id)
     {
+        #edit user request by admin
         $auth_id = auth()->user()->id;
         $role_id = auth()->user()->role_id;
         try {
             if (!empty($auth_id)) {
                 if ($role_id == 1) {
-                    $sellpro = SaleSubCategoryProduct::where('id', $id)->first();
-                    if (!empty($sellpro)) {
-                        $chksellid = Sale::where('id', $sellpro->sale_id)->first();
+                    $rentpro = Rent::where('id', $id)->first();
+                    if (!empty($rentpro)) {
+                        $chksellid = Sale::where('id', $rentpro->sale_id)->first();
 
                         if (!empty($chksellid)) {
                             $validator = Validator::make($request->all(), [
@@ -314,7 +293,7 @@ class SellSubCategoryProductController extends Controller
                                             $imgname = md5(rand('1000', '10000'));
                                             $extension = strtolower($file->getClientOriginalExtension());
                                             $img_full_name = $imgname . '.' . $extension;
-                                            $upload_path = 'public/sellImage/';
+                                            $upload_path = 'public/rentimage/';
                                             $img_url = $upload_path . $img_full_name;
                                             $file->move($upload_path, $img_full_name);
                                             array_push($images, $img_url);
@@ -340,7 +319,7 @@ class SellSubCategoryProductController extends Controller
                                             return response()->json(['message' => $validator->errors()]);
                                         }
 
-                                        // $data['sale_id']           = $request->sale_id;
+                                        $data['sale_id']           = $request->sale_id;
                                         $data['sub_cat_id']        = $request->sub_cat_id;
                                         $data['vendor_name']       = $request->vendor_name;
                                         $data['owner_or_broker']   = $request->owner_or_broker;
@@ -362,7 +341,7 @@ class SellSubCategoryProductController extends Controller
                                         $data['city_id']           = $request->city_id;
                                         // $data['user_id']           = $auth_id;
 
-                                        $updatedata =  $sellpro->update($data);
+                                        $updatedata =  $rentpro->update($data);
                                         $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                         $exp = explode('|',  $imp_image);
                                         $data['image'] = $exp;
@@ -382,7 +361,7 @@ class SellSubCategoryProductController extends Controller
                                         if ($validator->fails()) {
                                             return response()->json(['message' => $validator->errors()]);
                                         }
-                                        // $data['sale_id']           = $request->sale_id;
+                                        $data['sale_id']           = $request->sale_id;
                                         $data['sub_cat_id']        = $request->sub_cat_id;
                                         $data['vendor_name']       = $request->vendor_name;
                                         $data['owner_or_broker']   = $request->owner_or_broker;
@@ -400,7 +379,7 @@ class SellSubCategoryProductController extends Controller
                                         $data['hall']              = $request->hall;
                                         $data['lat_bath']          = $request->lat_bath;
 
-                                        $updatedata =  $sellpro->update($data);
+                                        $updatedata =  $rentpro->update($data);
 
                                         $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                         $exp = explode('|',  $imp_image);
@@ -451,10 +430,10 @@ class SellSubCategoryProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
         try {
-            $delete = SaleSubCategoryProduct::where('id', $id)->first();
+            $delete = Rent::where('id', $id)->first();
             if (!empty($delete)) {
                 $getdeleterec = $delete->delete();
                 return response()->json([
@@ -472,135 +451,9 @@ class SellSubCategoryProductController extends Controller
         }
     }
 
-    public function sellFormListOfUser(Request $request)
+    public function addRentProductViaAdmin(Request $request)
     {
-        ## all list of selling product form from user side we show this list on admin panel so that admin can accept and deny the product.
-        try {
-            $sellingproduct = SaleSubCategoryProduct::get()->toArray();
-            if (!empty($sellingproduct)) {
-                $newarr = [];
-                foreach ($sellingproduct as $key => $new) {
-                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
-                    $new['image'] = explode('|', $new['image']);
-                    array_push($newarr, $new);
-                }
-                return response()->json([
-                    'message' => 'List of product want to sell',
-                    'data' => $newarr,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'No record exist',
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function acceptSellProduct(Request $request)
-    {
-        ## request accept  by the admin for user sell product form 
-        $auth_id = auth()->user()->id;
-
-        $id = $request->id;
-        try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
-            }
-            $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
-            if (!empty($eachnews)) {
-                $eachnews = SaleSubCategoryProduct::where('id', $id)->where('city_id', '!=', null)->first();
-                if (!empty($rentcity)) {
-                    if ($eachnews->status == 0) {
-                        $eachnews->status = 1;
-                        $updateStatus = $eachnews->update();
-                        return response()->json([
-                            'message' => 'Selling product request accepted By Admin',
-                            'data' => $eachnews,
-                        ]);
-                    } else {
-                        if ($eachnews->status == 2) {
-                            return response()->json([
-                                'message' => 'Selling product request already denied By Admin so you can not accept',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Request is already accepted By Admin',
-                            ]);
-                        }
-                    }
-                } else {
-                    return response()->json([
-                        'message' => 'Please add city first',
-                    ]);
-                }
-            } else {
-                return response()->json([
-                    'message' => 'Record Not Exist',
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function denySellProduct(Request $request)
-    {
-        ## request deny  by the admin for user sell product form 
-        $auth_id = auth()->user()->id;
-
-        $id = $request->id;
-        try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
-            }
-            $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
-            if (!empty($eachnews)) {
-                if ($eachnews->status == 0) {
-                    $eachnews->status = 2;
-                    $updateStatus = $eachnews->update();
-                    return response()->json([
-                        'message' => 'Selling product request denied By Admin',
-                        'data' => $eachnews,
-                    ]);
-                } else {
-                    if ($eachnews->status == 1) {
-                        return response()->json([
-                            'message' => 'Renting product request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Renting product request is already denied By Admin',
-                        ]);
-                    }
-                }
-            } else {
-                return response()->json([
-                    'message' => 'Record Not Exist',
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function addSellProductViaAdmin(Request $request)
-    {
+        # rent request by admin
         $auth_id = auth()->user()->id;
         $role_id = auth()->user()->role_id;
 
@@ -651,7 +504,7 @@ class SellSubCategoryProductController extends Controller
                                         $imgname = md5(rand('1000', '10000'));
                                         $extension = strtolower($file->getClientOriginalExtension());
                                         $img_full_name = $imgname . '.' . $extension;
-                                        $upload_path = 'public/sellImage/';
+                                        $upload_path = 'public/rentimage/';
                                         $img_url = $upload_path . $img_full_name;
                                         $file->move($upload_path, $img_full_name);
                                         array_push($images, $img_url);
@@ -675,7 +528,7 @@ class SellSubCategoryProductController extends Controller
                                     if ($validator->fails()) {
                                         return response()->json(['message' => $validator->errors()]);
                                     }
-                                    $sellproduct = SaleSubCategoryProduct::create([
+                                    $rent = Rent::create([
                                         'sale_id' => $sell_id,
                                         'sub_cat_id' => $request->sub_cat_id,
                                         'vendor_name' => $request->vendor_name,
@@ -701,11 +554,11 @@ class SellSubCategoryProductController extends Controller
 
                                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                     $exp = explode('|',  $imp_image);
-                                    $sellproduct['image'] = $exp;
+                                    $rent['image'] = $exp;
 
                                     return response()->json([
-                                        'message' => 'Product added successfully in sell list',
-                                        'data' => $sellproduct,
+                                        'message' => 'Rent product added successfully for vehicle',
+                                        'data' => $rent,
                                     ]);
                                 } elseif ($chksellid->type == 'property') {
                                     $validator = Validator::make($request->all(), [
@@ -718,18 +571,18 @@ class SellSubCategoryProductController extends Controller
                                     if ($validator->fails()) {
                                         return response()->json(['message' => $validator->errors()]);
                                     }
-                                    $sellproduct = SaleSubCategoryProduct::create([
-                                        'sale_id' => $sell_id,
-                                        'sub_cat_id' => $request->sub_cat_id,
-                                        'vendor_name' => $request->vendor_name,
-                                        'owner_or_broker' => $request->owner_or_broker,
+                                    $rent = Rent::create([
+                                        'sale_id'           => $sell_id,
+                                        'sub_cat_id'        => $request->sub_cat_id,
+                                        'vendor_name'       => $request->vendor_name,
+                                        'owner_or_broker'   => $request->owner_or_broker,
                                         'property_location' => $request->property_location,
-                                        'price' => $request->price,
+                                        'price'             => $request->price,
                                         'size_length_width' => $request->size_length_width,
                                         'other_information' => $request->other_information ?? null,
-                                        'image' => $imp_image,
-                                        'city_id' => $request->city_id,
-                                        'user_id' => $auth_id,
+                                        'image'             => $imp_image,
+                                        'city_id'           => $request->city_id,
+                                        'user_id'           => $auth_id,
                                         'whatsapp_no'       => $request->whatsapp_no,
                                         'call_no'           => $request->call_no,
                                         'room_qty'          => $request->room_qty,
@@ -739,15 +592,15 @@ class SellSubCategoryProductController extends Controller
                                     ]);
 
                                     $exp = explode('|',  $imp_image);
-                                    $sellproduct['image'] = $exp;
+                                    $rent['image'] = $exp;
                                     return response()->json([
-                                        'message' => 'Product added successfully in sell list',
-                                        'data' => $sellproduct,
+                                        'message' => 'Rent product added successfully for property',
+                                        'data' => $rent,
                                     ]);
                                 }
                             } else {
                                 return response()->json([
-                                    'message' => 'No sell type exist',
+                                    'message' => 'Rent type not exist',
                                 ]);
                             }
                         } else {
@@ -757,7 +610,7 @@ class SellSubCategoryProductController extends Controller
                         }
                     } else {
                         return response()->json([
-                            'message' => 'Sell id not exist',
+                            'message' => 'Rent id not exist',
                         ]);
                     }
                 } else {
@@ -777,48 +630,167 @@ class SellSubCategoryProductController extends Controller
         }
     }
 
-    public function showSellProductViacity(Request $request)
+    public function rentFormListOfUser(Request $request)
     {
-        ## showing the selling product list on the city basis
-        $validator = Validator::make($request->all(), [
-            'city_id' => ['numeric'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
-        $city_id = $request->city_id;
+        ## all list of renting product form from user side we show this list on admin panel so that admin can accept and deny the rent product.
         try {
-            if ($city_id == null) {
-                $sellproduct = SaleSubCategoryProduct::where('status', 1)->get()->toArray();
+            $rentingproduct = Rent::get()->toArray();
+            if (!empty($rentingproduct)) {
                 $newarr = [];
-                foreach ($sellproduct as $key => $new) {
+                foreach ($rentingproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
                     array_push($newarr, $new);
                 }
                 return response()->json([
-                    'message' => 'All Selling product list',
+                    'message' => 'List of product want to give on rent',
+                    'data' => $newarr,
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'No record exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function acceptRentProduct(Request $request)
+    {
+        ## request accept  by the admin for user rent product form 
+        $auth_id = auth()->user()->id;
+        $id = $request->id;
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required', 'numeric'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $rent = Rent::where('id', $id)->first();
+            if (!empty($rent)) {
+                $rentcity = Rent::where('id', $id)->where('city_id', '!=', null)->first();
+                if (!empty($rentcity)) {
+                    if ($rent->status == 0) {
+                        $rent->status = 1;
+                        $updateStatus = $rent->update();
+                        return response()->json([
+                            'message' => 'Rent product request is accepted By Admin',
+                            'data' => $rent,
+                        ]);
+                    } else {
+                        if ($rent->status == 2) {
+                            return response()->json([
+                                'message' => 'Renting product request already denied By Admin so you can not accept',
+                            ]);
+                        } else {
+                            return response()->json([
+                                'message' => 'Request is already accepted By Admin',
+                            ]);
+                        }
+                    }
+                } else {
+                    return response()->json([
+                        'message' => 'Please add city first',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function denyRentProduct(Request $request)
+    {
+        ## request deny  by the admin for user rent product form 
+        $auth_id = auth()->user()->id;
+        $id = $request->id;
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required', 'numeric'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $rent = Rent::where('id', $id)->first();
+            if (!empty($rent)) {
+                if ($rent->status == 0) {
+                    $rent->status = 2;
+                    $updateStatus = $rent->update();
+                    return response()->json([
+                        'message' => 'Renting product request denied By Admin',
+                        'data' => $rent,
+                    ]);
+                } else {
+                    if ($rent->status == 1) {
+                        return response()->json([
+                            'message' => 'Renting product request already accepted By Admin so you can not deny',
+                        ]);
+                    } else {
+                        return response()->json([
+                            'message' => 'Renting product request is already denied By Admin',
+                        ]);
+                    }
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function showRentProductViacity(Request $request)
+    {
+        ## showing the renting product list on the city basis
+
+        $city_id = $request->city_id;
+        try {
+            if ($city_id == null) {
+                $rentproduct = Rent::where('status', 1)->get()->toArray();
+                $newarr = [];
+                foreach ($rentproduct as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+                    array_push($newarr, $new);
+                }
+                return response()->json([
+                    'message' => 'All Renting product list',
                     'data' => $newarr,
                 ]);
             } else {
                 $city = City::where('id', $city_id)->first();
                 if (!empty($city)) {
-                    $sellproduct = SaleSubCategoryProduct::where('sale_sub_category_products.city_id', $city_id)->where('status', 1)
-                        ->select('sale_sub_category_products.*', 'users.name', 'cities.city_name')
-                        ->join('users', 'users.id', 'sale_sub_category_products.user_id')
-                        ->join('cities', 'cities.id', 'sale_sub_category_products.city_id')
+                    $rentproduct = Rent::where('rents.city_id', $city_id)->where('status', 1)
+                        ->select('rents.*', 'users.name', 'cities.city_name')
+                        ->join('users', 'users.id', 'rents.user_id')
+                        ->join('cities', 'cities.id', 'rents.city_id')
                         ->get();
-                    if (!empty($sellproduct)) {
+                    if (!empty($rentproduct)) {
                         $newarr = [];
-                        foreach ($sellproduct as $key => $new) {
+                        foreach ($rentproduct as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
                             array_push($newarr, $new);
                         }
                         return response()->json([
-                            'message' => 'All Selling product list on the city basis',
-                            'data' => $sellproduct,
+                            'message' => 'Renting product list on the city basis',
+                            'data' => $rentproduct,
                         ]);
                     } else {
                         return response()->json([
@@ -837,63 +809,4 @@ class SellSubCategoryProductController extends Controller
             ]);
         }
     }
-
-
-
-
-
-
-
-
-
-    // public function acceptDenySell(Request $request)
-    // {
-    //     dd('acceptdenyproduct');
-    //     ## request accept and deny by the admin for user sell form 
-    //     $validator = Validator::make($request->all(), [
-    //         'status' => ['required', 'numeric', 'in:0,1'],
-    //         'id' => ['required'],
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['message' => $validator->errors()]);
-    //     }
-    //     $getdata =  SaleSubCategoryProduct::all(); ## all data with containing 0 and 1 status
-    //     dd($getdata);
-    //     $id = $request->id;
-    //     try {
-    //         if (!empty($getdata)) {
-    //             $eachnews = News::where('id', $id)->first();
-    //             if (!empty($eachnews)) {
-    //                 $updatecity = $eachnews->update([
-    //                     'status' => $request->status,
-    //                 ]);
-    //                 $all = News::where('id', $id)->first();
-    //                 if ($request->status == 1) {
-    //                     return response()->json([
-    //                         'message' => 'Accepted By Admin',
-    //                         'data' => $all,
-    //                     ]);
-    //                 } else {
-    //                     return response()->json([
-    //                         'message' => 'Deny By Admin',
-    //                         'data' => $all,
-    //                     ]);
-    //                 }
-    //             } else {
-    //                 return response()->json([
-    //                     'message' => 'Record Not Exist',
-    //                 ]);
-    //             }
-    //         } else {
-    //             return response()->json([
-    //                 'message' => 'No News Available',
-    //             ]);
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
 }
