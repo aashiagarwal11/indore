@@ -21,7 +21,7 @@ class NewsController extends Controller
     {
         ## showing the news which is accepted by admin
         try {
-            $news = News::where('status', 1)->where('city_id', '!=', null)->get()->toArray();
+            $news = News::where('status', 1)->where('city_id', '!=', null)->orderBy('id', 'desc')->get()->toArray();
             if (!empty($news)) {
                 $newarr = [];
                 foreach ($news as $key => $new) {
@@ -354,7 +354,7 @@ class NewsController extends Controller
         $city_id = $request->city;
         try {
             if ($city_id == null) {
-                $news = News::where('status', 1)->get()->toArray();
+                $news = News::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
                 $newarr = [];
                 foreach ($news as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
@@ -373,6 +373,7 @@ class NewsController extends Controller
                         ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.created_at', 'news.updated_at')
                         ->join('users', 'users.id', 'news.user_id')
                         ->join('cities', 'cities.id', 'news.city_id')
+                        ->orderBy('news.id', 'desc')
                         ->get();
                     if (!empty($news)) {
                         $newarr = [];

@@ -16,7 +16,7 @@ class CityController extends Controller
     public function index()
     {
         try {
-            $getcity = City::all();
+            $getcity = City::orderBy('id', 'desc')->get();
             if (!empty($getcity)) {
                 return response()->json([
                     'message' => 'All City Details',

@@ -12,6 +12,8 @@ use App\Http\Controllers\Sell\SellSubCategoryProductController;
 use App\Http\Controllers\Sell\SellProductListController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Rent\RentController;
+use App\Http\Controllers\KrishiMandiBhav\KrishiMandiBhavController;
+use App\Http\Controllers\ShokSuchna\ShokSuchnaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +52,8 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('sellproduct', SellProductListController::class);
     Route::apiResource('sellsubcategoryproduct', SellSubCategoryProductController::class);
     Route::apiResource('rent', RentController::class);
+    Route::apiResource('krishiMandiBhav', KrishiMandiBhavController::class);
+    Route::apiResource('shokSuchna', ShokSuchnaController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptNews', 'acceptNews');
         Route::post('denyNews', 'denyNews');
@@ -80,6 +84,10 @@ Route::middleware('jwt.verify')->group(function () {
         Route::post('acceptRentProduct', 'acceptRentProduct');
         Route::post('denyRentProduct', 'denyRentProduct');
         Route::get('showRentProductViacity', 'showRentProductViacity');
+    });
+
+    Route::controller(KrishiMandiBhavController::class)->group(function () {
+        Route::get('showListViaCity', 'showListViaCity');
     });
 });
 

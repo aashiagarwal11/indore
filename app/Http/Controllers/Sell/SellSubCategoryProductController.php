@@ -21,7 +21,7 @@ class SellSubCategoryProductController extends Controller
     {
         ## all list of selling product form from user side which is accepted by admin we show this list on user panel.
         try {
-            $sellingproduct = SaleSubCategoryProduct::where('status', 1)->get()->toArray();
+            $sellingproduct = SaleSubCategoryProduct::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
             if (!empty($sellingproduct)) {
                 $newarr = [];
                 foreach ($sellingproduct as $key => $new) {
@@ -476,7 +476,7 @@ class SellSubCategoryProductController extends Controller
     {
         ## all list of selling product form from user side we show this list on admin panel so that admin can accept and deny the product.
         try {
-            $sellingproduct = SaleSubCategoryProduct::get()->toArray();
+            $sellingproduct = SaleSubCategoryProduct::orderBy('id', 'desc')->get()->toArray();
             if (!empty($sellingproduct)) {
                 $newarr = [];
                 foreach ($sellingproduct as $key => $new) {
@@ -790,7 +790,7 @@ class SellSubCategoryProductController extends Controller
         $city_id = $request->city_id;
         try {
             if ($city_id == null) {
-                $sellproduct = SaleSubCategoryProduct::where('status', 1)->get()->toArray();
+                $sellproduct = SaleSubCategoryProduct::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
                 $newarr = [];
                 foreach ($sellproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
@@ -808,6 +808,7 @@ class SellSubCategoryProductController extends Controller
                         ->select('sale_sub_category_products.*', 'users.name', 'cities.city_name')
                         ->join('users', 'users.id', 'sale_sub_category_products.user_id')
                         ->join('cities', 'cities.id', 'sale_sub_category_products.city_id')
+                        ->orderBy('sale_sub_category_products.id', 'desc')
                         ->get();
                     if (!empty($sellproduct)) {
                         $newarr = [];
