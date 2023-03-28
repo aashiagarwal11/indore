@@ -18,7 +18,7 @@ class SellSubCategoryController extends Controller
     {
         try {
             $getsalesubcat = SaleSubCategory::join('sales', 'sales.id', 'sale_sub_categories.sale_id')
-                ->select('sale_sub_categories.id', 'sales.type', 'sale_sub_categories.sub_type', 'sale_sub_categories.created_at', 'sale_sub_categories.updated_at')->get();
+                ->select('sale_sub_categories.id', 'sales.type', 'sale_sub_categories.sub_type', 'sale_sub_categories.created_at', 'sale_sub_categories.updated_at')->orderBy('sale_sub_categories.id', 'desc')->get();
 
             if (!empty($getsalesubcat)) {
                 return response()->json([
@@ -158,7 +158,6 @@ class SellSubCategoryController extends Controller
             return response()->json([
                 'message' => $e->getMessage(),
             ]);
-            
         }
     }
 
@@ -205,6 +204,7 @@ class SellSubCategoryController extends Controller
                 $salesubcat = SaleSubCategory::where('sale_id', $sale_id)
                     ->select('sales.type', 'sale_sub_categories.id', 'sale_sub_categories.sub_type', 'sale_sub_categories.created_at', 'sale_sub_categories.updated_at')
                     ->join('sales', 'sales.id', 'sale_sub_categories.sale_id')
+                    ->orderBy('sale_sub_categories.id', 'desc')
                     ->get();
                 if (!empty($salesubcat)) {
                     return response()->json([

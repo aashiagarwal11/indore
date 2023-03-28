@@ -18,7 +18,7 @@ class RentController extends Controller
     {
         # Accepted list of rent product
         try {
-            $rentingproduct = Rent::where('status', 1)->get()->toArray();
+            $rentingproduct = Rent::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
             if (!empty($rentingproduct)) {
                 $newarr = [];
                 foreach ($rentingproduct as $key => $new) {
@@ -634,7 +634,7 @@ class RentController extends Controller
     {
         ## all list of renting product form from user side we show this list on admin panel so that admin can accept and deny the rent product.
         try {
-            $rentingproduct = Rent::get()->toArray();
+            $rentingproduct = Rent::orderBy('id', 'desc')->get()->toArray();
             if (!empty($rentingproduct)) {
                 $newarr = [];
                 foreach ($rentingproduct as $key => $new) {
@@ -762,7 +762,7 @@ class RentController extends Controller
         $city_id = $request->city_id;
         try {
             if ($city_id == null) {
-                $rentproduct = Rent::where('status', 1)->get()->toArray();
+                $rentproduct = Rent::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
                 $newarr = [];
                 foreach ($rentproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
@@ -780,6 +780,7 @@ class RentController extends Controller
                         ->select('rents.*', 'users.name', 'cities.city_name')
                         ->join('users', 'users.id', 'rents.user_id')
                         ->join('cities', 'cities.id', 'rents.city_id')
+                        ->orderBy('rents.id', 'desc')
                         ->get();
                     if (!empty($rentproduct)) {
                         $newarr = [];

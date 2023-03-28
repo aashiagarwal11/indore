@@ -16,7 +16,7 @@ class AdvertismentController extends Controller
     public function index()
     {
         try {
-            $advertisment =  Advertisment::all()->toArray();
+            $advertisment =  Advertisment::orderBy('id', 'desc')->get()->toArray();
             if (!empty($advertisment)) {
                 return response()->json([
                     'message' => 'All Ads List',

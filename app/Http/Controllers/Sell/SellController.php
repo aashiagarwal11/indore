@@ -18,7 +18,7 @@ class SellController extends Controller
         $sa_id = auth()->user()->id;
         try {
             if ($sa_id == 1) {
-                $getsell = Sale::all();
+                $getsell = Sale::orderBy('id', 'desc')->get();
                 if (!empty($getsell)) {
                     return response()->json([
                         'message' => 'All Sell Category List',
