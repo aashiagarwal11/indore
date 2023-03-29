@@ -89,6 +89,14 @@ Route::middleware('jwt.verify')->group(function () {
     Route::controller(KrishiMandiBhavController::class)->group(function () {
         Route::get('showListViaCity', 'showListViaCity');
     });
+
+    Route::controller(ShokSuchnaController::class)->group(function () {
+        Route::post('addViaAdmin', 'addViaAdmin');
+        Route::get('showAllOnAdmin', 'showAllOnAdmin');
+        Route::post('acceptShokSuchna', 'acceptShokSuchna');
+        Route::post('denyShokSuchna', 'denyShokSuchna');
+        Route::post('showListViacity', 'showListViacity');
+    });
 });
 
 
