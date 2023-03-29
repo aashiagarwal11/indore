@@ -46,7 +46,6 @@ class KrishiMandiBhavController extends Controller
      */
     public function store(Request $request)
     {
-        // dd('store');
         ## add krishi mandi bhav by admin
         $id = auth()->user()->id;
         try {
@@ -57,6 +56,7 @@ class KrishiMandiBhavController extends Controller
                     'city_id' => ['required', 'numeric'],
                     'image' => ['required'],
                     'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                    'video_url' => ['nullable'],
                 ]);
 
                 if ($validator->fails()) {
@@ -84,6 +84,7 @@ class KrishiMandiBhavController extends Controller
                         'city_id' => $request->city_id,
                         'image' => $imp_image,
                         'user_id' => $id,
+                        'video_url' => $request->video_url,
                     ]);
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|', $imp_image);
@@ -91,6 +92,7 @@ class KrishiMandiBhavController extends Controller
                     $data['description'] = $request->description;
                     $data['city_id'] = $request->city_id;
                     $data['image'] = $exp;
+                    $data['video_url'] = $request->video_url;
 
                     return response()->json([
                         'message' => 'Added Successfully',
@@ -120,7 +122,7 @@ class KrishiMandiBhavController extends Controller
     {
         try {
             $specificbhav = KrishiMandiBhav::where('krishi_mandi_bhavs.id', $id)
-                ->select('krishi_mandi_bhavs.id', 'krishi_mandi_bhavs.title', 'users.name', 'cities.city_name', 'krishi_mandi_bhavs.description', 'krishi_mandi_bhavs.image', 'krishi_mandi_bhavs.created_at', 'krishi_mandi_bhavs.updated_at')
+                ->select('krishi_mandi_bhavs.id', 'krishi_mandi_bhavs.title', 'users.name', 'cities.city_name', 'krishi_mandi_bhavs.description', 'krishi_mandi_bhavs.image', 'krishi_mandi_bhavs.video_url', 'krishi_mandi_bhavs.created_at', 'krishi_mandi_bhavs.updated_at')
                 ->join('users', 'users.id', 'krishi_mandi_bhavs.user_id')
                 ->join('cities', 'cities.id', 'krishi_mandi_bhavs.city_id')
                 ->get();
@@ -161,6 +163,7 @@ class KrishiMandiBhavController extends Controller
                     'city_id' => ['required', 'numeric'],
                     'image' => ['required'],
                     'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                    'video_url' => ['nullable'],
                 ]);
 
                 if ($validator->fails()) {
@@ -188,10 +191,11 @@ class KrishiMandiBhavController extends Controller
                     $data['description'] = $request->description;
                     $data['city_id'] = $request->city_id;
                     $data['image'] = $imp_image;
+                    $data['video_url'] = $request->video_url ?? null;
                     $updatedata = $KrishiMandiBhav->update($data);
 
                     $specificbhav = KrishiMandiBhav::where('krishi_mandi_bhavs.id', $id)
-                        ->select('krishi_mandi_bhavs.id', 'krishi_mandi_bhavs.title', 'cities.city_name', 'krishi_mandi_bhavs.description', 'krishi_mandi_bhavs.image', 'krishi_mandi_bhavs.created_at', 'krishi_mandi_bhavs.updated_at')
+                        ->select('krishi_mandi_bhavs.id', 'krishi_mandi_bhavs.title', 'cities.city_name', 'krishi_mandi_bhavs.description', 'krishi_mandi_bhavs.image', 'krishi_mandi_bhavs.video_url', 'krishi_mandi_bhavs.created_at', 'krishi_mandi_bhavs.updated_at')
                         ->join('cities', 'cities.id', 'krishi_mandi_bhavs.city_id')
                         ->get();
 
