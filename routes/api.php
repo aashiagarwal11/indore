@@ -14,6 +14,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Rent\RentController;
 use App\Http\Controllers\KrishiMandiBhav\KrishiMandiBhavController;
 use App\Http\Controllers\ShokSuchna\ShokSuchnaController;
+use App\Http\Controllers\Birthday\BirthdayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,7 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('rent', RentController::class);
     Route::apiResource('krishiMandiBhav', KrishiMandiBhavController::class);
     Route::apiResource('shokSuchna', ShokSuchnaController::class);
+    Route::apiResource('birthday', BirthdayController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptNews', 'acceptNews');
         Route::post('denyNews', 'denyNews');
@@ -66,6 +68,7 @@ Route::middleware('jwt.verify')->group(function () {
         Route::get('showallnewsonadmin', 'showallnewsonadmin');
         Route::post('cityUpdate', 'cityUpdate'); // city update by admin for accept the news
         Route::post('cityUpdateAcceptStatus', 'cityUpdateAcceptStatus'); // city update by admin for accept the news
+        Route::get('recentNews', 'recentNews'); ## recent news
     });
     Route::controller(SellSubCategoryController::class)->group(function () {
         Route::post('showSellSubCategoryViaSelltype', 'showSellSubCategoryViaSelltype');
@@ -98,7 +101,7 @@ Route::middleware('jwt.verify')->group(function () {
         Route::get('showAllOnAdmin', 'showAllOnAdmin');
         Route::post('acceptShokSuchna', 'acceptShokSuchna');
         Route::post('denyShokSuchna', 'denyShokSuchna');
-        Route::post('showListViacity', 'showListViacity');
+        Route::get('showListViacity', 'showListViacity');
     });
 });
 
