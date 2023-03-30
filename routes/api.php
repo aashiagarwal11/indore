@@ -30,6 +30,9 @@ Route::post('searchData', [SearchController::class, 'searchWordFromWholeDatabase
 
 // Route::group(['middleware' => 'api'], function ($routes) {
 Route::controller(RegisteredUserController::class)->group(function () {
+    Route::post('loginUser', 'loginUser');
+    Route::post('loginAdmin', 'loginAdmin');
+
     Route::post('register', 'register');
     Route::post('login', 'login');
     Route::post('registerUserViaMobile', 'registerUserViaMobile');
