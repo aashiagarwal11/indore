@@ -24,6 +24,114 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
+    #login user
+    public function loginUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'     => ['required', 'numeric', 'digits:10'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+        try {
+            $user = User::where('phone', $request->phone)->first();
+            if (!empty($user)) {
+                $verified['phone_verified'] = now();
+                $verified['active_device_id'] = 1;
+                $token = JWTAuth::fromUser($user);
+                return $this->getUserWithToken($token);
+                if (!$token = JWTAuth::attempt($validator->validated())) {
+                    return response()->json([
+                        'error' => 'Unauthorized',
+                    ]);
+                }
+                return $this->getUserWithToken($token);
+            } else {
+                $user = User::create([
+                    'phone'     => $request->phone,
+                    'role_id' => 2,
+                ]);
+                $data['id'] = $user->id;
+                $data['phone'] = $user->phone;
+                $data['role_id'] = $user->role_id;
+                $data['created_at'] = $user->created_at;
+                $data['updated_at'] = $user->updated_at;
+
+                $verified['phone_verified'] = now();
+                $verified['active_device_id'] = 1;
+                $token = JWTAuth::fromUser($user);
+                return $this->getUserWithToken($token);
+                if (!$token = JWTAuth::attempt($validator->validated())) {
+                    return response()->json([
+                        'error' => 'Unauthorized',
+                    ]);
+                }
+
+                return $this->getUserWithToken($token);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    #login user
+    public function loginAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone'     => ['required', 'numeric', 'digits:10'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()]);
+        }
+        try {
+            $user = User::where('phone', $request->phone)->first();
+            if (!empty($user)) {
+                $verified['phone_verified'] = now();
+                $verified['active_device_id'] = 1;
+                $token = JWTAuth::fromUser($user);
+                return $this->getUserWithToken($token);
+                if (!$token = JWTAuth::attempt($validator->validated())) {
+                    return response()->json([
+                        'error' => 'Unauthorized',
+                    ]);
+                }
+                return $this->getUserWithToken($token);
+            } else {
+                $user = User::create([
+                    'phone'     => $request->phone,
+                    'role_id' => 1,
+                ]);
+                $data['id'] = $user->id;
+                $data['phone'] = $user->phone;
+                $data['role_id'] = $user->role_id;
+                $data['created_at'] = $user->created_at;
+                $data['updated_at'] = $user->updated_at;
+
+                $verified['phone_verified'] = now();
+                $verified['active_device_id'] = 1;
+                $token = JWTAuth::fromUser($user);
+                return $this->getUserWithToken($token);
+                if (!$token = JWTAuth::attempt($validator->validated())) {
+                    return response()->json([
+                        'error' => 'Unauthorized',
+                    ]);
+                }
+
+                return $this->getUserWithToken($token);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -147,7 +255,6 @@ class RegisteredUserController extends Controller
     }
 
 
-    #verify otp
     public function verifyOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -234,9 +341,10 @@ class RegisteredUserController extends Controller
     public function getUserWithToken($token)
     {
         return [
+            'message'=>'Login Successfully',
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60,
+            // 'expires_in' => JWTAuth::factory()->getTTL() * 60,
             // 'user' => $user->userformat(),
         ];
     }
