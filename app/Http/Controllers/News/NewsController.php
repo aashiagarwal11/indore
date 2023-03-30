@@ -651,4 +651,32 @@ class NewsController extends Controller
             ]);
         }
     }
+
+    public function recentNews()
+    {
+        ## Recent news
+        try {
+            $news = News::where('status', 1)->where('city_id', '!=', null)->orderBy('id', 'desc')->limit(5)->get()->toArray();
+            if (!empty($news)) {
+                $newarr = [];
+                foreach ($news as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+                    array_push($newarr, $new);
+                }
+                return response()->json([
+                    'message' => 'All News',
+                    'data' => $newarr,
+                ]);
+            } else {
+                return response()->json([
+                    'error' => 'No News Found',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
