@@ -42,6 +42,7 @@ class RegisteredUserController extends Controller
                 $verified['active_device_id'] = 1;
                 $token = JWTAuth::fromUser($user);
                 return $this->getUserWithToken($token);
+                
                 if (!$token = JWTAuth::attempt($validator->validated())) {
                     return response()->json([
                         'error' => 'Unauthorized',
@@ -341,10 +342,10 @@ class RegisteredUserController extends Controller
     public function getUserWithToken($token)
     {
         return [
-            'message'=>'Login Successfully',
+            'message' => 'Login Successfully',
             'access_token' => $token,
             'token_type' => 'bearer',
-            // 'expires_in' => JWTAuth::factory()->getTTL() * 60,
+            // 'expires_in' => JWTAuth::factory()->getTTL() * 43200,
             // 'user' => $user->userformat(),
         ];
     }
