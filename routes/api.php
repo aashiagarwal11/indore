@@ -103,6 +103,14 @@ Route::middleware('jwt.verify')->group(function () {
         Route::post('denyShokSuchna', 'denyShokSuchna');
         Route::get('showListViacity', 'showListViacity');
     });
+
+    Route::controller(BirthdayController::class)->group(function () {
+        Route::post('addbirthdayViaAdmin', 'addbirthdayViaAdmin');
+        Route::get('birthdayListOfUser', 'birthdayListOfUser');
+        Route::post('acceptBirthday', 'acceptBirthday');
+        Route::post('denyBirthday', 'denyBirthday');
+        Route::get('showbBirthdayViacity', 'showbBirthdayViacity');
+    });
 });
 
 
