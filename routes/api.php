@@ -15,6 +15,7 @@ use App\Http\Controllers\Rent\RentController;
 use App\Http\Controllers\KrishiMandiBhav\KrishiMandiBhavController;
 use App\Http\Controllers\ShokSuchna\ShokSuchnaController;
 use App\Http\Controllers\Birthday\BirthdayController;
+use App\Http\Controllers\Resume\ResumeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,7 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('krishiMandiBhav', KrishiMandiBhavController::class);
     Route::apiResource('shokSuchna', ShokSuchnaController::class);
     Route::apiResource('birthday', BirthdayController::class);
+    Route::apiResource('resume', ResumeController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptNews', 'acceptNews');
         Route::post('denyNews', 'denyNews');
@@ -110,6 +112,14 @@ Route::middleware('jwt.verify')->group(function () {
         Route::post('acceptBirthday', 'acceptBirthday');
         Route::post('denyBirthday', 'denyBirthday');
         Route::get('showbBirthdayViacity', 'showbBirthdayViacity');
+    });
+
+    Route::controller(ResumeController::class)->group(function () {
+        //     Route::post('addResumeViaAdmin', 'addResumeViaAdmin');
+        Route::get('resumeListOfUser', 'resumeListOfUser');
+        //     Route::post('acceptResume', 'acceptResume');
+        //     Route::post('denyResume', 'denyResume');
+        //     Route::get('showbResumeViacity', 'showbResumeViacity');
     });
 });
 
