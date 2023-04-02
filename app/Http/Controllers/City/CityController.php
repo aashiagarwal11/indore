@@ -91,17 +91,18 @@ class CityController extends Controller
     public function update(Request $request, string $id)
     {
         $sa_id = auth()->user()->id;
-        $validator = Validator::make($request->all(), [
-            'city_name' => ['required', 'string', 'max:255'],
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
         try {
             if ($sa_id == 1) {
                 $city = City::where('id', $id)->first();
                 if (!empty($city)) {
+                    $validator = Validator::make($request->all(), [
+                        'city_name' => ['required', 'string', 'max:255'],
+                    ]);
+
+                    if ($validator->fails()) {
+                        return response()->json(['message' => $validator->errors()]);
+                    }
                     $updatecity = $city->update([
                         'city_name' => $request->city_name,
                     ]);
