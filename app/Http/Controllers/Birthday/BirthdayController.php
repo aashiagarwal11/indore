@@ -137,21 +137,20 @@ class BirthdayController extends Controller
         $auth_id = auth()->user()->id;
         try {
             if ($auth_id == 1) {
-                $validator = Validator::make($request->all(), [
-                    'title' => ['required', 'string'],
-                    'description' => ['required', 'string'],
-                    'city_id' => ['required', 'numeric'],
-                    'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg,svg'],
-                    'video_url' => ['nullable'],
-                ]);
-
-                if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
-                }
-
                 $birthday = Birthday::where('id', $id)->first();
                 if (!empty($birthday)) {
+                    $validator = Validator::make($request->all(), [
+                        'title' => ['required', 'string'],
+                        'description' => ['required', 'string'],
+                        'city_id' => ['required', 'numeric'],
+                        'image' => ['required'],
+                        'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                        'video_url' => ['nullable'],
+                    ]);
+
+                    if ($validator->fails()) {
+                        return response()->json(['message' => $validator->errors()]);
+                    }
                     $images = array();
                     if ($files = $request->file('image')) {
                         foreach ($files as $file) {

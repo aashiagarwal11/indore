@@ -115,11 +115,11 @@ Route::middleware('jwt.verify')->group(function () {
     });
 
     Route::controller(ResumeController::class)->group(function () {
-        //     Route::post('addResumeViaAdmin', 'addResumeViaAdmin');
+        Route::post('addResumeViaAdmin', 'addResumeViaAdmin');
         Route::get('resumeListOfUser', 'resumeListOfUser');
-        //     Route::post('acceptResume', 'acceptResume');
-        //     Route::post('denyResume', 'denyResume');
-        //     Route::get('showbResumeViacity', 'showbResumeViacity');
+        Route::post('acceptResume', 'acceptResume');
+        Route::post('denyResume', 'denyResume');
+        Route::get('showbResumeViacity', 'showbResumeViacity');
     });
 });
 

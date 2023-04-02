@@ -123,15 +123,16 @@ class SellController extends Controller
 
         try {
             if ($sa_id == 1) {
-                $validator = Validator::make($request->all(), [
-                    'type' => ['required', 'alpha', 'string', 'max:255'],
-                ]);
 
-                if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
-                }
                 $sell = Sale::where('id', $id)->first();
                 if (!empty($sell)) {
+                    $validator = Validator::make($request->all(), [
+                        'type' => ['required', 'alpha', 'string', 'max:255'],
+                    ]);
+
+                    if ($validator->fails()) {
+                        return response()->json(['message' => $validator->errors()]);
+                    }
                     $updatesell = $sell->update([
                         'type' => $request->type,
                     ]);
