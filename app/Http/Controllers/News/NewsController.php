@@ -342,16 +342,7 @@ class NewsController extends Controller
 
     public function shownewsViacity(Request $request)
     {
-        ## showing the news on the city basis
-        $validator = Validator::make($request->all(), [
-            // 'city' => ['required', 'numeric'],
-            'city' => ['numeric'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
-        }
-        $city_id = $request->city;
+        $city_id = $request->city_id;
         try {
             if ($city_id == null) {
                 $news = News::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
@@ -362,13 +353,12 @@ class NewsController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
-                    'message' => 'All News List On The City Basis',
+                    'message' => 'All News List',
                     'data' => $newarr,
                 ]);
             } else {
                 $city = City::where('id', $city_id)->first();
                 if (!empty($city)) {
-
                     $news = News::where('city_id', $city_id)->where('status', 1)
                         ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.created_at', 'news.updated_at')
                         ->join('users', 'users.id', 'news.user_id')
@@ -477,12 +467,30 @@ class NewsController extends Controller
                 }
                 $eachnews = News::where('id', $newsid)->first();
                 if (!empty($eachnews)) {
-                    if ($eachnews->status == 0) {
-                        $eachnews->status = 1;
-                        $updateStatus = $eachnews->update();
+                    $newscity = News::where('id', $newsid)->where('city_id', '!=', null)->first();
+
+                    if (!empty($newscity)) {
+                        if ($eachnews->status == 0) {
+                            $eachnews->status = 1;
+                            $updateStatus = $eachnews->update();
+                            return response()->json([
+                                'message' => 'Request is accepted By Admin',
+                                'data' => $eachnews,
+                            ]);
+                        } else {
+                            if ($eachnews->status == 2) {
+                                return response()->json([
+                                    'message' => 'Request already denied By Admin so you can not accept',
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'message' => 'Request is already accepted By Admin',
+                                ]);
+                            }
+                        }
+                    } else {
                         return response()->json([
-                            'message' => 'Accepted By Admin',
-                            'data' => $eachnews,
+                            'message' => 'Please add city first',
                         ]);
                     }
                 } else {
@@ -523,9 +531,19 @@ class NewsController extends Controller
                         $eachnews->status = 2;
                         $updateStatus = $eachnews->update();
                         return response()->json([
-                            'message' => 'Deny By Admin',
+                            'message' => 'Request denied By Admin',
                             'data' => $eachnews,
                         ]);
+                    } else {
+                        if ($eachnews->status == 1) {
+                            return response()->json([
+                                'message' => 'Request already accepted By Admin so you can not deny',
+                            ]);
+                        } else {
+                            return response()->json([
+                                'message' => 'Renting product request is already denied By Admin',
+                            ]);
+                        }
                     }
                 } else {
                     return response()->json([
