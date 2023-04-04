@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Models\Rent;
 use App\Models\City;
+use App\Models\Advertisment;
 
 class RentController extends Controller
 {
@@ -767,6 +768,18 @@ class RentController extends Controller
                 foreach ($rentproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+
+                    ## random ads
+                    $ads = Advertisment::all()->random(1);
+                    if (!empty($ads)) {
+                        $image = explode('|', $ads[0]->ads_image);
+                        shuffle($image);
+
+                        $ads[0]->ads_image = $image[0];
+                        $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                    }
+
+                    $new['randomimage'] = $ads[0]->ads_image;
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -787,6 +800,18 @@ class RentController extends Controller
                         foreach ($rentproduct as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+                            ## random ads
+                            $ads = Advertisment::all()->random(1);
+                            if (!empty($ads)) {
+                                $image = explode('|', $ads[0]->ads_image);
+                                shuffle($image);
+
+                                $ads[0]->ads_image = $image[0];
+                                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                            }
+
+                            $new['randomimage'] = $ads[0]->ads_image;
                             array_push($newarr, $new);
                         }
                         return response()->json([

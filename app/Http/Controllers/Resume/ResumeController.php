@@ -8,6 +8,7 @@ use App\Models\Resume;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\City;
+use App\Models\Advertisment;
 
 
 class ResumeController extends Controller
@@ -419,12 +420,27 @@ class ResumeController extends Controller
         try {
             if ($city_id == null) {
                 $resume = Resume::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
+
+                $newarr = [];
                 foreach ($resume as $key => $new) {
                     $new['pdf'] = str_replace("public", env('APP_URL') . "public", $new['pdf']);
+
+                    ## random ads
+                    $ads = Advertisment::all()->random(1);
+                    if (!empty($ads)) {
+                        $image = explode('|', $ads[0]->ads_image);
+                        shuffle($image);
+
+                        $ads[0]->ads_image = $image[0];
+                        $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                    }
+                    $new['randomimage'] = $ads[0]->ads_image;
+                    array_push($newarr, $new);
                 }
+
                 return response()->json([
                     'message' => 'All resume list',
-                    'data' => $new,
+                    'data' => $newarr,
                 ]);
             } else {
                 $city = City::where('id', $city_id)->first();
@@ -436,13 +452,26 @@ class ResumeController extends Controller
                         ->orderBy('resumes.id', 'desc')
                         ->get();
                     if (!empty($resume)) {
+
                         $newarr = [];
                         foreach ($resume as $key => $new) {
                             $new['pdf'] = str_replace("public", env('APP_URL') . "public", $new['pdf']);
+
+                            ## random ads
+                            $ads = Advertisment::all()->random(1);
+                            if (!empty($ads)) {
+                                $image = explode('|', $ads[0]->ads_image);
+                                shuffle($image);
+
+                                $ads[0]->ads_image = $image[0];
+                                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                            }
+                            $new['randomimage'] = $ads[0]->ads_image;
+                            array_push($newarr, $new);
                         }
                         return response()->json([
                             'message' => 'Resume list on the city basis',
-                            'data' => $new,
+                            'data' => $newarr,
                         ]);
                     } else {
                         return response()->json([

@@ -17,6 +17,7 @@ use App\Http\Controllers\ShokSuchna\ShokSuchnaController;
 use App\Http\Controllers\Birthday\BirthdayController;
 use App\Http\Controllers\Resume\ResumeController;
 use App\Http\Controllers\Requirement\RequirementController;
+use App\Http\Controllers\Directory\DirectoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,12 +64,13 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('birthday', BirthdayController::class);
     Route::apiResource('resume', ResumeController::class);
     Route::apiResource('requirement', RequirementController::class);
+    Route::apiResource('directory', DirectoryController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptNews', 'acceptNews');
         Route::post('denyNews', 'denyNews');
         Route::post('newsViaAdmin', 'newsViaAdmin');
         Route::get('shownewsViacity', 'shownewsViacity');
-        Route::get('randomads', 'randomads');
+        Route::get('premiumads', 'premiumads');
         Route::get('showallnewsonadmin', 'showallnewsonadmin');
         Route::post('cityUpdate', 'cityUpdate'); // city update by admin for accept the news
         Route::post('cityUpdateAcceptStatus', 'cityUpdateAcceptStatus'); // city update by admin for accept the news
@@ -125,11 +127,19 @@ Route::middleware('jwt.verify')->group(function () {
     });
 
     Route::controller(RequirementController::class)->group(function () {
-        // Route::post('addRequirementViaAdmin', 'addRequirementViaAdmin');
+        Route::post('addRequirementViaAdmin', 'addRequirementViaAdmin');
         Route::get('requirementListOfUser', 'requirementListOfUser');
-        // Route::post('acceptRequirement', 'acceptRequirement');
-        // Route::post('denyRequirement', 'denyRequirement');
-        // Route::get('showbRequirementViacity', 'showbRequirementViacity');
+        Route::post('acceptRequirement', 'acceptRequirement');
+        Route::post('denyRequirement', 'denyRequirement');
+        Route::get('showRequirementViacity', 'showRequirementViacity');
+    });
+
+    Route::controller(DirectoryController::class)->group(function () {
+        Route::post('addDirectoryViaAdmin', 'addDirectoryViaAdmin');
+        Route::get('directoryListOfUser', 'directoryListOfUser');
+        Route::post('acceptDirectory', 'acceptDirectory');
+        Route::post('denyDirectory', 'denyDirectory');
+        // Route::get('showDirectoryViacity', 'showDirectoryViacity');
     });
 });
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Sale;
 use Illuminate\Support\Facades\Schema;
 use App\Models\City;
+use App\Models\Advertisment;
 
 class SellSubCategoryProductController extends Controller
 {
@@ -795,6 +796,18 @@ class SellSubCategoryProductController extends Controller
                 foreach ($sellproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+
+                    ## random ads
+                    $ads = Advertisment::all()->random(1);
+                    if (!empty($ads)) {
+                        $image = explode('|', $ads[0]->ads_image);
+                        shuffle($image);
+
+                        $ads[0]->ads_image = $image[0];
+                        $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                    }
+
+                    $new['randomimage'] = $ads[0]->ads_image;
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -815,6 +828,18 @@ class SellSubCategoryProductController extends Controller
                         foreach ($sellproduct as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+                            ## random ads
+                            $ads = Advertisment::all()->random(1);
+                            if (!empty($ads)) {
+                                $image = explode('|', $ads[0]->ads_image);
+                                shuffle($image);
+
+                                $ads[0]->ads_image = $image[0];
+                                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                            }
+
+                            $new['randomimage'] = $ads[0]->ads_image;
                             array_push($newarr, $new);
                         }
                         return response()->json([
