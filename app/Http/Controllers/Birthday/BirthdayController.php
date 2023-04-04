@@ -8,6 +8,8 @@ use App\Models\Birthday;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\City;
+use App\Models\Advertisment;
+
 
 
 class BirthdayController extends Controller
@@ -412,6 +414,18 @@ class BirthdayController extends Controller
                 foreach ($birthday as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+
+                    ## random ads
+                    $ads = Advertisment::all()->random(1);
+                    if (!empty($ads)) {
+                        $image = explode('|', $ads[0]->ads_image);
+                        shuffle($image);
+
+                        $ads[0]->ads_image = $image[0];
+                        $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                    }
+
+                    $new['randomimage'] = $ads[0]->ads_image;
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -421,7 +435,7 @@ class BirthdayController extends Controller
             } else {
                 $city = City::where('id', $city_id)->first();
                 if (!empty($city)) {
-                    $birthday = Birthday::where('birthdays.city_id', $city_id)->where('status', 1)
+                    $birthday = Birthday::whereDate('birthdays.created_at', date('Y-m-d'))->where('birthdays.city_id', $city_id)->where('status', 1)
                         ->select('birthdays.*', 'users.name', 'cities.city_name')
                         ->join('users', 'users.id', 'birthdays.user_id')
                         ->join('cities', 'cities.id', 'birthdays.city_id')
@@ -432,6 +446,20 @@ class BirthdayController extends Controller
                         foreach ($birthday as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+
+                            ## random ads
+                            $ads = Advertisment::all()->random(1);
+                            if (!empty($ads)) {
+                                $image = explode('|', $ads[0]->ads_image);
+                                shuffle($image);
+
+                                $ads[0]->ads_image = $image[0];
+                                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                            }
+
+                            $new['randomimage'] = $ads[0]->ads_image;
+
                             array_push($newarr, $new);
                         }
                         return response()->json([

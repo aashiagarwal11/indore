@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\City;
 use App\Models\KrishiMandiBhav;
+use App\Models\Advertisment;
+
 
 
 class KrishiMandiBhavController extends Controller
@@ -259,6 +261,18 @@ class KrishiMandiBhavController extends Controller
                 foreach ($bhavproduct as $key => $bhav) {
                     $bhav['image'] = str_replace("public", env('APP_URL') . "public", $bhav['image']);
                     $bhav['image'] = explode('|', $bhav['image']);
+
+                    ## random ads
+                    $ads = Advertisment::all()->random(1);
+                    if (!empty($ads)) {
+                        $image = explode('|', $ads[0]->ads_image);
+                        shuffle($image);
+
+                        $ads[0]->ads_image = $image[0];
+                        $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                    }
+
+                    $bhav['randomimage'] = $ads[0]->ads_image;
                     array_push($newarr, $bhav);
                 }
                 return response()->json([
@@ -278,6 +292,18 @@ class KrishiMandiBhavController extends Controller
                         foreach ($bhavproduct as $key => $bhav) {
                             $bhav['image'] = str_replace("public", env('APP_URL') . "public", $bhav['image']);
                             $bhav['image'] = explode('|', $bhav['image']);
+
+                            ## random ads
+                            $ads = Advertisment::all()->random(1);
+                            if (!empty($ads)) {
+                                $image = explode('|', $ads[0]->ads_image);
+                                shuffle($image);
+
+                                $ads[0]->ads_image = $image[0];
+                                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                            }
+
+                            $bhav['randomimage'] = $ads[0]->ads_image;
                             array_push($newarr, $bhav);
                         }
                         return response()->json([

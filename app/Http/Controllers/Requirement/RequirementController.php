@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\City;
 use App\Models\Requirement;
+use App\Models\Advertisment;
 
 class RequirementController extends Controller
 {
@@ -242,198 +243,244 @@ class RequirementController extends Controller
         }
     }
 
-    // public function addRequirementViaAdmin(Request $request)
-    // {
-    //     $id = auth()->user()->id;
-    //     try {
-    //         if ($id == 1) {
-    //             $validator = Validator::make($request->all(), [
-    //                 'title'          => ['required', 'string'],
-    //                 'salary'         => ['required'],
-    //                 'city_id'        => ['required', 'numeric'],
-    //                 'working_time'   => ['required'],
-    //                 'comment'        => ['required'],
-    //             ]);
+    public function addRequirementViaAdmin(Request $request)
+    {
+        $id = auth()->user()->id;
+        try {
+            if ($id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'title'          => ['required', 'string'],
+                    'salary'         => ['required'],
+                    'city_id'        => ['required', 'numeric'],
+                    'working_time'   => ['required'],
+                    'comment'        => ['required'],
+                    'image'          => ['required'],
+                    'image.*'        => ['mimes:jpeg,png,jpg,svg']
+                ]);
 
-    //             if ($validator->fails()) {
-    //                 return response()->json(['message' => $validator->errors()]);
-    //             }
+                if ($validator->fails()) {
+                    return response()->json(['message' => $validator->errors()]);
+                }
 
-    //             $city = City::where('id', $request->city_id)->first();
-    //             if (!empty($city)) {
+                $images = array();
+                if ($files = $request->file('image')) {
+                    foreach ($files as $file) {
+                        $imgname = md5(rand('1000', '10000'));
+                        $extension = strtolower($file->getClientOriginalExtension());
+                        $img_full_name = $imgname . '.' . $extension;
+                        $upload_path = 'public/requirement/';
+                        $img_url = $upload_path . $img_full_name;
+                        $file->move($upload_path, $img_full_name);
+                        array_push($images, $img_url);
+                    }
+                }
 
-    //                 $requirement = Requirement::create([
-    //                     'title'          => $request->title,
-    //                     'salary'         => $request->salary,
-    //                     'city_id'        => $request->city_id,
-    //                     'working_time'   => $request->working_time,
-    //                     'comment'        => $request->comment,
-    //                     'user_id'        => $id,
-    //                     'status'         => 1,
-    //                 ]);
+                $imp_image =  implode('|', $images);
 
-    //                 return response()->json([
-    //                     'message' => 'Requirement Added Successfully By Admin',
-    //                     'data' => $requirement,
-    //                 ]);
-    //             } else {
-    //                 return response()->json([
-    //                     'error' => 'City not exist',
-    //                 ]);
-    //             }
-    //         } else {
-    //             return response()->json([
-    //                 'message' => 'Login as admin first',
-    //             ]);
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
+                $city = City::where('id', $request->city_id)->first();
+                if (!empty($city)) {
 
-    // public function acceptRequirement(Request $request)
-    // {
-    //     $auth_id = auth()->user()->id;
-    //     $id = $request->id;
-    //     try {
-    //         $validator = Validator::make($request->all(), [
-    //             'id' => ['required', 'numeric'],
-    //         ]);
+                    $requirement = Requirement::create([
+                        'title'          => $request->title,
+                        'salary'         => $request->salary,
+                        'city_id'        => $request->city_id,
+                        'working_time'   => $request->working_time,
+                        'comment'        => $request->comment,
+                        'user_id'        => $id,
+                        'status'         => 1,
+                        'image'          => $imp_image,
+                    ]);
 
-    //         if ($validator->fails()) {
-    //             return response()->json(['message' => $validator->errors()]);
-    //         }
-    //         $resume = Resume::where('id', $id)->first();
-    //         if (!empty($resume)) {
-    //             $resumecity = Resume::where('id', $id)->where('city_id', '!=', null)->first();
-    //             if (!empty($resumecity)) {
-    //                 if ($resume->status == 0) {
-    //                     $resume->status = 1;
-    //                     $updateStatus = $resume->update();
-    //                     return response()->json([
-    //                         'message' => 'Request is accepted By Admin',
-    //                         'data' => $resume,
-    //                     ]);
-    //                 } else {
-    //                     if ($resume->status == 2) {
-    //                         return response()->json([
-    //                             'message' => 'Request already denied By Admin so you can not accept',
-    //                         ]);
-    //                     } else {
-    //                         return response()->json([
-    //                             'message' => 'Request is already accepted By Admin',
-    //                         ]);
-    //                     }
-    //                 }
-    //             } else {
-    //                 return response()->json([
-    //                     'message' => 'Please add city first',
-    //                 ]);
-    //             }
-    //         } else {
-    //             return response()->json([
-    //                 'message' => 'Record Not Exist',
-    //             ]);
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
+                    return response()->json([
+                        'message' => 'Requirement Added Successfully By Admin',
+                        'data' => $requirement,
+                    ]);
+                } else {
+                    return response()->json([
+                        'error' => 'City not exist',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Login as admin first',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 
-    // public function denyRequirement(Request $request)
-    // {
-    //     $auth_id = auth()->user()->id;
-    //     $id = $request->id;
-    //     try {
-    //         $validator = Validator::make($request->all(), [
-    //             'id' => ['required', 'numeric'],
-    //         ]);
+    public function acceptRequirement(Request $request)
+    {
+        $auth_id = auth()->user()->id;
+        $id = $request->id;
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required', 'numeric'],
+            ]);
 
-    //         if ($validator->fails()) {
-    //             return response()->json(['message' => $validator->errors()]);
-    //         }
-    //         $resume = Resume::where('id', $id)->first();
-    //         if (!empty($resume)) {
-    //             if ($resume->status == 0) {
-    //                 $resume->status = 2;
-    //                 $updateStatus = $resume->update();
-    //                 return response()->json([
-    //                     'message' => 'Request denied By Admin',
-    //                     'data' => $resume,
-    //                 ]);
-    //             } else {
-    //                 if ($resume->status == 1) {
-    //                     return response()->json([
-    //                         'message' => 'Request already accepted By Admin so you can not deny',
-    //                     ]);
-    //                 } else {
-    //                     return response()->json([
-    //                         'message' => 'Renting product request is already denied By Admin',
-    //                     ]);
-    //                 }
-    //             }
-    //         } else {
-    //             return response()->json([
-    //                 'message' => 'Record Not Exist',
-    //             ]);
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $requirement = Requirement::where('id', $id)->first();
+            if (!empty($requirement)) {
+                $requirementcity = Requirement::where('id', $id)->where('city_id', '!=', null)->first();
+                if (!empty($requirementcity)) {
+                    if ($requirement->status == 0) {
+                        $requirement->status = 1;
+                        $updateStatus = $requirement->update();
+                        return response()->json([
+                            'message' => 'Request is accepted By Admin',
+                            'data' => $requirement,
+                        ]);
+                    } else {
+                        if ($requirement->status == 2) {
+                            return response()->json([
+                                'message' => 'Request already denied By Admin so you can not accept',
+                            ]);
+                        } else {
+                            return response()->json([
+                                'message' => 'Request is already accepted By Admin',
+                            ]);
+                        }
+                    }
+                } else {
+                    return response()->json([
+                        'message' => 'Please add city first',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 
-    // public function showbRequirementViacity(Request $request)
-    // {
-    //     $city_id = $request->city_id;
-    //     try {
-    //         if ($city_id == null) {
-    //             $resume = Resume::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
-    //             foreach ($resume as $key => $new) {
-    //                 $new['pdf'] = str_replace("public", env('APP_URL') . "public", $new['pdf']);
-    //             }
-    //             return response()->json([
-    //                 'message' => 'All resume list',
-    //                 'data' => $new,
-    //             ]);
-    //         } else {
-    //             $city = City::where('id', $city_id)->first();
-    //             if (!empty($city)) {
-    //                 $resume = Resume::where('resumes.city_id', $city_id)->where('status', 1)
-    //                     ->select('resumes.*', 'users.name', 'cities.city_name')
-    //                     ->join('users', 'users.id', 'resumes.user_id')
-    //                     ->join('cities', 'cities.id', 'resumes.city_id')
-    //                     ->orderBy('resumes.id', 'desc')
-    //                     ->get();
-    //                 if (!empty($resume)) {
-    //                     $newarr = [];
-    //                     foreach ($resume as $key => $new) {
-    //                         $new['pdf'] = str_replace("public", env('APP_URL') . "public", $new['pdf']);
-    //                     }
-    //                     return response()->json([
-    //                         'message' => 'Resume list on the city basis',
-    //                         'data' => $new,
-    //                     ]);
-    //                 } else {
-    //                     return response()->json([
-    //                         'error' => 'No data Found',
-    //                     ]);
-    //                 }
-    //             } else {
-    //                 return response()->json([
-    //                     'message' => 'City Not Exist',
-    //                 ]);
-    //             }
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
+    public function denyRequirement(Request $request)
+    {
+        $auth_id = auth()->user()->id;
+        $id = $request->id;
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => ['required', 'numeric'],
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()]);
+            }
+            $requirement = Requirement::where('id', $id)->first();
+            if (!empty($requirement)) {
+                if ($requirement->status == 0) {
+                    $requirement->status = 2;
+                    $updateStatus = $requirement->update();
+                    return response()->json([
+                        'message' => 'Request denied By Admin',
+                        'data' => $requirement,
+                    ]);
+                } else {
+                    if ($requirement->status == 1) {
+                        return response()->json([
+                            'message' => 'Request already accepted By Admin so you can not deny',
+                        ]);
+                    } else {
+                        return response()->json([
+                            'message' => 'Renting product request is already denied By Admin',
+                        ]);
+                    }
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Record Not Exist',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function showRequirementViacity(Request $request)
+    {
+        $city_id = $request->city_id;
+        try {
+            if ($city_id == null) {
+                $requirement = Requirement::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
+
+                $newarr = [];
+                foreach ($requirement as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+
+                    ## random ads
+                    $ads = Advertisment::all()->random(1);
+                    if (!empty($ads)) {
+                        $image = explode('|', $ads[0]->ads_image);
+                        shuffle($image);
+
+                        $ads[0]->ads_image = $image[0];
+                        $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                    }
+                    $new['randomimage'] = $ads[0]->ads_image;
+                    array_push($newarr, $new);
+                }
+                return response()->json([
+                    'message' => 'All requirement list',
+                    'data' => $newarr,
+                ]);
+            } else {
+                $city = City::where('id', $city_id)->first();
+                if (!empty($city)) {
+                    $requirement = Requirement::where('requirements.city_id', $city_id)->where('status', 1)
+                        ->select('requirements.*', 'users.name', 'cities.city_name')
+                        ->join('users', 'users.id', 'requirements.user_id')
+                        ->join('cities', 'cities.id', 'requirements.city_id')
+                        ->orderBy('requirements.id', 'desc')
+                        ->get();
+                    if (!empty($requirement)) {
+                        $newarr = [];
+                        foreach ($requirement as $key => $new) {
+                            $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                            $new['image'] = explode('|', $new['image']);
+
+                            ## random ads
+                            $ads = Advertisment::all()->random(1);
+                            if (!empty($ads)) {
+                                $image = explode('|', $ads[0]->ads_image);
+                                shuffle($image);
+
+                                $ads[0]->ads_image = $image[0];
+                                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                            }
+                            $new['randomimage'] = $ads[0]->ads_image;
+                            array_push($newarr, $new);
+                        }
+                        return response()->json([
+                            'message' => 'Requirement list on the city basis',
+                            'data' => $newarr,
+                        ]);
+                    } else {
+                        return response()->json([
+                            'error' => 'No data Found',
+                        ]);
+                    }
+                } else {
+                    return response()->json([
+                        'message' => 'City Not Exist',
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
