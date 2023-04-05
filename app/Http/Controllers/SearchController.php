@@ -22,6 +22,7 @@ class SearchController extends Controller
         }
         try {
             $searchTerm = $request->search;
+            // dd($searchTerm);
             $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
             $selectedTblArr = array_diff($tables, array("advertisments", "cities", "failed_jobs", "migrations", "model_has_permissions", "model_has_roles", "password_reset_tokens", "permissions", "personal_access_tokens", "roles", "role_has_permissions", "sales", "sale_product_lists", "sale_sub_categories", "users"));
             $tblarr = [];

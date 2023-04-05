@@ -59,7 +59,7 @@ class BirthdayController extends Controller
                         'title' => ['required', 'string'],
                         'description' => ['required', 'string'],
                         'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                        'image.*' => ['mimes:jpeg,png,jpg'],
                         'video_url' => ['nullable'],
                     ]);
 
@@ -146,7 +146,7 @@ class BirthdayController extends Controller
                         'description' => ['required', 'string'],
                         'city_id' => ['required', 'numeric'],
                         'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                        'image.*' => ['mimes:jpeg,png,jpg'],
                         'video_url' => ['nullable'],
                     ]);
 
@@ -220,7 +220,7 @@ class BirthdayController extends Controller
                     'description' => ['required', 'string'],
                     'city_id' => ['required', 'numeric'],
                     'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                    'image.*' => ['mimes:jpeg,png,jpg'],
                     'video_url' => ['nullable'],
                 ]);
 

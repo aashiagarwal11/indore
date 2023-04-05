@@ -58,7 +58,7 @@ class RequirementController extends Controller
                         'working_time'  => ['required'],
                         'comment'       => ['required'],
                         'image'         => ['required'],
-                        'image.*'       => ['mimes:jpeg,png,jpg,svg']
+                        'image.*'       => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -150,7 +150,7 @@ class RequirementController extends Controller
                         'working_time'   => ['required'],
                         'comment'        => ['required'],
                         'image'          => ['required'],
-                        'image.*'        => ['mimes:jpeg,png,jpg,svg']
+                        'image.*'        => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -255,7 +255,7 @@ class RequirementController extends Controller
                     'working_time'   => ['required'],
                     'comment'        => ['required'],
                     'image'          => ['required'],
-                    'image.*'        => ['mimes:jpeg,png,jpg,svg']
+                    'image.*'        => ['mimes:jpeg,png,jpg']
                 ]);
 
                 if ($validator->fails()) {

@@ -95,7 +95,7 @@ class SellSubCategoryProductController extends Controller
                             'property_location' => ['required', 'string', 'max:255'],
                             'price'             => ['required'],
                             'image'             => ['required'],
-                            'image.*'           => ['mimes:jpeg,png,jpg,svg'],
+                            'image.*'           => ['mimes:jpeg,png,jpg'],
                             'whatsapp_no'       => ['required', 'numeric', 'digits:10'],
                             'call_no'           => ['required'],
                         ]);
@@ -300,7 +300,7 @@ class SellSubCategoryProductController extends Controller
                                     'property_location' => ['required', 'string', 'max:255'],
                                     'price'             => ['required'],
                                     'image'             => ['required'],
-                                    'image.*'           => ['mimes:jpeg,png,jpg,svg'],
+                                    'image.*'           => ['mimes:jpeg,png,jpg'],
                                     'whatsapp_no'       => ['required', 'numeric', 'digits:10'],
                                     'call_no'           => ['required'],
                                 ]);
@@ -637,7 +637,7 @@ class SellSubCategoryProductController extends Controller
                                 'property_location' => ['required', 'string', 'max:255'],
                                 'price'             => ['required'],
                                 'image'             => ['required'],
-                                'image.*'           => ['mimes:jpeg,png,jpg,svg'],
+                                'image.*'           => ['mimes:jpeg,png,jpg'],
                                 'whatsapp_no'       => ['required', 'numeric', 'digits:10'],
                                 'call_no'           => ['required'],
                             ]);

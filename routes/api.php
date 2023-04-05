@@ -18,6 +18,7 @@ use App\Http\Controllers\Birthday\BirthdayController;
 use App\Http\Controllers\Resume\ResumeController;
 use App\Http\Controllers\Requirement\RequirementController;
 use App\Http\Controllers\Directory\DirectoryController;
+use App\Http\Controllers\Premium\PremiumAdsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,16 +66,20 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('resume', ResumeController::class);
     Route::apiResource('requirement', RequirementController::class);
     Route::apiResource('directory', DirectoryController::class);
+    Route::apiResource('premiumAds', PremiumAdsController::class);
     Route::controller(NewsController::class)->group(function () {
         Route::post('acceptNews', 'acceptNews');
         Route::post('denyNews', 'denyNews');
         Route::post('newsViaAdmin', 'newsViaAdmin');
         Route::get('shownewsViacity', 'shownewsViacity');
-        Route::get('premiumads', 'premiumads');
+        // Route::get('premiumads', 'premiumads');
         Route::get('showallnewsonadmin', 'showallnewsonadmin');
         Route::post('cityUpdate', 'cityUpdate'); // city update by admin for accept the news
         Route::post('cityUpdateAcceptStatus', 'cityUpdateAcceptStatus'); // city update by admin for accept the news
         Route::get('recentNews', 'recentNews'); ## recent news
+    });
+    Route::controller(PremiumAdsController::class)->group(function () {
+        Route::get('premiumads', 'premiumads');
     });
     Route::controller(SellSubCategoryController::class)->group(function () {
         Route::post('showSellSubCategoryViaSelltype', 'showSellSubCategoryViaSelltype');
@@ -139,7 +144,7 @@ Route::middleware('jwt.verify')->group(function () {
         Route::get('directoryListOfUser', 'directoryListOfUser');
         Route::post('acceptDirectory', 'acceptDirectory');
         Route::post('denyDirectory', 'denyDirectory');
-        // Route::get('showDirectoryViacity', 'showDirectoryViacity');
+        Route::get('showDirectoryViacity', 'showDirectoryViacity');
     });
 });
 

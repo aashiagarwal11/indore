@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Directory;
 use Illuminate\Support\Facades\DB;
+use App\Models\City;
+use App\Models\Advertisment;
 
 
 class DirectoryController extends Controller
@@ -52,7 +54,7 @@ class DirectoryController extends Controller
             if (!empty($id)) {
                 if ($role_id != 1) {
                     $validator = Validator::make($request->all(), [
-                        'biz_name'     => ['nullable', 'string'],
+                        'biz_name'     => ['required', 'string'],
                         'contact_per1' => ['nullable', 'string'],
                         'number1'      => ['nullable'],
                         'category'     => ['nullable', 'string'],
@@ -149,7 +151,8 @@ class DirectoryController extends Controller
                 $directory = Directory::where('id', $id)->first();
                 if (!empty($directory)) {
                     $validator = Validator::make($request->all(), [
-                        'biz_name'     => ['nullable', 'string'],
+                        'city_id'        => ['required', 'numeric'],
+                        'biz_name'     => ['required', 'string'],
                         'contact_per1' => ['nullable', 'string'],
                         'number1'      => ['nullable'],
                         'category'     => ['nullable', 'string'],
@@ -183,6 +186,7 @@ class DirectoryController extends Controller
 
                     $imp_image =  implode('|', $images);
 
+                    $data['city_id'] = $request->city_id;
                     $data['biz_name'] = $request->biz_name;
                     $data['contact_per1'] = $request->contact_per1;
                     $data['number1'] = $request->number1;
@@ -198,7 +202,11 @@ class DirectoryController extends Controller
                     $data['image'] = $imp_image;
                     $updatedata = $directory->update($data);
 
-                    $get = DB::table('directories')->where('id', $id)->get();
+                    // $get = DB::table('directories')->where('id', $id)->get();
+
+
+                    $get = DB::table('directories')->where('directories.id', $id)
+                        ->join('cities', 'directories.city_id', 'cities.id')->get();
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $get[0]->image = explode('|', $imp_image);
@@ -239,9 +247,10 @@ class DirectoryController extends Controller
         $role_id = auth()->user()->role_id;
         try {
             if (!empty($id)) {
-                if ($role_id != 1) {
+                if ($role_id == 1) {
                     $validator = Validator::make($request->all(), [
-                        'biz_name'     => ['nullable', 'string'],
+                        'city_id'      => ['required', 'numeric'],
+                        'biz_name'     => ['required', 'string'],
                         'contact_per1' => ['nullable', 'string'],
                         'number1'      => ['nullable'],
                         'category'     => ['nullable', 'string'],
@@ -276,32 +285,41 @@ class DirectoryController extends Controller
 
                     $imp_image =  implode('|', $images);
 
-                    $directory = Directory::create([
-                        'biz_name' => $request->biz_name,
-                        'contact_per1' => $request->contact_per1,
-                        'number1' => $request->number1,
-                        'category' => $request->category,
-                        'city' => $request->city,
-                        'state' => $request->state,
-                        'contact_per2' => $request->contact_per2,
-                        'contact_per3' => $request->contact_per3,
-                        'number2' => $request->number2,
-                        'number3' => $request->number3,
-                        'address' => $request->address,
-                        'detail' => $request->detail,
-                        'user_id' => $id,
-                        'image' => $imp_image,
-                        'status' => 1,
-                    ]);
-                    $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
-                    $exp = explode('|',  $imp_image);
+                    $city = City::where('id', $request->city_id)->first();
+                    if (!empty($city)) {
 
-                    $directory['image'] = $exp;
+                        $directory = Directory::create([
+                            'biz_name' => $request->biz_name,
+                            'city_id' => $request->city_id,
+                            'contact_per1' => $request->contact_per1,
+                            'number1' => $request->number1,
+                            'category' => $request->category,
+                            'city' => $request->city,
+                            'state' => $request->state,
+                            'contact_per2' => $request->contact_per2,
+                            'contact_per3' => $request->contact_per3,
+                            'number2' => $request->number2,
+                            'number3' => $request->number3,
+                            'address' => $request->address,
+                            'detail' => $request->detail,
+                            'user_id' => $id,
+                            'image' => $imp_image,
+                            'status' => 1,
+                        ]);
+                        $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                        $exp = explode('|',  $imp_image);
 
-                    return response()->json([
-                        'message' => 'Added Successfully By Admin',
-                        'data' => $directory,
-                    ]);
+                        $directory['image'] = $exp;
+
+                        return response()->json([
+                            'message' => 'Added Successfully By Admin',
+                            'data' => $directory,
+                        ]);
+                    } else {
+                        return response()->json([
+                            'error' => 'City not exist',
+                        ]);
+                    }
                 } else {
                     return response()->json([
                         'message' => 'Login as user',
@@ -318,7 +336,6 @@ class DirectoryController extends Controller
             ]);
         }
     }
-
 
     public function directoryListOfUser()
     {
@@ -427,6 +444,83 @@ class DirectoryController extends Controller
                 return response()->json([
                     'message' => 'Record Not Exist',
                 ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function showDirectoryViacity(Request $request)
+    {
+        $city_id = $request->city_id;
+        try {
+            if ($city_id == null) {
+                $directory = Directory::where('status', 1)->orderBy('id', 'desc')->get()->toArray();
+
+                $newarr = [];
+                foreach ($directory as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+
+                    ## random ads
+                    $ads = Advertisment::all()->random(1);
+                    if (!empty($ads)) {
+                        $image = explode('|', $ads[0]->ads_image);
+                        shuffle($image);
+
+                        $ads[0]->ads_image = $image[0];
+                        $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                    }
+                    $new['randomimage'] = $ads[0]->ads_image;
+                    array_push($newarr, $new);
+                }
+                return response()->json([
+                    'message' => 'All directory list',
+                    'data' => $newarr,
+                ]);
+            } else {
+                $city = City::where('id', $city_id)->first();
+                if (!empty($city)) {
+                    $directory = Directory::where('directories.city_id', $city_id)->where('directories.status', 1)
+                        ->select('directories.*', 'users.name', 'cities.city_name')
+                        ->join('users', 'users.id', 'directories.user_id')
+                        ->join('cities', 'cities.id', 'directories.city_id')
+                        ->orderBy('directories.id', 'desc')
+                        ->get();
+                    if (!empty($directory)) {
+                        $newarr = [];
+                        foreach ($directory as $key => $new) {
+                            $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                            $new['image'] = explode('|', $new['image']);
+
+                            ## random ads
+                            $ads = Advertisment::all()->random(1);
+                            if (!empty($ads)) {
+                                $image = explode('|', $ads[0]->ads_image);
+                                shuffle($image);
+
+                                $ads[0]->ads_image = $image[0];
+                                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+                            }
+                            $new['randomimage'] = $ads[0]->ads_image;
+                            array_push($newarr, $new);
+                        }
+                        return response()->json([
+                            'message' => 'Directory list on the city basis',
+                            'data' => $newarr,
+                        ]);
+                    } else {
+                        return response()->json([
+                            'error' => 'No data Found',
+                        ]);
+                    }
+                } else {
+                    return response()->json([
+                        'message' => 'City Not Exist',
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             return response()->json([
