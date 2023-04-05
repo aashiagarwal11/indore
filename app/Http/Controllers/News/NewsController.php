@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\City;
 use App\Models\User;
 use App\Models\Advertisment;
+use Image;
 
 
 class NewsController extends Controller
@@ -60,7 +61,7 @@ class NewsController extends Controller
                         'title' => ['required', 'string'],
                         'description' => ['required', 'string'],
                         'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg,svg']
+                        'image.*' => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -75,11 +76,22 @@ class NewsController extends Controller
                             $img_full_name = $imgname . '.' . $extension;
                             $upload_path = 'public/image/';
                             $img_url = $upload_path . $img_full_name;
+
+
+                            // ## insert watermark
+                            // $imgFile = Image::make($file->getRealPath());
+                            // $imgFile->text('Indore App', 10, 10, function ($font) {
+                            //     $font->size(35);
+                            //     $font->color('#FF0000');
+                            //     $font->align('bottom-right');
+                            //     // $font->valign('bottom-right');
+                            // })->save($img_url);
+
                             $file->move($upload_path, $img_full_name);
+
                             array_push($images, $img_url);
                         }
                     }
-
 
                     $imp_image =  implode('|', $images);
 
@@ -172,7 +184,7 @@ class NewsController extends Controller
                     'description' => ['required', 'string'],
                     'city_id' => ['required', 'numeric'],
                     'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg,svg']
+                    'image.*' => ['mimes:jpeg,png,jpg']
                     // 'video_url' => ['required'],
                 ]);
 
@@ -197,14 +209,30 @@ class NewsController extends Controller
 
                     $imp_image =  implode('|', $images);
 
+
+                    ## for audio
+
+                    if ($audio = $request->file('audio')) {
+                        $audioname = md5(rand('1000', '10000'));
+                        $extension = strtolower($audio->getClientOriginalExtension());
+                        $audio_full_name = $audioname . '.' . $extension;
+                        $upload_path = 'public/image/';
+                        $audio_url = $upload_path . $audio_full_name;
+                        $audio->move($upload_path, $audio_full_name);
+                        $imp_audio = str_replace("public", env('APP_URL') . "public", $audio_url);
+                    }
+
+
+
                     $data['title'] = $request->title;
                     $data['description'] = $request->description;
                     $data['city_id'] = $request->city_id;
                     $data['image'] = $imp_image;
                     $data['video_url'] = $request->video_url ?? null;
+                    $data['audio'] = $imp_audio ?? null;
                     $updatedata = $news->update($data);
 
-                    $get = DB::table('news')->where('news.id', $id)->select('news.id', 'news.title', 'news.description', 'news.image', 'news.video_url', 'cities.*')
+                    $get = DB::table('news')->where('news.id', $id)->select('news.id', 'news.title', 'news.description', 'news.image', 'news.video_url', 'news.audio', 'cities.*')
                         ->join('cities', 'news.city_id', 'cities.id')->get();
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
@@ -266,8 +294,10 @@ class NewsController extends Controller
                     'description' => ['required', 'string'],
                     'city_id' => ['required', 'numeric'],
                     'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                    'image.*' => ['mimes:jpeg,png,jpg'],
                     'video_url' => ['required'],
+                    'audio' => ['required'],
+                    'audio.*' => ['mimes:mpeg,mpga,mp3,wav,aac'],
                 ]);
 
                 if ($validator->fails()) {
@@ -276,8 +306,6 @@ class NewsController extends Controller
 
                 $city = City::where('id', $request->city_id)->first();
                 if (!empty($city)) {
-                    // $news = News::where('title', $request->title)->first();
-                    // if (empty($news)) {
                     $images = array();
                     if ($files = $request->file('image')) {
                         foreach ($files as $file) {
@@ -291,23 +319,42 @@ class NewsController extends Controller
                         }
                     }
                     $imp_image =  implode('|', $images);
+
+
+
+                    ## for audio
+                    if ($audio = $request->file('audio')) {
+                        $audioname = md5(rand('1000', '10000'));
+                        $extension = strtolower($audio->getClientOriginalExtension());
+                        $audio_full_name = $audioname . '.' . $extension;
+                        $upload_path = 'public/image/';
+                        $audio_url = $upload_path . $audio_full_name;
+                        $audio->move($upload_path, $audio_full_name);
+                    }
+
+
                     $news = News::create([
                         'title' => $request->title,
                         'description' => $request->description,
                         'ads_id' => $request->ads_id ?? null,
                         'image' => $imp_image,
                         'video_url' => $request->video_url,
+                        'audio' => $audio_url,
                         'user_id' => $id,
                         'city_id' => $request->city_id ?? null,
                         'status' => 1,
                     ]);
+
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+
+                    $imp_audio = str_replace("public", env('APP_URL') . "public", $audio_url);
                     $exp = explode('|', $imp_image);
                     $data['title'] = $request->title;
                     $data['description'] = $request->description;
                     $data['city_id'] = $request->city_id;
                     $data['image'] = $exp;
                     $data['video_url'] = $request->video_url;
+                    $data['audio'] = $imp_audio;
 
                     // $get = DB::table('news')
                     //     ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
@@ -318,11 +365,6 @@ class NewsController extends Controller
                         'message' => 'News Added Successfully By Admin',
                         'data' => $data,
                     ]);
-                    // } else {
-                    //     return response()->json([
-                    //         'message' => 'Duplicate Title Not Allowed',
-                    //     ]);
-                    // }
                 } else {
                     return response()->json([
                         'error' => 'City not exist',
@@ -374,7 +416,7 @@ class NewsController extends Controller
                 $city = City::where('id', $city_id)->first();
                 if (!empty($city)) {
                     $news = News::where('city_id', $city_id)->where('status', 1)
-                        ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.created_at', 'news.updated_at')
+                        ->select('news.id', 'news.title', 'users.name', 'cities.city_name', 'news.description', 'news.image', 'news.video_url', 'news.audio', 'news.created_at', 'news.updated_at')
                         ->join('users', 'users.id', 'news.user_id')
                         ->join('cities', 'cities.id', 'news.city_id')
                         ->orderBy('news.id', 'desc')
@@ -421,32 +463,32 @@ class NewsController extends Controller
         }
     }
 
-    public function premiumads()
-    {
-        ## random ads api
-        try {
-            $ads = Advertisment::all()->random(1);
-            if (!empty($ads)) {
-                $image = explode('|', $ads[0]->ads_image);
-                shuffle($image);
+    // public function premiumads()
+    // {
+    //     ## random ads api
+    //     try {
+    //         $ads = Advertisment::all()->random(1);
+    //         if (!empty($ads)) {
+    //             $image = explode('|', $ads[0]->ads_image);
+    //             shuffle($image);
 
-                $ads[0]->ads_image = $image[0];
-                $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
-                return response()->json([
-                    'message' => 'Ad',
-                    'data' => $ads,
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'No Ads Exist',
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
+    //             $ads[0]->ads_image = $image[0];
+    //             $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+    //             return response()->json([
+    //                 'message' => 'Ad',
+    //                 'data' => $ads,
+    //             ]);
+    //         } else {
+    //             return response()->json([
+    //                 'message' => 'No Ads Exist',
+    //             ]);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 
     public function showallnewsonadmin()
     {

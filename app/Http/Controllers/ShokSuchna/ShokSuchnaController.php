@@ -58,7 +58,7 @@ class ShokSuchnaController extends Controller
                         'title' => ['required', 'string'],
                         'description' => ['required', 'string'],
                         'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg,svg']
+                        'image.*' => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -142,7 +142,7 @@ class ShokSuchnaController extends Controller
                         'description' => ['required', 'string'],
                         'city_id' => ['required', 'numeric'],
                         'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg,svg']
+                        'image.*' => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -215,7 +215,7 @@ class ShokSuchnaController extends Controller
                     'description' => ['required', 'string'],
                     'city_id' => ['required', 'numeric'],
                     'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg,svg'],
+                    'image.*' => ['mimes:jpeg,png,jpg'],
                 ]);
 
                 if ($validator->fails()) {

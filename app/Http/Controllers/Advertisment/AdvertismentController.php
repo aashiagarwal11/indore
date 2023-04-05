@@ -18,9 +18,15 @@ class AdvertismentController extends Controller
         try {
             $advertisment =  Advertisment::orderBy('id', 'desc')->get()->toArray();
             if (!empty($advertisment)) {
+                $newarr = [];
+                foreach ($advertisment as $key => $new) {
+                    $new['ads_image'] = str_replace("public", env('APP_URL') . "public", $new['ads_image']);
+                    $new['ads_image'] = explode('|', $new['ads_image']);
+                    array_push($newarr, $new);
+                }
                 return response()->json([
                     'message' => 'All Ads List',
-                    'data' => $advertisment,
+                    'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
@@ -41,7 +47,7 @@ class AdvertismentController extends Controller
     {
         $validator =  Validator::make($request->all(), [
             'ads_image'             => ['required'],
-            'ads_image.*'           => ['mimes:jpeg,png,jpg,svg']
+            'ads_image.*'           => ['mimes:jpeg,png,jpg']
         ]);
 
         if ($validator->fails()) {
@@ -64,13 +70,14 @@ class AdvertismentController extends Controller
                 }
 
                 $imp_image =  implode('|', $images);
+
                 $media = Advertisment::create([
                     'ads_image' => $imp_image,
                     'created_at' => \Carbon\Carbon::now(),
                     'updated_at' => \Carbon\Carbon::now(),
                 ]);
-
-                $media['ads_image'] = explode('|', $media->ads_image);
+                $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                $media['ads_image'] = explode('|', $imp_image);
 
                 return response()->json([
                     'message' => 'Advertisment Added Successfully',
@@ -117,13 +124,14 @@ class AdvertismentController extends Controller
             if (!empty($advertisment)) {
                 $exdata = $advertisment->ads_image;
                 $advertisment['ads_image'] = explode('|', $exdata);
+                $advertisment['ads_image'] = str_replace("public", env('APP_URL') . "public", $advertisment['ads_image']);
                 return response()->json([
                     'message' => 'Advertisment',
                     'data' => $advertisment,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'Record '.$id .' not exist',
+                    'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
         } catch (\Exception $e) {
@@ -140,7 +148,7 @@ class AdvertismentController extends Controller
     {
         $validator =  Validator::make($request->all(), [
             'ads_image'             => ['required'],
-            'ads_image.*'           => ['mimes:jpeg,png,jpg,svg'],
+            'ads_image.*'           => ['mimes:jpeg,png,jpg'],
             'key'                   => ['required', 'numeric'],
         ]);
 
@@ -190,7 +198,7 @@ class AdvertismentController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'Record '.$id .' not exist',
+                    'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
         } catch (\Exception $e) {
@@ -245,7 +253,7 @@ class AdvertismentController extends Controller
                 }
             } else {
                 return response()->json([
-                    'message' => 'Record '.$id .' not exist',
+                    'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
         } catch (\Exception $e) {
