@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\City;
 use App\Models\User;
 use App\Models\Advertisment;
+use App\Models\Watermark;
 use Image;
 
 
@@ -31,12 +32,15 @@ class NewsController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'All News',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'error' => 'No News Found',
+                    'success' => true,
+                    'message' => 'No News Found',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -65,7 +69,10 @@ class NewsController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json([
+                            'success' => false,
+                            'message' => $validator->errors()
+                        ]);
                     }
 
                     $images = array();
@@ -77,17 +84,21 @@ class NewsController extends Controller
                             $upload_path = 'public/image/';
                             $img_url = $upload_path . $img_full_name;
 
+                            ## insert watermark
+                            $wimage = Watermark::first();
 
-                            // ## insert watermark
-                            // $imgFile = Image::make($file->getRealPath());
-                            // $imgFile->text('Indore App', 10, 10, function ($font) {
-                            //     $font->size(35);
-                            //     $font->color('#FF0000');
-                            //     $font->align('bottom-right');
-                            //     // $font->valign('bottom-right');
-                            // })->save($img_url);
+                            $waterMarkUrl = $wimage->image;
+                            if (!empty($waterMarkUrl)) {
+                                $imgFile = Image::make($file->getRealPath());
+                                $imgFile->insert($waterMarkUrl, 'bottom-right', 5, 5, function ($font) {
+                                    $font->width(10);
+                                    $font->hright(2);
+                                });
+                                $imgFile->save($img_url);
+                            }
 
-                            $file->move($upload_path, $img_full_name);
+
+                            // $file->move($upload_path, $img_full_name);
 
                             array_push($images, $img_url);
                         }
@@ -113,16 +124,19 @@ class NewsController extends Controller
                     $data['updated_at'] = $news->updated_at;
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'News Added Successfully',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as user',
                 ]);
             }
@@ -155,12 +169,15 @@ class NewsController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'News with particular Id',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'No Record Exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -189,7 +206,10 @@ class NewsController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => $validator->errors()
+                    ]);
                 }
 
                 $news = News::where('id', $id)->first();
@@ -239,16 +259,20 @@ class NewsController extends Controller
                     $get[0]->image = explode('|', $imp_image);
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'News Updated Successfully',
                         'data' => $get,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Record Not Exist',
+                        'data' => [],
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -269,10 +293,12 @@ class NewsController extends Controller
             if (!empty($delete)) {
                 $getdeleterec = $delete->delete();
                 return response()->json([
+                    'success' => true,
                     'message' => 'Record Deleted Successfully',
                 ]);
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -301,7 +327,7 @@ class NewsController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['success' => false, 'message' => $validator->errors()]);
                 }
 
                 $city = City::where('id', $request->city_id)->first();
@@ -362,16 +388,19 @@ class NewsController extends Controller
                     //     ->join('cities', 'news.city_id', 'cities.id')->get();
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'News Added Successfully By Admin',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
-                        'error' => 'City not exist',
+                        'success' => false,
+                        'message' => 'City not exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -409,6 +438,7 @@ class NewsController extends Controller
                 }
 
                 return response()->json([
+                    'success' => true,
                     'message' => 'All News List',
                     'data' => $newarr,
                 ]);
@@ -442,16 +472,20 @@ class NewsController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'success' => true,
                             'message' => 'All News List On The City Basis',
                             'data' => $news,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No News Found',
+                            'success' => true,
+                            'message' => 'No News Found',
+                            'data' => [],
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }
@@ -503,12 +537,15 @@ class NewsController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'All News',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'error' => 'No News Found',
+                    'success' => true,
+                    'message' => 'No News Found',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -532,8 +569,10 @@ class NewsController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['success' => false, 'message' => $validator->errors()]);
                 }
+
+
                 $eachnews = News::where('id', $newsid)->first();
                 if (!empty($eachnews)) {
                     $newscity = News::where('id', $newsid)->where('city_id', '!=', null)->first();
@@ -543,32 +582,31 @@ class NewsController extends Controller
                             $eachnews->status = 1;
                             $updateStatus = $eachnews->update();
                             return response()->json([
+                                'success' => true,
                                 'message' => 'Request is accepted By Admin',
                                 'data' => $eachnews,
                             ]);
-                        } else {
-                            if ($eachnews->status == 2) {
-                                return response()->json([
-                                    'message' => 'Request already denied By Admin so you can not accept',
-                                ]);
-                            } else {
-                                return response()->json([
-                                    'message' => 'Request is already accepted By Admin',
-                                ]);
-                            }
+                        } elseif ($eachnews->status == 2) {
+                            return response()->json([
+                                'success' => false,
+                                'message' => 'Request already denied By Admin so you can not accept',
+                            ]);
                         }
                     } else {
                         return response()->json([
+                            'success' => false,
                             'message' => 'Please add city first',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -592,7 +630,7 @@ class NewsController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['success' => false, 'message' => $validator->errors()]);
                 }
                 $eachnews = News::where('id', $newsid)->first();
                 if (!empty($eachnews)) {
@@ -600,27 +638,25 @@ class NewsController extends Controller
                         $eachnews->status = 2;
                         $updateStatus = $eachnews->update();
                         return response()->json([
+                            'success' => true,
                             'message' => 'Request denied By Admin',
                             'data' => $eachnews,
                         ]);
-                    } else {
-                        if ($eachnews->status == 1) {
-                            return response()->json([
-                                'message' => 'Request already accepted By Admin so you can not deny',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Renting product request is already denied By Admin',
-                            ]);
-                        }
+                    } elseif ($eachnews->status == 1) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Request already accepted By Admin so you can not deny',
+                        ]);
                     }
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -642,7 +678,7 @@ class NewsController extends Controller
                 $news_id = $request->news_id;
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['success' => false, 'message' => $validator->errors()]);
                 }
 
                 $news = News::where('id', $news_id)->first();
@@ -652,7 +688,7 @@ class NewsController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['success' => false, 'message' => $validator->errors()]);
                     }
                     $data['city_id'] = $request->city_id;
                     $updatedata = $news->update($data);
@@ -664,16 +700,19 @@ class NewsController extends Controller
                         ->join('cities', 'news.city_id', 'cities.id')->get();
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'City Updated Successfully In News',
                         'data' => $getcity,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -695,7 +734,7 @@ class NewsController extends Controller
                 $news_id = $request->news_id;
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['success' => false, 'message' => $validator->errors()]);
                 }
 
                 $news = News::where('id', $news_id)->first();
@@ -705,7 +744,7 @@ class NewsController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['success' => false, 'message' => $validator->errors()]);
                     }
                     $data['city_id'] = $request->city_id;
 
@@ -719,16 +758,19 @@ class NewsController extends Controller
                         ->join('cities', 'news.city_id', 'cities.id')->get();
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'City Updated Successfully In News',
                         'data' => $getcity,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -752,12 +794,15 @@ class NewsController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'All News',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'error' => 'No News Found',
+                    'success' => true,
+                    'message' => 'No News Found',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {

@@ -19,6 +19,7 @@ use App\Http\Controllers\Resume\ResumeController;
 use App\Http\Controllers\Requirement\RequirementController;
 use App\Http\Controllers\Directory\DirectoryController;
 use App\Http\Controllers\Premium\PremiumAdsController;
+use App\Http\Controllers\Watermark\WatermarkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,6 +146,10 @@ Route::middleware('jwt.verify')->group(function () {
         Route::post('acceptDirectory', 'acceptDirectory');
         Route::post('denyDirectory', 'denyDirectory');
         Route::get('showDirectoryViacity', 'showDirectoryViacity');
+    });
+    Route::controller(WatermarkController::class)->group(function () {
+        Route::post('addWatermark', 'addWatermark');
+        Route::get('showWatermark', 'showWatermark');
     });
 });
 

@@ -13,6 +13,7 @@ class SearchController extends Controller
 {
     public function searchWordFromWholeDatabase(Request $request)
     {
+        dd('search');   
         $validator = Validator::make($request->all(), [
             'search' => ['required'],
         ]);
@@ -22,47 +23,44 @@ class SearchController extends Controller
         }
         try {
             $searchTerm = $request->search;
-            // dd($searchTerm);
+
             $tables = DB::connection()->getDoctrineSchemaManager()->listTableNames();
-            $selectedTblArr = array_diff($tables, array("advertisments", "cities", "failed_jobs", "migrations", "model_has_permissions", "model_has_roles", "password_reset_tokens", "permissions", "personal_access_tokens", "roles", "role_has_permissions", "sales", "sale_product_lists", "sale_sub_categories", "users"));
+
+            $selectedTblArr = array_diff($tables, array("advertisments", "cities", "failed_jobs", "migrations", "model_has_permissions", "model_has_roles", "password_reset_tokens", "permissions", "personal_access_tokens", "roles", "role_has_permissions", "sales", "sale_product_lists", "sale_sub_categories", "users", 'premium_ads','watermarks'));
             $tblarr = [];
             foreach ($selectedTblArr as $key => $a) {
                 array_push($tblarr, $a);
             }
-            $results = collect(); // Initialize an empty collection to store the search results
+
+            $results = array();
             foreach ($tblarr as $table) {
                 $columns = DB::getSchemaBuilder()->getColumnListing($table);
                 foreach ($columns as $column) {
                     $query = DB::table($table)
                         ->where($column, 'LIKE', '%' . $searchTerm . '%')
-                        ->get();
-                    $results = $results->merge($query); // Add the query results to the collection of search results
+                        ->get()->toArray();
+                    $results = array_merge($results, $query);
                 }
             }
-            // dd($results);
-            $indoreCity = $results->where('status', 1)->where('city_id', 1);
 
-            $users = User::all();
-            // dump($users);
-            // $columnsuser = DB::getSchemaBuilder()->getColumnListing($users);
-            $columnsuser = Schema::getColumnListing($users);
-            dd($columnsuser);
-            foreach ($columns as $column) {
-                $query = DB::table($table)
-                    ->where($column, 'LIKE', '%' . $searchTerm . '%')
-                    ->get();
-                $resultsuser = $results->merge($query); // Add the query results to the collection of search results
-            }
-            $indoremerge = $indoreCity->merge($resultsuser);
-            dd($indoremerge);
-
+            $statusArr = [];
             if (!empty($results)) {
+                foreach ($results as $res) {
+                    if ($res->status == 1 && $res->city_id != null) {
+                        $res->image = str_replace("public", env('APP_URL') . "public",  $res->image);
+                        $res->image = explode('|', $res->image);
+
+                        array_push($statusArr, $res);
+                    }
+                }
                 return response()->json([
+                    'success' => 'true',
                     'message' => 'Result on the basis of search term',
-                    'data' => $indoreCity,
+                    'data' => $statusArr,
                 ]);
             } else {
                 return response()->json([
+                    'success' => 'false',
                     'message' => 'Empty',
                 ]);
             }
