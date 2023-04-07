@@ -19,12 +19,15 @@ class CityController extends Controller
             $getcity = City::orderBy('id', 'desc')->get();
             if (!empty($getcity)) {
                 return response()->json([
+                    'status' => true,
                     'message' => 'All City Details',
                     'data' => $getcity,
                 ]);
             } else {
                 return response()->json([
+                    'status' => true,
                     'message' => 'No City Found In The List',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -45,7 +48,10 @@ class CityController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
         }
         try {
             if ($sa_id == 1) {
@@ -55,16 +61,19 @@ class CityController extends Controller
                         'city_name' => $request->city_name,
                     ]);
                     return response()->json([
+                        'status' => true,
                         'message' => 'City Added Successfully',
                         'data' => $city,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Already Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Only admin can add city',
                 ]);
             }
@@ -101,22 +110,25 @@ class CityController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false,'message' => $validator->errors()]);
                     }
                     $updatecity = $city->update([
                         'city_name' => $request->city_name,
                     ]);
                     return response()->json([
+                        'status' => true,
                         'message' => 'City Updated Successfully',
                         'data' => $city,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Only admin can update city',
                 ]);
             }
@@ -137,11 +149,13 @@ class CityController extends Controller
             if (!empty($city)) {
                 $delcity = $city->delete();
                 return response()->json([
+                    'status' => true,
                     'message' => 'City Deleted Successfully',
                     'data' => $city,
                 ]);
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'City Not Exist',
                 ]);
             }

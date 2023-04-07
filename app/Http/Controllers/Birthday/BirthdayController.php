@@ -30,12 +30,15 @@ class BirthdayController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'List of today birthday',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'success' => true,
+                    'message' => 'Data not found',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -64,7 +67,7 @@ class BirthdayController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['success' => false, 'message' => $validator->errors()]);
                     }
 
                     $images = array();
@@ -102,16 +105,19 @@ class BirthdayController extends Controller
                     $data['updated_at'] = $news->updated_at;
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'Birthday Added Successfully',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as user',
                 ]);
             }
@@ -151,7 +157,7 @@ class BirthdayController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['success' => false, 'message' => $validator->errors()]);
                     }
                     $images = array();
                     if ($files = $request->file('image')) {
@@ -182,16 +188,19 @@ class BirthdayController extends Controller
                     $get[0]->image = explode('|', $imp_image);
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'Birthday Updated Successfully',
                         'data' => $get,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -225,7 +234,7 @@ class BirthdayController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['success' => false, 'message' => $validator->errors()]);
                 }
 
                 $city = City::where('id', $request->city_id)->first();
@@ -261,16 +270,19 @@ class BirthdayController extends Controller
                     $data['video_url'] = $request->video_url ?? null;
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'Added Successfully By Admin',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
-                        'error' => 'City not exist',
+                        'success' => false,
+                        'message' => 'City not exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -294,12 +306,15 @@ class BirthdayController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'List of today birthday',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'success' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -319,7 +334,7 @@ class BirthdayController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['success' => false, 'message' => $validator->errors()]);
             }
             $birthday = Birthday::where('id', $id)->first();
             if (!empty($birthday)) {
@@ -329,27 +344,25 @@ class BirthdayController extends Controller
                         $birthday->status = 1;
                         $updateStatus = $birthday->update();
                         return response()->json([
+                            'success' => true,
                             'message' => 'Request is accepted By Admin',
                             'data' => $birthday,
                         ]);
-                    } else {
-                        if ($birthday->status == 2) {
-                            return response()->json([
-                                'message' => 'Request already denied By Admin so you can not accept',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Request is already accepted By Admin',
-                            ]);
-                        }
+                    } elseif ($birthday->status == 2) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Request already denied By Admin so you can not accept',
+                        ]);
                     }
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Please add city first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -370,7 +383,7 @@ class BirthdayController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['success' => false, 'message' => $validator->errors()]);
             }
             $birthday = Birthday::where('id', $id)->first();
             if (!empty($birthday)) {
@@ -378,22 +391,25 @@ class BirthdayController extends Controller
                     $birthday->status = 2;
                     $updateStatus = $birthday->update();
                     return response()->json([
+                        'success' => true,
                         'message' => 'Request denied By Admin',
                         'data' => $birthday,
                     ]);
-                } else {
-                    if ($birthday->status == 1) {
-                        return response()->json([
-                            'message' => 'Request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Renting product request is already denied By Admin',
-                        ]);
-                    }
+                } elseif ($birthday->status == 1) {
+                    // if ($birthday->status == 1) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Request already accepted By Admin so you can not deny',
+                    ]);
+                    // } else {
+                    //     return response()->json([
+                    //         'message' => 'Renting product request is already denied By Admin',
+                    //     ]);
+                    // }
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -429,6 +445,7 @@ class BirthdayController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'All birthday list',
                     'data' => $newarr,
                 ]);
@@ -463,16 +480,20 @@ class BirthdayController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'success' => true,
                             'message' => 'Today Birthday list on the city basis',
                             'data' => $birthday,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No data Found',
+                            'success' => false,
+                            'message' => 'No data Found',
+                            'data' => [],
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }

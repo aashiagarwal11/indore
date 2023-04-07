@@ -25,12 +25,15 @@ class AdvertismentController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'success' => true,
                     'message' => 'All Ads List',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
+                    'success' => true,
                     'message' => 'No Ads Available',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -51,7 +54,10 @@ class AdvertismentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()
+            ]);
         }
         try {
             $chkads = Advertisment::where('ads_image', $request->ads_image)->first();
@@ -80,6 +86,7 @@ class AdvertismentController extends Controller
                 $media['ads_image'] = explode('|', $imp_image);
 
                 return response()->json([
+                    'success' => true,
                     'message' => 'Advertisment Added Successfully',
                     'data' => $media,
                 ]);
@@ -103,6 +110,7 @@ class AdvertismentController extends Controller
                 $verified['updated_at']  = \Carbon\Carbon::now();
                 $adsmedia = Advertisment::where('ads_image', $verified['ads_image'])->update($verified);
                 return response()->json([
+                    'success' => true,
                     'message' => 'Advertisment Updated Successfully',
                     'data' => $adsmedia,
                 ]);
@@ -126,11 +134,13 @@ class AdvertismentController extends Controller
                 $advertisment['ads_image'] = explode('|', $exdata);
                 $advertisment['ads_image'] = str_replace("public", env('APP_URL') . "public", $advertisment['ads_image']);
                 return response()->json([
+                    'success' => true,
                     'message' => 'Advertisment',
                     'data' => $advertisment,
                 ]);
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
@@ -153,7 +163,7 @@ class AdvertismentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['success' => false, 'message' => $validator->errors()]);
         }
         try {
             $user_ads = Advertisment::where('id', $id)->first();
@@ -188,16 +198,19 @@ class AdvertismentController extends Controller
                     $mediadata['created_at'] = $mediadata->created_at;
                     $mediadata['updated_at'] = $mediadata->updated_at;
                     return response()->json([
+                        'success' => true,
                         'message' => 'Ads Updated Successfully',
                         'data' => $mediadata,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Key Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
@@ -218,7 +231,7 @@ class AdvertismentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['success' => false, 'message' => $validator->errors()]);
         }
         try {
             $user_media_delete = Advertisment::where('id', $id)->first();
@@ -243,16 +256,19 @@ class AdvertismentController extends Controller
                     $deleted_media['ads_image'] = explode('|', $deleted_media->ads_image);
 
                     return response()->json([
+                        'success' => true,
                         'message' => 'Ads Deleted Successfully',
                         'data' => $deleted_media,
                     ]);
                 } else {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Key Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'success' => false,
                     'message' => 'Record ' . $id . ' not exist',
                 ]);
             }

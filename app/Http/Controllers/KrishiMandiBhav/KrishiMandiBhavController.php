@@ -28,12 +28,15 @@ class KrishiMandiBhavController extends Controller
                     array_push($KrishiMandiBhavarr, $Krishi);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List',
                     'data' => $KrishiMandiBhavarr,
                 ]);
             } else {
                 return response()->json([
-                    'error' => 'No data found',
+                    'status' => true,
+                    'message' => 'No data found',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -62,7 +65,7 @@ class KrishiMandiBhavController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                 }
 
                 $city = City::where('id', $request->city_id)->first();
@@ -97,16 +100,19 @@ class KrishiMandiBhavController extends Controller
                     $data['video_url'] = $request->video_url;
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Added Successfully',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
-                        'error' => 'City not exist',
+                        'status' => false,
+                        'message' => 'City not exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -136,12 +142,15 @@ class KrishiMandiBhavController extends Controller
                     array_push($newarr, $bhav);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'Detail with specific Id',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No Record Exist',
+                    'status' => true,
+                    'message' => 'No data Exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -171,7 +180,7 @@ class KrishiMandiBhavController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
                     $images = array();
                     if ($files = $request->file('image')) {
@@ -204,16 +213,19 @@ class KrishiMandiBhavController extends Controller
                     $specificbhav[0]->image = explode('|', $imp_image);
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Updated Successfully',
                         'data' => $specificbhav,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -234,10 +246,12 @@ class KrishiMandiBhavController extends Controller
             if (!empty($delete)) {
                 $getdeleterec = $delete->delete();
                 return response()->json([
+                    'status' => true,
                     'message' => 'Record Deleted Successfully',
                 ]);
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -276,6 +290,7 @@ class KrishiMandiBhavController extends Controller
                     array_push($newarr, $bhav);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List via city basis',
                     'data' => $newarr,
                 ]);
@@ -307,16 +322,20 @@ class KrishiMandiBhavController extends Controller
                             array_push($newarr, $bhav);
                         }
                         return response()->json([
+                            'status' => true,
                             'message' => 'List on the city basis',
                             'data' => $bhavproduct,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No data found',
+                            'status' => true,
+                            'message' => 'No data found',
+                            'data' => [],
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }

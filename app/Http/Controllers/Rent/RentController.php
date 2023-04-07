@@ -28,12 +28,15 @@ class RentController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of product want to give on rent',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -59,7 +62,7 @@ class RentController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $sell_id = $request->sale_id;
@@ -78,7 +81,7 @@ class RentController extends Controller
                             'call_no'           => ['required'],
                         ]);
                         if ($validator->fails()) {
-                            return response()->json(['message' => $validator->errors()]);
+                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                         }
 
                         if (!empty($chksellid->type)) {
@@ -110,7 +113,7 @@ class RentController extends Controller
                                     'color'             => ['required', 'string', 'max:20'],
                                 ]);
                                 if ($validator->fails()) {
-                                    return response()->json(['message' => $validator->errors()]);
+                                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                                 }
                                 $rent = Rent::create([
                                     'sale_id'           => $sell_id,
@@ -141,6 +144,7 @@ class RentController extends Controller
                                 $rent['image'] = $exp;
 
                                 return response()->json([
+                                    'status' => true,
                                     'message' => 'Rent Product added successfully for vehicle',
                                     'data' => $rent,
                                 ]);
@@ -153,7 +157,7 @@ class RentController extends Controller
                                     'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
                                 ]);
                                 if ($validator->fails()) {
-                                    return response()->json(['message' => $validator->errors()]);
+                                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                                 }
                                 $rent = Rent::create([
                                     'sale_id'           => $sell_id,
@@ -178,27 +182,32 @@ class RentController extends Controller
                                 $exp = explode('|',  $imp_image);
                                 $rent['image'] = $exp;
                                 return response()->json([
+                                    'status' => true,
                                     'message' => 'Rent Product added successfully for property',
                                     'data' => $rent,
                                 ]);
                             }
                         } else {
                             return response()->json([
+                                'status' => false,
                                 'message' => 'Rent type not exist',
                             ]);
                         }
                     } else {
                         return response()->json([
+                            'status' => false,
                             'message' => 'Rent id not exist',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Sorry!! Only user can add details, login as user first',
                 ]);
             }
@@ -229,11 +238,13 @@ class RentController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'Show the result of rent product with particular Id',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'No Record Exist',
                 ]);
             }
@@ -265,7 +276,7 @@ class RentController extends Controller
                             ]);
 
                             if ($validator->fails()) {
-                                return response()->json(['message' => $validator->errors()]);
+                                return response()->json(['status' => false, 'message' => $validator->errors()]);
                             }
 
                             $city = City::where('id', $request->city_id)->first();
@@ -284,7 +295,7 @@ class RentController extends Controller
                                     'call_no'           => ['required'],
                                 ]);
                                 if ($validator->fails()) {
-                                    return response()->json(['message' => $validator->errors()]);
+                                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                                 }
 
                                 if (!empty($chksellid->type)) {
@@ -317,7 +328,7 @@ class RentController extends Controller
                                             'color'             => ['required', 'string', 'max:20'],
                                         ]);
                                         if ($validator->fails()) {
-                                            return response()->json(['message' => $validator->errors()]);
+                                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                                         }
 
                                         $data['sale_id']           = $request->sale_id;
@@ -348,6 +359,7 @@ class RentController extends Controller
                                         $data['image'] = $exp;
 
                                         return response()->json([
+                                            'status' => true,
                                             'message' => 'Product updated successfully',
                                             'data' => $data,
                                         ]);
@@ -360,7 +372,7 @@ class RentController extends Controller
                                             'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
                                         ]);
                                         if ($validator->fails()) {
-                                            return response()->json(['message' => $validator->errors()]);
+                                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                                         }
                                         $data['sale_id']           = $request->sale_id;
                                         $data['sub_cat_id']        = $request->sub_cat_id;
@@ -387,37 +399,44 @@ class RentController extends Controller
                                         $data['image'] = $exp;
 
                                         return response()->json([
+                                            'status' => true,
                                             'message' => 'Product updated successfully',
                                             'data' => $data,
                                         ]);
                                     }
                                 } else {
                                     return response()->json([
+                                        'status' => false,
                                         'message' => 'No sell category exist',
                                     ]);
                                 }
                             } else {
                                 return response()->json([
-                                    'error' => 'City not exist',
+                                    'status' => false,
+                                    'message' => 'City not exist',
                                 ]);
                             }
                         } else {
                             return response()->json([
+                                'status' => false,
                                 'message' => 'Sell id not exist',
                             ]);
                         }
                     } else {
                         return response()->json([
+                            'status' => false,
                             'message' => 'Record not exist',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as admin first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Sorry!! Only admin can edit details, login as admin first',
                 ]);
             }
@@ -438,10 +457,12 @@ class RentController extends Controller
             if (!empty($delete)) {
                 $getdeleterec = $delete->delete();
                 return response()->json([
+                    'status' => true,
                     'message' => 'Record Deleted Successfully',
                 ]);
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -466,7 +487,7 @@ class RentController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $sell_id = $request->sale_id;
@@ -477,7 +498,7 @@ class RentController extends Controller
                         ]);
 
                         if ($validator->fails()) {
-                            return response()->json(['message' => $validator->errors()]);
+                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                         }
 
                         $city = City::where('id', $request->city_id)->first();
@@ -495,7 +516,7 @@ class RentController extends Controller
                                 'call_no'           => ['required'],
                             ]);
                             if ($validator->fails()) {
-                                return response()->json(['message' => $validator->errors()]);
+                                return response()->json(['status' => false, 'message' => $validator->errors()]);
                             }
 
                             if (!empty($chksellid->type)) {
@@ -527,7 +548,7 @@ class RentController extends Controller
                                         'color'             => ['required', 'string', 'max:20'],
                                     ]);
                                     if ($validator->fails()) {
-                                        return response()->json(['message' => $validator->errors()]);
+                                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                                     }
                                     $rent = Rent::create([
                                         'sale_id' => $sell_id,
@@ -558,6 +579,7 @@ class RentController extends Controller
                                     $rent['image'] = $exp;
 
                                     return response()->json([
+                                        'status' => true,
                                         'message' => 'Rent product added successfully for vehicle',
                                         'data' => $rent,
                                     ]);
@@ -570,7 +592,7 @@ class RentController extends Controller
                                         'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
                                     ]);
                                     if ($validator->fails()) {
-                                        return response()->json(['message' => $validator->errors()]);
+                                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                                     }
                                     $rent = Rent::create([
                                         'sale_id'           => $sell_id,
@@ -595,32 +617,38 @@ class RentController extends Controller
                                     $exp = explode('|',  $imp_image);
                                     $rent['image'] = $exp;
                                     return response()->json([
+                                        'status' => true,
                                         'message' => 'Rent product added successfully for property',
                                         'data' => $rent,
                                     ]);
                                 }
                             } else {
                                 return response()->json([
+                                    'status' => false,
                                     'message' => 'Rent type not exist',
                                 ]);
                             }
                         } else {
                             return response()->json([
-                                'error' => 'City not exist',
+                                'status' => false,
+                                'message' => 'City not exist',
                             ]);
                         }
                     } else {
                         return response()->json([
+                            'status' => false,
                             'message' => 'Rent id not exist',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as admin',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Sorry!! Only admin can add details, login as admin first',
                 ]);
             }
@@ -644,12 +672,15 @@ class RentController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of product want to give on rent',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -670,7 +701,7 @@ class RentController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $rent = Rent::where('id', $id)->first();
             if (!empty($rent)) {
@@ -680,27 +711,25 @@ class RentController extends Controller
                         $rent->status = 1;
                         $updateStatus = $rent->update();
                         return response()->json([
+                            'status' => true,
                             'message' => 'Rent product request is accepted By Admin',
                             'data' => $rent,
                         ]);
-                    } else {
-                        if ($rent->status == 2) {
-                            return response()->json([
-                                'message' => 'Renting product request already denied By Admin so you can not accept',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Request is already accepted By Admin',
-                            ]);
-                        }
+                    } elseif ($rent->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Renting product request already denied By Admin so you can not accept',
+                        ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Please add city first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -722,7 +751,7 @@ class RentController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $rent = Rent::where('id', $id)->first();
             if (!empty($rent)) {
@@ -730,22 +759,19 @@ class RentController extends Controller
                     $rent->status = 2;
                     $updateStatus = $rent->update();
                     return response()->json([
+                        'status' => true,
                         'message' => 'Renting product request denied By Admin',
                         'data' => $rent,
                     ]);
-                } else {
-                    if ($rent->status == 1) {
-                        return response()->json([
-                            'message' => 'Renting product request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Renting product request is already denied By Admin',
-                        ]);
-                    }
+                } elseif ($rent->status == 1) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Renting product request already accepted By Admin so you can not deny',
+                    ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -783,6 +809,7 @@ class RentController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All Renting product list',
                     'data' => $newarr,
                 ]);
@@ -815,16 +842,20 @@ class RentController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'status' => true,
                             'message' => 'Renting product list on the city basis',
                             'data' => $rentproduct,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No News Found',
+                            'status' => true,
+                            'message' => 'No data Found',
+                            'data' => [],
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }

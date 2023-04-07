@@ -28,12 +28,15 @@ class DirectoryController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -71,7 +74,7 @@ class DirectoryController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $images = array();
@@ -111,16 +114,19 @@ class DirectoryController extends Controller
                     $directory['image'] = $exp;
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Added Successfully',
                         'data' => $directory,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as user',
                 ]);
             }
@@ -169,7 +175,7 @@ class DirectoryController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
                     $images = array();
                     if ($files = $request->file('image')) {
@@ -212,16 +218,19 @@ class DirectoryController extends Controller
                     $get[0]->image = explode('|', $imp_image);
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Updated Successfully',
                         'data' => $get,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -267,7 +276,7 @@ class DirectoryController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $images = array();
@@ -312,21 +321,25 @@ class DirectoryController extends Controller
                         $directory['image'] = $exp;
 
                         return response()->json([
+                            'status' => true,
                             'message' => 'Added Successfully By Admin',
                             'data' => $directory,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'City not exist',
+                            'status' => false,
+                            'message' => 'City not exist',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as user',
                 ]);
             }
@@ -349,12 +362,16 @@ class DirectoryController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
+
                 ]);
             }
         } catch (\Exception $e) {
@@ -374,7 +391,7 @@ class DirectoryController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $directory = Directory::where('id', $id)->first();
             if (!empty($directory)) {
@@ -382,22 +399,19 @@ class DirectoryController extends Controller
                     $directory->status = 1;
                     $updateStatus = $directory->update();
                     return response()->json([
+                        'status' => true,
                         'message' => 'Request is accepted By Admin',
                         'data' => $directory,
                     ]);
-                } else {
-                    if ($directory->status == 2) {
-                        return response()->json([
-                            'message' => 'Request already denied By Admin so you can not accept',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Request is already accepted By Admin',
-                        ]);
-                    }
+                } elseif ($directory->status == 2) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Request already denied By Admin so you can not accept',
+                    ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -418,7 +432,7 @@ class DirectoryController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $directory = Directory::where('id', $id)->first();
             if (!empty($directory)) {
@@ -426,19 +440,15 @@ class DirectoryController extends Controller
                     $directory->status = 2;
                     $updateStatus = $directory->update();
                     return response()->json([
+                        'status' => true,
                         'message' => 'Request denied By Admin',
                         'data' => $directory,
                     ]);
-                } else {
-                    if ($directory->status == 1) {
-                        return response()->json([
-                            'message' => 'Request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Renting product request is already denied By Admin',
-                        ]);
-                    }
+                } elseif ($directory->status == 1) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Request already accepted By Admin so you can not deny',
+                    ]);
                 }
             } else {
                 return response()->json([
@@ -477,6 +487,7 @@ class DirectoryController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All directory list',
                     'data' => $newarr,
                 ]);
@@ -508,16 +519,21 @@ class DirectoryController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'status' => true,
                             'message' => 'Directory list on the city basis',
                             'data' => $newarr,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No data Found',
+                            'status' => true,
+                            'message' => 'No data Found',
+                            'data' => [],
+
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }
