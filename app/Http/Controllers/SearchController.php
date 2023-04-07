@@ -13,6 +13,7 @@ class SearchController extends Controller
 {
     public function searchWordFromWholeDatabase(Request $request)
     {
+        dd('search');
         $validator = Validator::make($request->all(), [
             'search' => ['required'],
         ]);

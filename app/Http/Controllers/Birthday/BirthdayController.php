@@ -27,6 +27,7 @@ class BirthdayController extends Controller
                 foreach ($birthday as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -59,11 +60,11 @@ class BirthdayController extends Controller
             if (!empty($id)) {
                 if ($role_id != 1) {
                     $validator = Validator::make($request->all(), [
-                        'title' => ['required', 'string'],
-                        'description' => ['required', 'string'],
-                        'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg'],
-                        'video_url' => ['nullable'],
+                        'title'       => ['required', 'string'],
+                        'description' => ['required'],
+                        'image'       => ['nullable'],
+                        'image.*'     => ['mimes:jpeg,png,jpg'],
+                        'video_url'   => ['nullable'],
                     ]);
 
                     if ($validator->fails()) {
@@ -86,7 +87,7 @@ class BirthdayController extends Controller
 
                     $imp_image =  implode('|', $images);
 
-                    $news = Birthday::create([
+                    $birthday = Birthday::create([
                         'title' => $request->title,
                         'description' => $request->description,
                         'user_id' => $id,
@@ -97,17 +98,12 @@ class BirthdayController extends Controller
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|',  $imp_image);
 
-                    $data['title'] = $news->title;
-                    $data['description'] = $news->description;
-                    $data['image'] = $exp;
-                    $data['video_url'] = $news->video_url;
-                    $data['created_at'] = $news->created_at;
-                    $data['updated_at'] = $news->updated_at;
+                    $birthday['image'] = ($exp[0] != "") ? $exp : [];
 
                     return response()->json([
                         'success' => true,
                         'message' => 'Birthday Added Successfully',
-                        'data' => $data,
+                        'data' => $birthday,
                     ]);
                 } else {
                     return response()->json([
@@ -148,12 +144,12 @@ class BirthdayController extends Controller
                 $birthday = Birthday::where('id', $id)->first();
                 if (!empty($birthday)) {
                     $validator = Validator::make($request->all(), [
-                        'title' => ['required', 'string'],
-                        'description' => ['required', 'string'],
-                        'city_id' => ['required', 'numeric'],
-                        'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg'],
-                        'video_url' => ['nullable'],
+                        'title'       => ['required', 'string'],
+                        'description' => ['required'],
+                        'city_id'     => ['required', 'numeric'],
+                        'image'       => ['nullable'],
+                        'image.*'     => ['mimes:jpeg,png,jpg'],
+                        'video_url'   => ['nullable'],
                     ]);
 
                     if ($validator->fails()) {
@@ -186,6 +182,7 @@ class BirthdayController extends Controller
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $get[0]->image = explode('|', $imp_image);
+                    $get[0]->image = ($get[0]->image[0] != "") ? $get[0]->image : [];
 
                     return response()->json([
                         'success' => true,
@@ -225,12 +222,12 @@ class BirthdayController extends Controller
         try {
             if ($id == 1) {
                 $validator = Validator::make($request->all(), [
-                    'title' => ['required', 'string'],
-                    'description' => ['required', 'string'],
-                    'city_id' => ['required', 'numeric'],
-                    'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg'],
-                    'video_url' => ['nullable'],
+                    'title'       => ['required', 'string'],
+                    'description' => ['required'],
+                    'city_id'     => ['required', 'numeric'],
+                    'image'       => ['nullable'],
+                    'image.*'     => ['mimes:jpeg,png,jpg'],
+                    'video_url'   => ['nullable'],
                 ]);
 
                 if ($validator->fails()) {
@@ -252,7 +249,8 @@ class BirthdayController extends Controller
                         }
                     }
                     $imp_image =  implode('|', $images);
-                    $news = Birthday::create([
+
+                    $birthday = Birthday::create([
                         'title' => $request->title,
                         'description' => $request->description,
                         'image' => $imp_image,
@@ -262,17 +260,14 @@ class BirthdayController extends Controller
                         'status' => 1,
                     ]);
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+
                     $exp = explode('|', $imp_image);
-                    $data['title'] = $request->title;
-                    $data['description'] = $request->description;
-                    $data['city_id'] = $request->city_id;
-                    $data['image'] = $exp;
-                    $data['video_url'] = $request->video_url ?? null;
+                    $birthday['image'] = ($exp[0] != "") ? $exp : [];
 
                     return response()->json([
                         'success' => true,
                         'message' => 'Added Successfully By Admin',
-                        'data' => $data,
+                        'data' => $birthday,
                     ]);
                 } else {
                     return response()->json([
@@ -303,6 +298,7 @@ class BirthdayController extends Controller
                 foreach ($birthday as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -346,12 +342,11 @@ class BirthdayController extends Controller
                         return response()->json([
                             'success' => true,
                             'message' => 'Request is accepted By Admin',
-                            'data' => $birthday,
                         ]);
-                    } elseif ($birthday->status == 2) {
+                    } elseif ($birthday->status == 1) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'Request already denied By Admin so you can not accept',
+                            'message' => 'Request already accepted By Admin so you can not accept again',
                         ]);
                     }
                 } else {
@@ -393,13 +388,12 @@ class BirthdayController extends Controller
                     return response()->json([
                         'success' => true,
                         'message' => 'Request denied By Admin',
-                        'data' => $birthday,
                     ]);
-                } elseif ($birthday->status == 1) {
+                } elseif ($birthday->status == 2) {
                     // if ($birthday->status == 1) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Request already accepted By Admin so you can not deny',
+                        'message' => 'Request already denied By Admin so you can not deny again',
                     ]);
                     // } else {
                     //     return response()->json([
@@ -430,6 +424,7 @@ class BirthdayController extends Controller
                 foreach ($birthday as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                     ## random ads
                     $ads = Advertisment::all()->random(1);
@@ -463,6 +458,8 @@ class BirthdayController extends Controller
                         foreach ($birthday as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+                            $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
 
                             ## random ads
