@@ -29,6 +29,8 @@ class NewsController extends Controller
                 foreach ($news as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
+                    $new['audio'] = str_replace("public", env('APP_URL') . "public", $new['audio']);
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -62,10 +64,10 @@ class NewsController extends Controller
             if (!empty($id)) {
                 if ($role_id != 1) {
                     $validator = Validator::make($request->all(), [
-                        'title' => ['required', 'string'],
-                        'description' => ['required', 'string'],
-                        'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg']
+                        'title'       => ['required', 'string'],
+                        'description' => ['required'],
+                        'image'       => ['nullable'],
+                        'image.*'     => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -85,20 +87,20 @@ class NewsController extends Controller
                             $img_url = $upload_path . $img_full_name;
 
                             ## insert watermark
-                            $wimage = Watermark::first();
+                            // $wimage = Watermark::first();
 
-                            $waterMarkUrl = $wimage->image;
-                            if (!empty($waterMarkUrl)) {
-                                $imgFile = Image::make($file->getRealPath());
-                                $imgFile->insert($waterMarkUrl, 'bottom-right', 5, 5, function ($font) {
-                                    $font->width(10);
-                                    $font->hright(2);
-                                });
-                                $imgFile->save($img_url);
-                            }
+                            // $waterMarkUrl = $wimage->image;
+                            // if (!empty($waterMarkUrl)) {
+                            //     $imgFile = Image::make($file->getRealPath());
+                            //     $imgFile->insert($waterMarkUrl, 'bottom-right', 5, 5, function ($font) {
+                            //         $font->width(10);
+                            //         $font->hright(2);
+                            //     });
+                            //     $imgFile->save($img_url);
+                            // }
 
 
-                            // $file->move($upload_path, $img_full_name);
+                            $file->move($upload_path, $img_full_name);
 
                             array_push($images, $img_url);
                         }
@@ -109,7 +111,6 @@ class NewsController extends Controller
                     $news = News::create([
                         'title' => $request->title,
                         'description' => $request->description,
-                        'ads_id' => $request->ads_id ?? null,
                         'user_id' => $id,
                         'city_id' => $request->city_id ?? null,
                         'image' => $imp_image,
@@ -117,16 +118,12 @@ class NewsController extends Controller
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|',  $imp_image);
 
-                    $data['title'] = $news->title;
-                    $data['description'] = $news->description;
-                    $data['image'] = $exp;
-                    $data['created_at'] = $news->created_at;
-                    $data['updated_at'] = $news->updated_at;
+                    $news['image'] = ($exp[0] != "") ? $exp : [];
 
                     return response()->json([
                         'success' => true,
                         'message' => 'News Added Successfully',
-                        'data' => $data,
+                        'data' => $news,
                     ]);
                 } else {
                     return response()->json([
@@ -197,12 +194,15 @@ class NewsController extends Controller
         try {
             if ($auth_id == 1) {
                 $validator = Validator::make($request->all(), [
-                    'title' => ['required', 'string'],
-                    'description' => ['required', 'string'],
-                    'city_id' => ['required', 'numeric'],
-                    'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg']
-                    // 'video_url' => ['required'],
+                    'title'       => ['required', 'string'],
+                    'description' => ['required'],
+                    'city_id'     => ['required', 'numeric'],
+                    'image'       => ['nullable'],
+                    'image.*'     => ['mimes:jpeg,png,jpg'],
+                    'video_url'   => ['nullable'],
+                    'audio'       => ['nullable'],
+                    'audio.*'     => ['mimes:mpeg,mpga,mp3,wav,aac'],
+
                 ]);
 
                 if ($validator->fails()) {
@@ -243,6 +243,8 @@ class NewsController extends Controller
                     }
 
 
+                    // dd($imp_image);
+
 
                     $data['title'] = $request->title;
                     $data['description'] = $request->description;
@@ -257,6 +259,7 @@ class NewsController extends Controller
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $get[0]->image = explode('|', $imp_image);
+                    $get[0]->image = ($get[0]->image[0] != "") ? $get[0]->image : [];
 
                     return response()->json([
                         'success' => true,
@@ -316,14 +319,14 @@ class NewsController extends Controller
         try {
             if ($id == 1) {
                 $validator = Validator::make($request->all(), [
-                    'title' => ['required', 'string'],
-                    'description' => ['required', 'string'],
-                    'city_id' => ['required', 'numeric'],
-                    'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg'],
-                    'video_url' => ['required'],
-                    'audio' => ['required'],
-                    'audio.*' => ['mimes:mpeg,mpga,mp3,wav,aac'],
+                    'title'       => ['required', 'string'],
+                    'description' => ['required'],
+                    'city_id'     => ['required', 'numeric'],
+                    'image'       => ['nullable'],
+                    'image.*'     => ['mimes:jpeg,png,jpg'],
+                    'video_url'   => ['nullable'],
+                    'audio'       => ['nullable'],
+                    'audio.*'     => ['mimes:mpeg,mpga,mp3,wav,aac'],
                 ]);
 
                 if ($validator->fails()) {
@@ -356,41 +359,37 @@ class NewsController extends Controller
                         $upload_path = 'public/image/';
                         $audio_url = $upload_path . $audio_full_name;
                         $audio->move($upload_path, $audio_full_name);
+                    } else {
+
+                        $audio_url = null;
                     }
 
 
                     $news = News::create([
                         'title' => $request->title,
                         'description' => $request->description,
-                        'ads_id' => $request->ads_id ?? null,
                         'image' => $imp_image,
-                        'video_url' => $request->video_url,
-                        'audio' => $audio_url,
+                        'video_url' => $request->video_url ?? null,
+                        'audio' => ($audio_url != null) ? $audio_url : null,
                         'user_id' => $id,
-                        'city_id' => $request->city_id ?? null,
+                        'city_id' => $request->city_id,
                         'status' => 1,
                     ]);
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
 
                     $imp_audio = str_replace("public", env('APP_URL') . "public", $audio_url);
+                    // dd($imp_audio);
                     $exp = explode('|', $imp_image);
-                    $data['title'] = $request->title;
-                    $data['description'] = $request->description;
-                    $data['city_id'] = $request->city_id;
-                    $data['image'] = $exp;
-                    $data['video_url'] = $request->video_url;
-                    $data['audio'] = $imp_audio;
 
-                    // $get = DB::table('news')
-                    //     ->select('news.title', 'news.description', 'news.image', 'news.video_url', 'cities.city_name', 'news.created_at', 'news.updated_at')
-                    //     ->where('title', $request->title)
-                    //     ->join('cities', 'news.city_id', 'cities.id')->get();
+
+                    $news['image'] = ($exp[0] != "") ? $exp : [];
+                    $news['audio'] = $imp_audio;
 
                     return response()->json([
                         'success' => true,
                         'message' => 'News Added Successfully By Admin',
-                        'data' => $data,
+                        'data' => $news,
                     ]);
                 } else {
                     return response()->json([
@@ -421,6 +420,8 @@ class NewsController extends Controller
                 foreach ($news as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
+                    $new['audio'] = str_replace("public", env('APP_URL') . "public", $new['audio']);
 
 
                     ## random ads
@@ -456,6 +457,8 @@ class NewsController extends Controller
                         foreach ($news as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+                            $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
+                            $new['audio'] = str_replace("public", env('APP_URL') . "public", $new['audio']);
 
                             ## random ads
                             $ads = Advertisment::all()->random(1);
@@ -497,43 +500,18 @@ class NewsController extends Controller
         }
     }
 
-    // public function premiumads()
-    // {
-    //     ## random ads api
-    //     try {
-    //         $ads = Advertisment::all()->random(1);
-    //         if (!empty($ads)) {
-    //             $image = explode('|', $ads[0]->ads_image);
-    //             shuffle($image);
-
-    //             $ads[0]->ads_image = $image[0];
-    //             $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
-    //             return response()->json([
-    //                 'message' => 'Ad',
-    //                 'data' => $ads,
-    //             ]);
-    //         } else {
-    //             return response()->json([
-    //                 'message' => 'No Ads Exist',
-    //             ]);
-    //         }
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => $e->getMessage(),
-    //         ]);
-    //     }
-    // }
-
     public function showallnewsonadmin()
     {
         ## showing the news  on admin panel 
         try {
-            $news = News::get()->toArray();
+            $news = News::orderBy('id', 'desc')->get()->toArray();
             if (!empty($news)) {
                 $newarr = [];
                 foreach ($news as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
+                    $new['audio'] = str_replace("public", env('APP_URL') . "public", $new['audio']);
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -584,12 +562,11 @@ class NewsController extends Controller
                             return response()->json([
                                 'success' => true,
                                 'message' => 'Request is accepted By Admin',
-                                'data' => $eachnews,
                             ]);
-                        } elseif ($eachnews->status == 2) {
+                        } elseif ($eachnews->status == 1) {
                             return response()->json([
                                 'success' => false,
-                                'message' => 'Request already denied By Admin so you can not accept',
+                                'message' => 'Request already accepted By Admin so you can not accept again',
                             ]);
                         }
                     } else {
@@ -640,12 +617,11 @@ class NewsController extends Controller
                         return response()->json([
                             'success' => true,
                             'message' => 'Request denied By Admin',
-                            'data' => $eachnews,
                         ]);
-                    } elseif ($eachnews->status == 1) {
+                    } elseif ($eachnews->status == 2) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'Request already accepted By Admin so you can not deny',
+                            'message' => 'Request already denied By Admin so you can not deny again',
                         ]);
                     }
                 } else {
@@ -666,6 +642,68 @@ class NewsController extends Controller
             ]);
         }
     }
+
+    public function recentNews()
+    {
+        ## Recent news
+        try {
+            $news = News::where('status', 1)->where('city_id', '!=', null)->orderBy('id', 'desc')->limit(5)->get()->toArray();
+            if (!empty($news)) {
+                $newarr = [];
+                foreach ($news as $key => $new) {
+                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
+                    $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
+                    $new['audio'] = str_replace("public", env('APP_URL') . "public", $new['audio']);
+                    array_push($newarr, $new);
+                }
+                return response()->json([
+                    'success' => true,
+                    'message' => 'All News',
+                    'data' => $newarr,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No News Found',
+                    'data' => [],
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // public function premiumads()
+    // {
+    //     ## random ads api
+    //     try {
+    //         $ads = Advertisment::all()->random(1);
+    //         if (!empty($ads)) {
+    //             $image = explode('|', $ads[0]->ads_image);
+    //             shuffle($image);
+
+    //             $ads[0]->ads_image = $image[0];
+    //             $ads[0]->ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->ads_image);
+    //             return response()->json([
+    //                 'message' => 'Ad',
+    //                 'data' => $ads,
+    //             ]);
+    //         } else {
+    //             return response()->json([
+    //                 'message' => 'No Ads Exist',
+    //             ]);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
+
+
 
     public function cityUpdate(Request $request)
     {
@@ -772,37 +810,6 @@ class NewsController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Login as admin first',
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function recentNews()
-    {
-        ## Recent news
-        try {
-            $news = News::where('status', 1)->where('city_id', '!=', null)->orderBy('id', 'desc')->limit(5)->get()->toArray();
-            if (!empty($news)) {
-                $newarr = [];
-                foreach ($news as $key => $new) {
-                    $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
-                    $new['image'] = explode('|', $new['image']);
-                    array_push($newarr, $new);
-                }
-                return response()->json([
-                    'success' => true,
-                    'message' => 'All News',
-                    'data' => $newarr,
-                ]);
-            } else {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'No News Found',
-                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
