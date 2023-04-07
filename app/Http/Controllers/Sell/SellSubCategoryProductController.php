@@ -31,12 +31,15 @@ class SellSubCategoryProductController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of product want to sell',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -81,7 +84,7 @@ class SellSubCategoryProductController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $sell_id = $request->sale_id;
@@ -100,7 +103,7 @@ class SellSubCategoryProductController extends Controller
                             'call_no'           => ['required'],
                         ]);
                         if ($validator->fails()) {
-                            return response()->json(['message' => $validator->errors()]);
+                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                         }
 
                         if (!empty($chksellid->type)) {
@@ -132,7 +135,7 @@ class SellSubCategoryProductController extends Controller
                                     'color'             => ['required', 'string', 'max:20'],
                                 ]);
                                 if ($validator->fails()) {
-                                    return response()->json(['message' => $validator->errors()]);
+                                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                                 }
                                 $sellproduct = SaleSubCategoryProduct::create([
                                     'sale_id'           => $sell_id,
@@ -163,7 +166,8 @@ class SellSubCategoryProductController extends Controller
                                 $sellproduct['image'] = $exp;
 
                                 return response()->json([
-                                    'message' => 'Product added successfully in sell list',
+                                    'status' => true,
+                                    'message' => 'Product added successfully',
                                     'data' => $sellproduct,
                                 ]);
                             } elseif ($chksellid->type == 'property') {
@@ -175,7 +179,7 @@ class SellSubCategoryProductController extends Controller
                                     'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
                                 ]);
                                 if ($validator->fails()) {
-                                    return response()->json(['message' => $validator->errors()]);
+                                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                                 }
                                 $sellproduct = SaleSubCategoryProduct::create([
                                     'sale_id'           => $sell_id,
@@ -200,27 +204,32 @@ class SellSubCategoryProductController extends Controller
                                 $exp = explode('|',  $imp_image);
                                 $sellproduct['image'] = $exp;
                                 return response()->json([
+                                    'status' => true,
                                     'message' => 'Product for property added successfully',
                                     'data' => $sellproduct,
                                 ]);
                             }
                         } else {
                             return response()->json([
+                                'status' => false,
                                 'message' => 'No sell type exist',
                             ]);
                         }
                     } else {
                         return response()->json([
+                            'status' => false,
                             'message' => 'Sell id not exist',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Sorry!! Only user can add details, login as user first',
                 ]);
             }
@@ -251,11 +260,13 @@ class SellSubCategoryProductController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'Selling Product with particular Id',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'No Record Exist',
                 ]);
             }
@@ -286,7 +297,7 @@ class SellSubCategoryProductController extends Controller
                             ]);
 
                             if ($validator->fails()) {
-                                return response()->json(['message' => $validator->errors()]);
+                                return response()->json(['status' => false, 'message' => $validator->errors()]);
                             }
 
                             $city = City::where('id', $request->city_id)->first();
@@ -305,7 +316,7 @@ class SellSubCategoryProductController extends Controller
                                     'call_no'           => ['required'],
                                 ]);
                                 if ($validator->fails()) {
-                                    return response()->json(['message' => $validator->errors()]);
+                                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                                 }
 
                                 if (!empty($chksellid->type)) {
@@ -338,7 +349,7 @@ class SellSubCategoryProductController extends Controller
                                             'color'             => ['required', 'string', 'max:20'],
                                         ]);
                                         if ($validator->fails()) {
-                                            return response()->json(['message' => $validator->errors()]);
+                                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                                         }
 
                                         // $data['sale_id']           = $request->sale_id;
@@ -369,6 +380,7 @@ class SellSubCategoryProductController extends Controller
                                         $data['image'] = $exp;
 
                                         return response()->json([
+                                            'status' => true,
                                             'message' => 'Product updated successfully',
                                             'data' => $data,
                                         ]);
@@ -381,7 +393,7 @@ class SellSubCategoryProductController extends Controller
                                             'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
                                         ]);
                                         if ($validator->fails()) {
-                                            return response()->json(['message' => $validator->errors()]);
+                                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                                         }
                                         // $data['sale_id']           = $request->sale_id;
                                         $data['sub_cat_id']        = $request->sub_cat_id;
@@ -408,37 +420,44 @@ class SellSubCategoryProductController extends Controller
                                         $data['image'] = $exp;
 
                                         return response()->json([
+                                            'status' => true,
                                             'message' => 'Product updated successfully',
                                             'data' => $data,
                                         ]);
                                     }
                                 } else {
                                     return response()->json([
-                                        'message' => 'No sell category exist',
+                                        'status' => false,
+                                        'message' => 'No category exist',
                                     ]);
                                 }
                             } else {
                                 return response()->json([
-                                    'error' => 'City not exist',
+                                    'status' => false,
+                                    'message' => 'City not exist',
                                 ]);
                             }
                         } else {
                             return response()->json([
+                                'status' => false,
                                 'message' => 'Sell id not exist',
                             ]);
                         }
                     } else {
                         return response()->json([
+                            'status' => false,
                             'message' => 'Record not exist',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as admin first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Sorry!! Only admin can edit details, login as admin first',
                 ]);
             }
@@ -459,10 +478,12 @@ class SellSubCategoryProductController extends Controller
             if (!empty($delete)) {
                 $getdeleterec = $delete->delete();
                 return response()->json([
+                    'status' => true,
                     'message' => 'Record Deleted Successfully',
                 ]);
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -486,12 +507,15 @@ class SellSubCategoryProductController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of product want to sell',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -513,7 +537,7 @@ class SellSubCategoryProductController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
             if (!empty($eachnews)) {
@@ -523,27 +547,25 @@ class SellSubCategoryProductController extends Controller
                         $eachnews->status = 1;
                         $updateStatus = $eachnews->update();
                         return response()->json([
+                            'status' => true,
                             'message' => 'Selling product request accepted By Admin',
                             'data' => $eachnews,
                         ]);
-                    } else {
-                        if ($eachnews->status == 2) {
-                            return response()->json([
-                                'message' => 'Selling product request already denied By Admin so you can not accept',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Request is already accepted By Admin',
-                            ]);
-                        }
+                    } elseif ($eachnews->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Selling product request already denied By Admin so you can not accept',
+                        ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Please add city first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -566,7 +588,7 @@ class SellSubCategoryProductController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
             if (!empty($eachnews)) {
@@ -574,22 +596,19 @@ class SellSubCategoryProductController extends Controller
                     $eachnews->status = 2;
                     $updateStatus = $eachnews->update();
                     return response()->json([
+                        'status' => true,
                         'message' => 'Selling product request denied By Admin',
                         'data' => $eachnews,
                     ]);
-                } else {
-                    if ($eachnews->status == 1) {
-                        return response()->json([
-                            'message' => 'Renting product request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Renting product request is already denied By Admin',
-                        ]);
-                    }
+                } elseif ($eachnews->status == 1) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Renting product request already accepted By Admin so you can not deny',
+                    ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -613,7 +632,7 @@ class SellSubCategoryProductController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $sell_id = $request->sale_id;
@@ -624,7 +643,7 @@ class SellSubCategoryProductController extends Controller
                         ]);
 
                         if ($validator->fails()) {
-                            return response()->json(['message' => $validator->errors()]);
+                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                         }
 
                         $city = City::where('id', $request->city_id)->first();
@@ -642,7 +661,7 @@ class SellSubCategoryProductController extends Controller
                                 'call_no'           => ['required'],
                             ]);
                             if ($validator->fails()) {
-                                return response()->json(['message' => $validator->errors()]);
+                                return response()->json(['status' => false, 'message' => $validator->errors()]);
                             }
 
                             if (!empty($chksellid->type)) {
@@ -674,7 +693,7 @@ class SellSubCategoryProductController extends Controller
                                         'color'             => ['required', 'string', 'max:20'],
                                     ]);
                                     if ($validator->fails()) {
-                                        return response()->json(['message' => $validator->errors()]);
+                                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                                     }
                                     $sellproduct = SaleSubCategoryProduct::create([
                                         'sale_id' => $sell_id,
@@ -705,6 +724,7 @@ class SellSubCategoryProductController extends Controller
                                     $sellproduct['image'] = $exp;
 
                                     return response()->json([
+                                        'status' => true,
                                         'message' => 'Product added successfully in sell list',
                                         'data' => $sellproduct,
                                     ]);
@@ -717,7 +737,7 @@ class SellSubCategoryProductController extends Controller
                                         'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
                                     ]);
                                     if ($validator->fails()) {
-                                        return response()->json(['message' => $validator->errors()]);
+                                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                                     }
                                     $sellproduct = SaleSubCategoryProduct::create([
                                         'sale_id' => $sell_id,
@@ -742,32 +762,38 @@ class SellSubCategoryProductController extends Controller
                                     $exp = explode('|',  $imp_image);
                                     $sellproduct['image'] = $exp;
                                     return response()->json([
+                                        'status' => true,
                                         'message' => 'Product added successfully in sell list',
                                         'data' => $sellproduct,
                                     ]);
                                 }
                             } else {
                                 return response()->json([
+                                    'status' => false,
                                     'message' => 'No sell type exist',
                                 ]);
                             }
                         } else {
                             return response()->json([
-                                'error' => 'City not exist',
+                                'status' => false,
+                                'message' => 'City not exist',
                             ]);
                         }
                     } else {
                         return response()->json([
+                            'status' => false,
                             'message' => 'Sell id not exist',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as admin',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Sorry!! Only admin can add details, login as admin first',
                 ]);
             }
@@ -786,7 +812,7 @@ class SellSubCategoryProductController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['status' => false, 'message' => $validator->errors()]);
         }
         $city_id = $request->city_id;
         try {
@@ -811,6 +837,7 @@ class SellSubCategoryProductController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All Selling product list',
                     'data' => $newarr,
                 ]);
@@ -843,16 +870,19 @@ class SellSubCategoryProductController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'status' => true,
                             'message' => 'All Selling product list on the city basis',
                             'data' => $sellproduct,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No News Found',
+                            'status' => false,
+                            'message' => 'No News Found',
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }

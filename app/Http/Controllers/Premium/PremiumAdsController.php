@@ -25,12 +25,15 @@ class PremiumAdsController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All Premium Ads List',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
+                    'status' => true,
                     'message' => 'No Premium Ads Available',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -51,7 +54,7 @@ class PremiumAdsController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['status' => false, 'message' => $validator->errors()]);
         }
         try {
             $chkads = PremiumAds::where('premium_ads_image', $request->premium_ads_image)->first();
@@ -79,6 +82,7 @@ class PremiumAdsController extends Controller
                 $media['premium_ads_image'] = explode('|', $imp_image);
 
                 return response()->json([
+                    'status' => true,
                     'message' => 'Premium Advertisment Added Successfully',
                     'data' => $media,
                 ]);
@@ -102,6 +106,7 @@ class PremiumAdsController extends Controller
                 $verified['updated_at']  = \Carbon\Carbon::now();
                 $adsmedia = premiumAds::where('premium_ads_image', $verified['premium_ads_image'])->update($verified);
                 return response()->json([
+                    'status' => true,
                     'message' => 'Premium Advertisment Updated Successfully',
                     'data' => $adsmedia,
                 ]);
@@ -125,11 +130,13 @@ class PremiumAdsController extends Controller
                 $premiumAds['premium_ads_image'] = explode('|', $exdata);
                 $premiumAds['premium_ads_image'] = str_replace("public", env('APP_URL') . "public", $premiumAds['premium_ads_image']);
                 return response()->json([
+                    'status' => true,
                     'message' => 'Premium Ads',
                     'data' => $premiumAds,
                 ]);
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
@@ -152,7 +159,7 @@ class PremiumAdsController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['status' => false, 'message' => $validator->errors()]);
         }
         try {
             $user_ads = PremiumAds::where('id', $id)->first();
@@ -184,16 +191,19 @@ class PremiumAdsController extends Controller
                     $mediadata['created_at'] = $mediadata->created_at;
                     $mediadata['updated_at'] = $mediadata->updated_at;
                     return response()->json([
+                        'status' => true,
                         'message' => 'Premium Ads Updated Successfully',
                         'data' => $mediadata,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Key Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
@@ -214,7 +224,7 @@ class PremiumAdsController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['status' => false, 'message' => $validator->errors()]);
         }
         try {
             $user_media_delete = PremiumAds::where('id', $id)->first();
@@ -239,16 +249,19 @@ class PremiumAdsController extends Controller
                     $deleted_media['premium_ads_image'] = explode('|', $deleted_media->premium_ads_image);
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Premium Ads Deleted Successfully',
                         'data' => $deleted_media,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Key Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record ' . $id . ' not exist',
                 ]);
             }
@@ -271,12 +284,15 @@ class PremiumAdsController extends Controller
                 $ads[0]->premium_ads_image = $image[0];
                 $ads[0]->premium_ads_image = str_replace("public", env('APP_URL') . "public", $ads[0]->premium_ads_image);
                 return response()->json([
+                    'status' => true,
                     'message' => 'Premium Ad',
                     'data' => $ads,
                 ]);
             } else {
                 return response()->json([
+                    'status' => true,
                     'message' => 'No Premium Ads Exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {

@@ -39,12 +39,15 @@ class ResumeController extends Controller
                     array_push($newarr, $data);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of Resume',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
+                    'status' => true,
                     'message' => 'No record exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -73,7 +76,7 @@ class ResumeController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     if ($file = $request->file('pdf')) {
@@ -103,16 +106,19 @@ class ResumeController extends Controller
                     $data['created_at']     = $resume->created_at;
                     $data['updated_at']     = $resume->updated_at;
                     return response()->json([
+                        'status' => true,
                         'message' => 'Added Successfully',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as user',
                 ]);
             }
@@ -152,7 +158,7 @@ class ResumeController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
                     if ($file = $request->file('pdf')) {
                         $pdfname = md5(rand('1000', '10000'));
@@ -180,16 +186,19 @@ class ResumeController extends Controller
                     $imp_image = str_replace("public", env('APP_URL') . "public", $pdf_url);
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Updated Successfully',
                         'data' => $get,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -231,12 +240,15 @@ class ResumeController extends Controller
                     array_push($newarr, $data);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of Resume',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -263,7 +275,7 @@ class ResumeController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                 }
 
                 $city = City::where('id', $request->city_id)->first();
@@ -299,16 +311,19 @@ class ResumeController extends Controller
                     $data['updated_at']      = $resume->updated_at;
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Resume Added Successfully By Admin',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
-                        'error' => 'City not exist',
+                        'status' => false,
+                        'message' => 'City not exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -329,7 +344,7 @@ class ResumeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $resume = Resume::where('id', $id)->first();
             if (!empty($resume)) {
@@ -339,27 +354,25 @@ class ResumeController extends Controller
                         $resume->status = 1;
                         $updateStatus = $resume->update();
                         return response()->json([
+                            'status' => true,
                             'message' => 'Request is accepted By Admin',
                             'data' => $resume,
                         ]);
-                    } else {
-                        if ($resume->status == 2) {
-                            return response()->json([
-                                'message' => 'Request already denied By Admin so you can not accept',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Request is already accepted By Admin',
-                            ]);
-                        }
+                    } elseif ($resume->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Request already denied By Admin so you can not accept',
+                        ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Please add city first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -380,7 +393,7 @@ class ResumeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $resume = Resume::where('id', $id)->first();
             if (!empty($resume)) {
@@ -388,22 +401,19 @@ class ResumeController extends Controller
                     $resume->status = 2;
                     $updateStatus = $resume->update();
                     return response()->json([
+                        'status' => true,
                         'message' => 'Request denied By Admin',
                         'data' => $resume,
                     ]);
-                } else {
-                    if ($resume->status == 1) {
-                        return response()->json([
-                            'message' => 'Request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Renting product request is already denied By Admin',
-                        ]);
-                    }
+                } elseif ($resume->status == 1) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Request already accepted By Admin so you can not deny',
+                    ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -439,6 +449,7 @@ class ResumeController extends Controller
                 }
 
                 return response()->json([
+                    'status' => true,
                     'message' => 'All resume list',
                     'data' => $newarr,
                 ]);
@@ -470,16 +481,20 @@ class ResumeController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'status' => true,
                             'message' => 'Resume list on the city basis',
                             'data' => $newarr,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No data Found',
+                            'status' => true,
+                            'message' => 'No data Found',
+                            'data' => [],
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }

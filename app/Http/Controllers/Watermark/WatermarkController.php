@@ -24,7 +24,7 @@ class WatermarkController extends Controller
                         ]);
 
                         if ($validator->fails()) {
-                            return response()->json(['message' => $validator->errors()]);
+                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                         }
                         if ($file = $request->file('image')) {
                             $imagename = md5(rand('1000', '10000'));
@@ -51,7 +51,7 @@ class WatermarkController extends Controller
                         ]);
 
                         if ($validator->fails()) {
-                            return response()->json(['message' => $validator->errors()]);
+                            return response()->json(['status' => false,'message' => $validator->errors()]);
                         }
 
                         if ($file = $request->file('image')) {
@@ -77,6 +77,7 @@ class WatermarkController extends Controller
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as admin',
                     ]);
                 }
@@ -101,8 +102,9 @@ class WatermarkController extends Controller
                 ]);
             } else {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'No record exist',
+                    'success' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {

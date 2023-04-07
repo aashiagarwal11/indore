@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['status' => false, 'message' => $validator->errors()]);
         }
         try {
             $user = User::where('phone', $request->phone)->first();
@@ -42,10 +42,11 @@ class RegisteredUserController extends Controller
                 $verified['active_device_id'] = 1;
                 $token = JWTAuth::fromUser($user);
                 return $this->getUserWithToken($token);
-                
+
                 if (!$token = JWTAuth::attempt($validator->validated())) {
                     return response()->json([
-                        'error' => 'Unauthorized',
+                        'status' => false,
+                        'message' => 'Unauthorized',
                     ]);
                 }
                 return $this->getUserWithToken($token);
@@ -66,7 +67,8 @@ class RegisteredUserController extends Controller
                 return $this->getUserWithToken($token);
                 if (!$token = JWTAuth::attempt($validator->validated())) {
                     return response()->json([
-                        'error' => 'Unauthorized',
+                        'status' => false,
+                        'message' => 'Unauthorized',
                     ]);
                 }
 
@@ -87,7 +89,7 @@ class RegisteredUserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => $validator->errors()]);
+            return response()->json(['status' => false, 'message' => $validator->errors()]);
         }
         try {
             $user = User::where('phone', $request->phone)->first();
@@ -98,7 +100,8 @@ class RegisteredUserController extends Controller
                 return $this->getUserWithToken($token);
                 if (!$token = JWTAuth::attempt($validator->validated())) {
                     return response()->json([
-                        'error' => 'Unauthorized',
+                        'status' => false,
+                        'message' => 'Unauthorized',
                     ]);
                 }
                 return $this->getUserWithToken($token);
@@ -119,7 +122,8 @@ class RegisteredUserController extends Controller
                 return $this->getUserWithToken($token);
                 if (!$token = JWTAuth::attempt($validator->validated())) {
                     return response()->json([
-                        'error' => 'Unauthorized',
+                        'status' => false,
+                        'message' => 'Unauthorized',
                     ]);
                 }
 
@@ -131,6 +135,43 @@ class RegisteredUserController extends Controller
             ]);
         }
     }
+
+    #logout
+    public function logout(Request $request)
+    {
+        try {
+            $authUser = auth()->user();
+            $user = auth()->user()->id;
+            if ($user) {
+                auth('api')->logout();
+                $phone = $authUser->phone;
+
+                $data['active_device_id'] = 0;
+
+                User::where('id', $user)->update($data);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Logged Out Successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Login First',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+
+
+
+
 
 
     public function register(Request $request)
@@ -184,36 +225,6 @@ class RegisteredUserController extends Controller
         }
         return $this->getUserWithToken($token);
     }
-
-    #logout
-    public function logout(Request $request)
-    {
-        try {
-            $authUser = auth()->user();
-            $user = auth()->user()->id;
-            if ($user) {
-                auth('api')->logout();
-                $phone = $authUser->phone;
-
-                $data['active_device_id'] = 0;
-
-                User::where('id', $user)->update($data);
-
-                return response()->json([
-                    'message' => 'Logged Out Successfully',
-                ]);
-            } else {
-                return response()->json([
-                    'message' => 'Login First',
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
 
 
     #User registration via mobile
@@ -342,6 +353,7 @@ class RegisteredUserController extends Controller
     public function getUserWithToken($token)
     {
         return [
+            'status' => true,
             'message' => 'Login Successfully',
             'access_token' => $token,
             'token_type' => 'bearer',

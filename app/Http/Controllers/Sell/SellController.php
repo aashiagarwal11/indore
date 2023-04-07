@@ -21,16 +21,20 @@ class SellController extends Controller
                 $getsell = Sale::orderBy('id', 'desc')->get();
                 if (!empty($getsell)) {
                     return response()->json([
-                        'message' => 'All Sell Category List',
+                        'status' => true,
+                        'message' => 'Category List',
                         'data' => $getsell,
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'No Sell Category Found In The List',
+                        'status' => true,
+                        'message' => 'No data found',
+                        'data' => [],
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Only admin have access',
                 ]);
             }
@@ -55,7 +59,7 @@ class SellController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                 }
                 $chkselltype = Sale::where('type', $request->type)->first();
                 if (empty($chkselltype)) {
@@ -63,17 +67,20 @@ class SellController extends Controller
                         'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'Sell Category Added Successfully',
+                        'status' => true,
+                        'message' => 'Category Added Successfully',
                         'data' => $selltype,
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'Sell Category Already Exist',
+                        'status' => false,
+                        'message' => 'Category Already Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add sell category',
+                    'status' => false,
+                    'message' => 'Only admin can add category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -94,17 +101,21 @@ class SellController extends Controller
                 $getsellid = Sale::where('id', $id)->first();
                 if (!empty($getsellid)) {
                     return response()->json([
+                        'status' => true,
                         'message' => 'Details',
                         'data' => $getsellid,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => true,
                         'message' => 'Not exist',
+                        'data' => [],
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add sell category',
+                    'status' => false,
+                    'message' => 'Only admin can add category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -131,23 +142,26 @@ class SellController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
                     $updatesell = $sell->update([
                         'type' => $request->type,
                     ]);
                     return response()->json([
-                        'message' => 'Sell Category Updated Successfully',
+                        'status' => true,
+                        'message' => 'Category Updated Successfully',
                         'data' => $sell,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can update sell category',
+                    'status' => false,
+                    'message' => 'Only admin can update category',
                 ]);
             }
         } catch (\Exception $e) {
@@ -169,17 +183,20 @@ class SellController extends Controller
                 if (!empty($sell)) {
                     $delsell = $sell->delete();
                     return response()->json([
-                        'message' => 'Sell Category Deleted Successfully',
+                        'status' => true,
+                        'message' => 'Category Deleted Successfully',
                         'data' => $sell,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Type Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Only admin can add sell category',
+                    'status' => false,
+                    'message' => 'Only admin can add category',
                 ]);
             }
         } catch (\Exception $e) {

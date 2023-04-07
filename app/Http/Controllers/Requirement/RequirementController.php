@@ -27,12 +27,15 @@ class RequirementController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of Requirement',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -62,7 +65,7 @@ class RequirementController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $images = array();
@@ -104,16 +107,19 @@ class RequirementController extends Controller
                     $data['updated_at'] = $requirement->updated_at;
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Added Successfully',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as user',
                 ]);
             }
@@ -154,7 +160,7 @@ class RequirementController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
                     $images = array();
                     if ($files = $request->file('image')) {
@@ -187,16 +193,20 @@ class RequirementController extends Controller
                     $get[0]->image = explode('|', $imp_image);
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Updated Successfully',
                         'data' => $get,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Record Not Exist',
+                        'data' => [],
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -228,12 +238,15 @@ class RequirementController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'List of requirement',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'No record exist',
+                    'status' => true,
+                    'message' => 'No data exist',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -259,7 +272,7 @@ class RequirementController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                 }
 
                 $images = array();
@@ -292,16 +305,19 @@ class RequirementController extends Controller
                     ]);
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Requirement Added Successfully By Admin',
                         'data' => $requirement,
                     ]);
                 } else {
                     return response()->json([
-                        'error' => 'City not exist',
+                        'status' => false,
+                        'message' => 'City not exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -322,7 +338,7 @@ class RequirementController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $requirement = Requirement::where('id', $id)->first();
             if (!empty($requirement)) {
@@ -332,27 +348,25 @@ class RequirementController extends Controller
                         $requirement->status = 1;
                         $updateStatus = $requirement->update();
                         return response()->json([
+                            'status' => true,
                             'message' => 'Request is accepted By Admin',
                             'data' => $requirement,
                         ]);
-                    } else {
-                        if ($requirement->status == 2) {
-                            return response()->json([
-                                'message' => 'Request already denied By Admin so you can not accept',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Request is already accepted By Admin',
-                            ]);
-                        }
+                    } elseif ($requirement->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Request already denied By Admin so you can not accept',
+                        ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Please add city first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -373,7 +387,7 @@ class RequirementController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $requirement = Requirement::where('id', $id)->first();
             if (!empty($requirement)) {
@@ -381,22 +395,19 @@ class RequirementController extends Controller
                     $requirement->status = 2;
                     $updateStatus = $requirement->update();
                     return response()->json([
+                        'status' => true,
                         'message' => 'Request denied By Admin',
                         'data' => $requirement,
                     ]);
-                } else {
-                    if ($requirement->status == 1) {
-                        return response()->json([
-                            'message' => 'Request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Renting product request is already denied By Admin',
-                        ]);
-                    }
+                } elseif ($requirement->status == 1) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Request already accepted By Admin so you can not deny',
+                    ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -432,6 +443,7 @@ class RequirementController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All requirement list',
                     'data' => $newarr,
                 ]);
@@ -463,16 +475,20 @@ class RequirementController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'status' => true,
                             'message' => 'Requirement list on the city basis',
                             'data' => $newarr,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No data Found',
+                            'status' => true,
+                            'message' => 'No data Found',
+                            'data' => [],
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }

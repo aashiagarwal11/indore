@@ -28,12 +28,15 @@ class ShokSuchnaController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All list',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'error' => 'No data Found',
+                    'status' => true,
+                    'message' => 'No data Found',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -62,7 +65,7 @@ class ShokSuchnaController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
 
                     $images = array();
@@ -98,16 +101,19 @@ class ShokSuchnaController extends Controller
                     $data['updated_at'] = $shoksuchna->updated_at;
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Added Successfully',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Login as user',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as user',
                 ]);
             }
@@ -146,7 +152,7 @@ class ShokSuchnaController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json(['message' => $validator->errors()]);
+                        return response()->json(['status' => false, 'message' => $validator->errors()]);
                     }
                     $images = array();
                     if ($files = $request->file('image')) {
@@ -176,16 +182,19 @@ class ShokSuchnaController extends Controller
                     $get[0]->image = explode('|', $imp_image);
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Record Updated Successfully',
                         'data' => $get,
                     ]);
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -219,7 +228,7 @@ class ShokSuchnaController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['message' => $validator->errors()]);
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
                 }
 
                 $city = City::where('id', $request->city_id)->first();
@@ -254,16 +263,19 @@ class ShokSuchnaController extends Controller
                     $data['user_id'] = $id;
 
                     return response()->json([
+                        'status' => true,
                         'message' => 'Added Successfully By Admin',
                         'data' => $data,
                     ]);
                 } else {
                     return response()->json([
-                        'error' => 'City not exist',
+                        'status' => false,
+                        'message' => 'City not exist',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Login as admin first',
                 ]);
             }
@@ -287,12 +299,15 @@ class ShokSuchnaController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All List',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'error' => 'No data Found',
+                    'status' => true,
+                    'message' => 'No data Found',
+                    'data' => [],
                 ]);
             }
         } catch (\Exception $e) {
@@ -312,7 +327,7 @@ class ShokSuchnaController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $shoksuchna = ShokSuchna::where('id', $id)->first();
             if (!empty($shoksuchna)) {
@@ -322,27 +337,25 @@ class ShokSuchnaController extends Controller
                         $shoksuchna->status = 1;
                         $updateStatus = $shoksuchna->update();
                         return response()->json([
+                            'status' => true,
                             'message' => 'Accepted By Admin',
                             'data' => $shoksuchna,
                         ]);
-                    } else {
-                        if ($shoksuchna->status == 2) {
-                            return response()->json([
-                                'message' => 'Request already denied By Admin so you can not accept',
-                            ]);
-                        } else {
-                            return response()->json([
-                                'message' => 'Request is already accepted By Admin',
-                            ]);
-                        }
+                    } elseif ($shoksuchna->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Request already denied By Admin so you can not accept',
+                        ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'Please add city first',
                     ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -363,7 +376,7 @@ class ShokSuchnaController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
             $shokSuchna = ShokSuchna::where('id', $id)->first();
             if (!empty($shokSuchna)) {
@@ -371,22 +384,19 @@ class ShokSuchnaController extends Controller
                     $shokSuchna->status = 2;
                     $updateStatus = $shokSuchna->update();
                     return response()->json([
+                        'status' => true,
                         'message' => 'Request denied By Admin',
                         'data' => $shokSuchna,
                     ]);
-                } else {
-                    if ($shokSuchna->status == 1) {
-                        return response()->json([
-                            'message' => 'Request already accepted By Admin so you can not deny',
-                        ]);
-                    } else {
-                        return response()->json([
-                            'message' => 'Request is already denied By Admin',
-                        ]);
-                    }
+                } elseif ($shokSuchna->status == 1) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Request already accepted By Admin so you can not deny',
+                    ]);
                 }
             } else {
                 return response()->json([
+                    'status' => false,
                     'message' => 'Record Not Exist',
                 ]);
             }
@@ -422,6 +432,7 @@ class ShokSuchnaController extends Controller
                     array_push($newarr, $new);
                 }
                 return response()->json([
+                    'status' => true,
                     'message' => 'All list',
                     'data' => $newarr,
                 ]);
@@ -454,16 +465,20 @@ class ShokSuchnaController extends Controller
                             array_push($newarr, $new);
                         }
                         return response()->json([
+                            'status' => true,
                             'message' => 'List on the city basis',
                             'data' => $shokSuchna,
                         ]);
                     } else {
                         return response()->json([
-                            'error' => 'No data Found',
+                            'status' => true,
+                            'message' => 'No data Found',
+                            'data' => [],
                         ]);
                     }
                 } else {
                     return response()->json([
+                        'status' => false,
                         'message' => 'City Not Exist',
                     ]);
                 }
