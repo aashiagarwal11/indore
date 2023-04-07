@@ -258,7 +258,9 @@ class NewsController extends Controller
                         ->join('cities', 'news.city_id', 'cities.id')->get();
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+
                     $get[0]->image = explode('|', $imp_image);
+                    
                     $get[0]->image = ($get[0]->image[0] != "") ? $get[0]->image : [];
 
                     return response()->json([

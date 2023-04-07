@@ -22,6 +22,7 @@ class AdvertismentController extends Controller
                 foreach ($advertisment as $key => $new) {
                     $new['ads_image'] = str_replace("public", env('APP_URL') . "public", $new['ads_image']);
                     $new['ads_image'] = explode('|', $new['ads_image']);
+                    $new['ads_image'] = ($new['ads_image'][0] != "") ? $new['ads_image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -83,7 +84,8 @@ class AdvertismentController extends Controller
                     'updated_at' => \Carbon\Carbon::now(),
                 ]);
                 $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
-                $media['ads_image'] = explode('|', $imp_image);
+                $exp = explode('|', $imp_image);
+                $media['ads_image'] = ($exp[0] != "") ? $exp : [];
 
                 return response()->json([
                     'success' => true,

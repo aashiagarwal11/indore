@@ -25,6 +25,7 @@ class KrishiMandiBhavController extends Controller
                 foreach ($KrishiMandiBhav as $key => $Krishi) {
                     $Krishi['image'] = str_replace("public", env('APP_URL') . "public", $Krishi['image']);
                     $Krishi['image'] = explode('|', $Krishi['image']);
+                    $Krishi['image'] = ($Krishi['image'][0] != "") ? $Krishi['image'] : [];
                     array_push($KrishiMandiBhavarr, $Krishi);
                 }
                 return response()->json([
@@ -56,12 +57,12 @@ class KrishiMandiBhavController extends Controller
         try {
             if ($id == 1) {
                 $validator = Validator::make($request->all(), [
-                    'title' => ['required', 'string'],
-                    'description' => ['required', 'string'],
-                    'city_id' => ['required', 'numeric'],
-                    'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg'],
-                    'video_url' => ['nullable'],
+                    'title'       => ['required', 'string'],
+                    'description' => ['required'],
+                    'city_id'     => ['required', 'numeric'],
+                    'image'       => ['nullable'],
+                    'image.*'     => ['mimes:jpeg,png,jpg'],
+                    'video_url'   => ['nullable'],
                 ]);
 
                 if ($validator->fails()) {
@@ -83,7 +84,7 @@ class KrishiMandiBhavController extends Controller
                         }
                     }
                     $imp_image =  implode('|', $images);
-                    $news = KrishiMandiBhav::create([
+                    $krishiMandiBhav = KrishiMandiBhav::create([
                         'title' => $request->title,
                         'description' => $request->description,
                         'city_id' => $request->city_id,
@@ -93,16 +94,13 @@ class KrishiMandiBhavController extends Controller
                     ]);
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|', $imp_image);
-                    $data['title'] = $request->title;
-                    $data['description'] = $request->description;
-                    $data['city_id'] = $request->city_id;
-                    $data['image'] = $exp;
-                    $data['video_url'] = $request->video_url;
+
+                    $krishiMandiBhav['image'] = ($exp[0] != "") ? $exp : [];
 
                     return response()->json([
                         'status' => true,
                         'message' => 'Added Successfully',
-                        'data' => $data,
+                        'data' => $krishiMandiBhav,
                     ]);
                 } else {
                     return response()->json([
@@ -139,6 +137,7 @@ class KrishiMandiBhavController extends Controller
                 foreach ($specificbhav as $key => $bhav) {
                     $bhav['image'] = str_replace("public", env('APP_URL') . "public", $bhav['image']);
                     $bhav['image'] = explode('|', $bhav['image']);
+                    $bhav['image'] = ($bhav['image'][0] != "") ? $bhav['image'] : [];
                     array_push($newarr, $bhav);
                 }
                 return response()->json([
@@ -171,12 +170,12 @@ class KrishiMandiBhavController extends Controller
                 $KrishiMandiBhav = KrishiMandiBhav::where('id', $id)->first();
                 if (!empty($KrishiMandiBhav)) {
                     $validator = Validator::make($request->all(), [
-                        'title' => ['required', 'string'],
-                        'description' => ['required', 'string'],
-                        'city_id' => ['required', 'numeric'],
-                        'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg'],
-                        'video_url' => ['nullable'],
+                        'title'       => ['required', 'string'],
+                        'description' => ['required'],
+                        'city_id'     => ['required', 'numeric'],
+                        'image'       => ['nullable'],
+                        'image.*'     => ['mimes:jpeg,png,jpg'],
+                        'video_url'   => ['nullable'],
                     ]);
 
                     if ($validator->fails()) {
@@ -210,7 +209,9 @@ class KrishiMandiBhavController extends Controller
                         ->get();
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+
                     $specificbhav[0]->image = explode('|', $imp_image);
+                    $specificbhav[0]->image = ($specificbhav[0]->image[0] != "") ? $specificbhav[0]->image : [];
 
                     return response()->json([
                         'status' => true,
@@ -275,6 +276,7 @@ class KrishiMandiBhavController extends Controller
                 foreach ($bhavproduct as $key => $bhav) {
                     $bhav['image'] = str_replace("public", env('APP_URL') . "public", $bhav['image']);
                     $bhav['image'] = explode('|', $bhav['image']);
+                    $bhav['image'] = ($bhav['image'][0] != "") ? $bhav['image'] : [];
 
                     ## random ads
                     $ads = Advertisment::all()->random(1);
@@ -307,6 +309,8 @@ class KrishiMandiBhavController extends Controller
                         foreach ($bhavproduct as $key => $bhav) {
                             $bhav['image'] = str_replace("public", env('APP_URL') . "public", $bhav['image']);
                             $bhav['image'] = explode('|', $bhav['image']);
+
+                            $bhav['image'] = ($bhav['image'][0] != "") ? $bhav['image'] : [];
 
                             ## random ads
                             $ads = Advertisment::all()->random(1);
