@@ -25,6 +25,7 @@ class RentController extends Controller
                 foreach ($rentingproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -72,13 +73,13 @@ class RentController extends Controller
                         $validator = Validator::make($request->all(), [
                             'sub_cat_id'        => ['required', 'numeric'],
                             'vendor_name'       => ['required', 'string', 'max:50'],
-                            'owner_or_broker'   => ['required', 'string', 'max:255', 'in:owner,broker'],
-                            'property_location' => ['required', 'string', 'max:255'],
-                            'price'             => ['required'],
-                            'image'             => ['required'],
+                            'owner_or_broker'   => ['nullable', 'string', 'max:255', 'in:owner,broker'],
+                            'property_location' => ['nullable', 'string', 'max:255'],
+                            'price'             => ['nullable'],
+                            'image'             => ['nullable'],
                             'image.*'           => ['mimes:jpeg,png,jpg'],
-                            'whatsapp_no'       => ['required', 'numeric', 'digits:10'],
-                            'call_no'           => ['required'],
+                            'whatsapp_no'       => ['nullable', 'numeric', 'digits:10'],
+                            'call_no'           => ['nullable'],
                         ]);
                         if ($validator->fails()) {
                             return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -102,15 +103,15 @@ class RentController extends Controller
 
                             if ($chksellid->type == 'vehicle') {
                                 $validator = Validator::make($request->all(), [
-                                    'vehicle_sighting'  => ['required', 'string', 'max:255'],
-                                    'brand'             => ['required', 'string', 'max:30'],
-                                    'model_name'        => ['required', 'string', 'max:20'],
-                                    'model_year'        => ['required', 'numeric'],
-                                    'fuel_type'         => ['required', 'string', 'max:20'],
-                                    'seater'            => ['required', 'numeric', 'max:30'],
-                                    'kilometer_running' => ['required', 'string', 'max:30'],
-                                    'insurance_period'  => ['required', 'string', 'max:20'],
-                                    'color'             => ['required', 'string', 'max:20'],
+                                    'vehicle_sighting'  => ['nullable', 'string', 'max:255'],
+                                    'brand'             => ['nullable', 'string', 'max:30'],
+                                    'model_name'        => ['nullable', 'string', 'max:20'],
+                                    'model_year'        => ['nullable', 'numeric'],
+                                    'fuel_type'         => ['nullable', 'string', 'max:20'],
+                                    'seater'            => ['nullable', 'numeric', 'max:30'],
+                                    'kilometer_running' => ['nullable', 'string', 'max:30'],
+                                    'insurance_period'  => ['nullable', 'string', 'max:20'],
+                                    'color'             => ['nullable', 'string', 'max:20'],
                                 ]);
                                 if ($validator->fails()) {
                                     return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -141,7 +142,7 @@ class RentController extends Controller
 
                                 $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                 $exp = explode('|',  $imp_image);
-                                $rent['image'] = $exp;
+                                $rent['image'] = ($exp[0] != "") ? $exp : [];
 
                                 return response()->json([
                                     'status' => true,
@@ -150,11 +151,11 @@ class RentController extends Controller
                                 ]);
                             } elseif ($chksellid->type == 'property') {
                                 $validator = Validator::make($request->all(), [
-                                    'size_length_width'  => ['required', 'number'],
-                                    'room_qty'           => ['required', 'number'],
-                                    'kitchen'            => ['required', 'number'],
-                                    'hall'               => ['required', 'number'],
-                                    'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
+                                    'size_length_width'  => ['nullable', 'number'],
+                                    'room_qty'           => ['nullable', 'number'],
+                                    'kitchen'            => ['nullable', 'number'],
+                                    'hall'               => ['nullable', 'number'],
+                                    'lat_bath'           => ['nullable', 'string', 'in:attach,non-attach'],
                                 ]);
                                 if ($validator->fails()) {
                                     return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -180,7 +181,8 @@ class RentController extends Controller
                                 ]);
 
                                 $exp = explode('|',  $imp_image);
-                                $rent['image'] = $exp;
+                                $rent['image'] = ($exp[0] != "") ? $exp : [];
+
                                 return response()->json([
                                     'status' => true,
                                     'message' => 'Rent Product added successfully for property',
@@ -286,13 +288,13 @@ class RentController extends Controller
                                     'sale_id'           => ['required', 'numeric'],
                                     'sub_cat_id'        => ['required', 'numeric'],
                                     'vendor_name'       => ['required', 'string', 'max:50'],
-                                    'owner_or_broker'   => ['required', 'string', 'max:255', 'in:owner,broker'],
-                                    'property_location' => ['required', 'string', 'max:255'],
-                                    'price'             => ['required'],
-                                    'image'             => ['required'],
+                                    'owner_or_broker'   => ['nullable', 'string', 'max:255', 'in:owner,broker'],
+                                    'property_location' => ['nullable', 'string', 'max:255'],
+                                    'price'             => ['nullable'],
+                                    'image'             => ['nullable'],
                                     'image.*'           => ['mimes:jpeg,png,jpg'],
-                                    'whatsapp_no'       => ['required', 'numeric', 'digits:10'],
-                                    'call_no'           => ['required'],
+                                    'whatsapp_no'       => ['nullable', 'numeric', 'digits:10'],
+                                    'call_no'           => ['nullable'],
                                 ]);
                                 if ($validator->fails()) {
                                     return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -317,15 +319,15 @@ class RentController extends Controller
                                     if ($chksellid->type == 'vehicle') {
 
                                         $validator = Validator::make($request->all(), [
-                                            'vehicle_sighting'  => ['required', 'string', 'max:255'],
-                                            'brand'             => ['required', 'string', 'max:30'],
-                                            'model_name'        => ['required', 'string', 'max:20'],
-                                            'model_year'        => ['required', 'numeric'],
-                                            'fuel_type'         => ['required', 'string', 'max:20'],
-                                            'seater'            => ['required', 'numeric', 'max:30'],
-                                            'kilometer_running' => ['required', 'string', 'max:30'],
-                                            'insurance_period'  => ['required', 'string', 'max:20'],
-                                            'color'             => ['required', 'string', 'max:20'],
+                                            'vehicle_sighting'  => ['nullable', 'string', 'max:255'],
+                                            'brand'             => ['nullable', 'string', 'max:30'],
+                                            'model_name'        => ['nullable', 'string', 'max:20'],
+                                            'model_year'        => ['nullable', 'numeric'],
+                                            'fuel_type'         => ['nullable', 'string', 'max:20'],
+                                            'seater'            => ['nullable', 'numeric', 'max:30'],
+                                            'kilometer_running' => ['nullable', 'string', 'max:30'],
+                                            'insurance_period'  => ['nullable', 'string', 'max:20'],
+                                            'color'             => ['nullable', 'string', 'max:20'],
                                         ]);
                                         if ($validator->fails()) {
                                             return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -356,7 +358,7 @@ class RentController extends Controller
                                         $updatedata =  $rentpro->update($data);
                                         $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                         $exp = explode('|',  $imp_image);
-                                        $data['image'] = $exp;
+                                        $data['image'] = ($exp[0] != "") ? $exp : [];
 
                                         return response()->json([
                                             'status' => true,
@@ -365,11 +367,11 @@ class RentController extends Controller
                                         ]);
                                     } elseif ($chksellid->type == 'property') {
                                         $validator = Validator::make($request->all(), [
-                                            'size_length_width'  => ['required', 'number'],
-                                            'room_qty'           => ['required', 'number'],
-                                            'kitchen'            => ['required', 'number'],
-                                            'hall'               => ['required', 'number'],
-                                            'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
+                                            'size_length_width'  => ['nullable', 'number'],
+                                            'room_qty'           => ['nullable', 'number'],
+                                            'kitchen'            => ['nullable', 'number'],
+                                            'hall'               => ['nullable', 'number'],
+                                            'lat_bath'           => ['nullable', 'string', 'in:attach,non-attach'],
                                         ]);
                                         if ($validator->fails()) {
                                             return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -396,7 +398,7 @@ class RentController extends Controller
 
                                         $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                         $exp = explode('|',  $imp_image);
-                                        $data['image'] = $exp;
+                                        $data['image'] = ($exp[0] != "") ? $exp : [];
 
                                         return response()->json([
                                             'status' => true,
@@ -505,15 +507,15 @@ class RentController extends Controller
 
                         if (!empty($city)) {
                             $validator = Validator::make($request->all(), [
-                                'sub_cat_id'       => ['required', 'numeric'],
+                                'sub_cat_id'        => ['required', 'numeric'],
                                 'vendor_name'       => ['required', 'string', 'max:50'],
-                                'owner_or_broker'   => ['required', 'string', 'max:255', 'in:owner,broker'],
-                                'property_location' => ['required', 'string', 'max:255'],
-                                'price'             => ['required'],
-                                'image'             => ['required'],
+                                'owner_or_broker'   => ['nullable', 'string', 'max:255', 'in:owner,broker'],
+                                'property_location' => ['nullable', 'string', 'max:255'],
+                                'price'             => ['nullable'],
+                                'image'             => ['nullable'],
                                 'image.*'           => ['mimes:jpeg,png,jpg'],
-                                'whatsapp_no'       => ['required', 'numeric', 'digits:10'],
-                                'call_no'           => ['required'],
+                                'whatsapp_no'       => ['nullable', 'numeric', 'digits:10'],
+                                'call_no'           => ['nullable'],
                             ]);
                             if ($validator->fails()) {
                                 return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -537,15 +539,15 @@ class RentController extends Controller
 
                                 if ($chksellid->type == 'vehicle') {
                                     $validator = Validator::make($request->all(), [
-                                        'vehicle_sighting'  => ['required', 'string', 'max:255'],
-                                        'brand'             => ['required', 'string', 'max:30'],
-                                        'model_name'        => ['required', 'string', 'max:20'],
-                                        'model_year'        => ['required', 'numeric'],
-                                        'fuel_type'         => ['required', 'string', 'max:20'],
-                                        'seater'            => ['required', 'numeric', 'max:30'],
-                                        'kilometer_running' => ['required', 'string', 'max:30'],
-                                        'insurance_period'  => ['required', 'string', 'max:20'],
-                                        'color'             => ['required', 'string', 'max:20'],
+                                        'vehicle_sighting'  => ['nullable', 'string', 'max:255'],
+                                        'brand'             => ['nullable', 'string', 'max:30'],
+                                        'model_name'        => ['nullable', 'string', 'max:20'],
+                                        'model_year'        => ['nullable', 'numeric'],
+                                        'fuel_type'         => ['nullable', 'string', 'max:20'],
+                                        'seater'            => ['nullable', 'numeric', 'max:30'],
+                                        'kilometer_running' => ['nullable', 'string', 'max:30'],
+                                        'insurance_period'  => ['nullable', 'string', 'max:20'],
+                                        'color'             => ['nullable', 'string', 'max:20'],
                                     ]);
                                     if ($validator->fails()) {
                                         return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -576,7 +578,8 @@ class RentController extends Controller
 
                                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                                     $exp = explode('|',  $imp_image);
-                                    $rent['image'] = $exp;
+
+                                    $rent['image'] = ($exp[0] != "") ? $exp : [];
 
                                     return response()->json([
                                         'status' => true,
@@ -585,11 +588,11 @@ class RentController extends Controller
                                     ]);
                                 } elseif ($chksellid->type == 'property') {
                                     $validator = Validator::make($request->all(), [
-                                        'size_length_width'  => ['required', 'number'],
-                                        'room_qty'           => ['required', 'number'],
-                                        'kitchen'            => ['required', 'number'],
-                                        'hall'               => ['required', 'number'],
-                                        'lat_bath'           => ['required', 'string', 'in:attach,non-attach'],
+                                        'size_length_width'  => ['nullable', 'number'],
+                                        'room_qty'           => ['nullable', 'number'],
+                                        'kitchen'            => ['nullable', 'number'],
+                                        'hall'               => ['nullable', 'number'],
+                                        'lat_bath'           => ['nullable', 'string', 'in:attach,non-attach'],
                                     ]);
                                     if ($validator->fails()) {
                                         return response()->json(['status' => false, 'message' => $validator->errors()]);
@@ -615,7 +618,8 @@ class RentController extends Controller
                                     ]);
 
                                     $exp = explode('|',  $imp_image);
-                                    $rent['image'] = $exp;
+                                    $rent['image'] = ($exp[0] != "") ? $exp : [];
+
                                     return response()->json([
                                         'status' => true,
                                         'message' => 'Rent product added successfully for property',
@@ -669,6 +673,7 @@ class RentController extends Controller
                 foreach ($rentingproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -715,10 +720,10 @@ class RentController extends Controller
                             'message' => 'Rent product request is accepted By Admin',
                             'data' => $rent,
                         ]);
-                    } elseif ($rent->status == 2) {
+                    } elseif ($rent->status == 1) {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Renting product request already denied By Admin so you can not accept',
+                            'message' => 'Renting product request already accepted By Admin so you can not accept again',
                         ]);
                     }
                 } else {
@@ -763,10 +768,10 @@ class RentController extends Controller
                         'message' => 'Renting product request denied By Admin',
                         'data' => $rent,
                     ]);
-                } elseif ($rent->status == 1) {
+                } elseif ($rent->status == 2) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Renting product request already accepted By Admin so you can not deny',
+                        'message' => 'Renting product request already denied By Admin so you can not deny again',
                     ]);
                 }
             } else {
@@ -794,6 +799,9 @@ class RentController extends Controller
                 foreach ($rentproduct as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
+
 
                     ## random ads
                     $ads = Advertisment::all()->random(1);
@@ -827,6 +835,8 @@ class RentController extends Controller
                         foreach ($rentproduct as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+                            $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                             ## random ads
                             $ads = Advertisment::all()->random(1);

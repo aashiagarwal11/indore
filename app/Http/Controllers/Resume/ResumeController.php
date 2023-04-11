@@ -71,8 +71,8 @@ class ResumeController extends Controller
                         'name'           => ['required', 'string'],
                         'education'      => ['required'],
                         'job_experience' => ['required'],
-                        'expectation'    => ['required', 'numeric'],
-                        'pdf'            => ['required', 'mimes:pdf']
+                        'expectation'    => ['nullable', 'numeric'],
+                        'pdf'            => ['nullable', 'mimes:pdf']
                     ]);
 
                     if ($validator->fails()) {
@@ -86,6 +86,8 @@ class ResumeController extends Controller
                         $upload_path = 'public/resumePdf/';
                         $pdf_url = $upload_path . $pdf_full_name;
                         $file->move($upload_path, $pdf_full_name);
+                    } else {
+                        $pdf_url = null;
                     }
                     $resume = Resume::create([
                         'name' => $request->name,
@@ -98,17 +100,13 @@ class ResumeController extends Controller
                     ]);
                     $imp_pdf = str_replace("public", env('APP_URL') . "public", $pdf_url);
 
-                    $data['name']           = $resume->name;
-                    $data['education']      = $resume->education;
-                    $data['job_experience'] = $resume->job_experience;
-                    $data['expectation']    = $resume->expectation;
-                    $data['pdf']            = $imp_pdf;
-                    $data['created_at']     = $resume->created_at;
-                    $data['updated_at']     = $resume->updated_at;
+                    $resume['pdf'] = ($imp_pdf != "") ? $imp_pdf : "";
+
+                    // $resume['pdf']            = $imp_pdf;
                     return response()->json([
                         'status' => true,
                         'message' => 'Added Successfully',
-                        'data' => $data,
+                        'data' => $resume,
                     ]);
                 } else {
                     return response()->json([
@@ -153,8 +151,8 @@ class ResumeController extends Controller
                         'education'      => ['required'],
                         'city_id'        => ['required', 'numeric'],
                         'job_experience' => ['required'],
-                        'expectation'    => ['required', 'numeric'],
-                        'pdf'          => ['required', 'mimes:pdf']
+                        'expectation'    => ['nullable', 'numeric'],
+                        'pdf'            => ['nullable', 'mimes:pdf']
                     ]);
 
                     if ($validator->fails()) {
@@ -167,6 +165,8 @@ class ResumeController extends Controller
                         $upload_path = 'public/resumePdf/';
                         $pdf_url = $upload_path . $pdf_full_name;
                         $file->move($upload_path, $pdf_full_name);
+                    } else {
+                        $pdf_url = null;
                     }
 
                     $imp_pdf = str_replace("public", env('APP_URL') . "public", $pdf_url);
@@ -270,8 +270,8 @@ class ResumeController extends Controller
                     'education'      => ['required'],
                     'city_id'        => ['required', 'numeric'],
                     'job_experience' => ['required'],
-                    'expectation'    => ['required', 'numeric'],
-                    'pdf'            => ['required', 'mimes:pdf']
+                    'expectation'    => ['nullable', 'numeric'],
+                    'pdf'            => ['nullable', 'mimes:pdf']
                 ]);
 
                 if ($validator->fails()) {
@@ -287,6 +287,8 @@ class ResumeController extends Controller
                         $upload_path = 'public/resumePdf/';
                         $pdf_url = $upload_path . $pdf_full_name;
                         $file->move($upload_path, $pdf_full_name);
+                    } else {
+                        $pdf_url = null;
                     }
                     $resume = Resume::create([
                         'name'           => $request->name,
@@ -301,19 +303,12 @@ class ResumeController extends Controller
 
                     $imp_pdf = str_replace("public", env('APP_URL') . "public", $pdf_url);
 
-                    $data['name']            = $request->name;
-                    $data['education']       = $request->education;
-                    $data['city_id']         = $request->city_id;
-                    $data['job_experience']  = $request->job_experience;
-                    $data['expectation']     = $request->expectation;
-                    $data['pdf']             = $imp_pdf;
-                    $data['created_at']      = $resume->created_at;
-                    $data['updated_at']      = $resume->updated_at;
+                    $resume['pdf'] = $imp_pdf;
 
                     return response()->json([
                         'status' => true,
                         'message' => 'Resume Added Successfully By Admin',
-                        'data' => $data,
+                        'data' => $resume,
                     ]);
                 } else {
                     return response()->json([
@@ -358,10 +353,10 @@ class ResumeController extends Controller
                             'message' => 'Request is accepted By Admin',
                             'data' => $resume,
                         ]);
-                    } elseif ($resume->status == 2) {
+                    } elseif ($resume->status == 1) {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Request already denied By Admin so you can not accept',
+                            'message' => 'Request already accepted By Admin so you can not accept again',
                         ]);
                     }
                 } else {
@@ -405,10 +400,10 @@ class ResumeController extends Controller
                         'message' => 'Request denied By Admin',
                         'data' => $resume,
                     ]);
-                } elseif ($resume->status == 1) {
+                } elseif ($resume->status == 2) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already accepted By Admin so you can not deny',
+                        'message' => 'Request already denied By Admin so you can not deny again',
                     ]);
                 }
             } else {
