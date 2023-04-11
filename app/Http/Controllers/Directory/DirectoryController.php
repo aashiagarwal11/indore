@@ -25,6 +25,7 @@ class DirectoryController extends Controller
                 foreach ($directory as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -111,7 +112,8 @@ class DirectoryController extends Controller
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|',  $imp_image);
 
-                    $directory['image'] = $exp;
+                    $directory['image'] = ($exp[0] != "") ? $exp : [];
+
 
                     return response()->json([
                         'status' => true,
@@ -157,7 +159,7 @@ class DirectoryController extends Controller
                 $directory = Directory::where('id', $id)->first();
                 if (!empty($directory)) {
                     $validator = Validator::make($request->all(), [
-                        'city_id'        => ['required', 'numeric'],
+                        'city_id'      => ['required', 'numeric'],
                         'biz_name'     => ['required', 'string'],
                         'contact_per1' => ['nullable', 'string'],
                         'number1'      => ['nullable'],
@@ -216,6 +218,8 @@ class DirectoryController extends Controller
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $get[0]->image = explode('|', $imp_image);
+
+                    $get[0]->image = ($get[0]->image[0] != "") ? $get[0]->image : [];
 
                     return response()->json([
                         'status' => true,
@@ -318,7 +322,7 @@ class DirectoryController extends Controller
                         $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                         $exp = explode('|',  $imp_image);
 
-                        $directory['image'] = $exp;
+                        $directory['image'] = ($exp[0] != "") ? $exp : [];
 
                         return response()->json([
                             'status' => true,
@@ -359,6 +363,7 @@ class DirectoryController extends Controller
                 foreach ($directory as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -403,10 +408,10 @@ class DirectoryController extends Controller
                         'message' => 'Request is accepted By Admin',
                         'data' => $directory,
                     ]);
-                } elseif ($directory->status == 2) {
+                } elseif ($directory->status == 1) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already denied By Admin so you can not accept',
+                        'message' => 'Request already accepted By Admin so you can not accept again',
                     ]);
                 }
             } else {
@@ -444,10 +449,10 @@ class DirectoryController extends Controller
                         'message' => 'Request denied By Admin',
                         'data' => $directory,
                     ]);
-                } elseif ($directory->status == 1) {
+                } elseif ($directory->status == 2) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already accepted By Admin so you can not deny',
+                        'message' => 'Request already denied By Admin so you can not deny again',
                     ]);
                 }
             } else {
@@ -473,6 +478,8 @@ class DirectoryController extends Controller
                 foreach ($directory as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                     ## random ads
                     $ads = Advertisment::all()->random(1);
@@ -505,6 +512,8 @@ class DirectoryController extends Controller
                         foreach ($directory as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+                            $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                             ## random ads
                             $ads = Advertisment::all()->random(1);

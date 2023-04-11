@@ -51,7 +51,7 @@ class WatermarkController extends Controller
                         ]);
 
                         if ($validator->fails()) {
-                            return response()->json(['status' => false,'message' => $validator->errors()]);
+                            return response()->json(['status' => false, 'message' => $validator->errors()]);
                         }
 
                         if ($file = $request->file('image')) {

@@ -25,6 +25,7 @@ class ShokSuchnaController extends Controller
                 foreach ($shoksuchna as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -58,10 +59,10 @@ class ShokSuchnaController extends Controller
             if (!empty($id)) {
                 if ($role_id != 1) {
                     $validator = Validator::make($request->all(), [
-                        'title' => ['required', 'string'],
+                        'title'       => ['required', 'string'],
                         'description' => ['required', 'string'],
-                        'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg']
+                        'image'       => ['nullable'],
+                        'image.*'     => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -94,16 +95,12 @@ class ShokSuchnaController extends Controller
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|',  $imp_image);
 
-                    $data['title'] = $shoksuchna->title;
-                    $data['description'] = $shoksuchna->description;
-                    $data['image'] = $exp;
-                    $data['created_at'] = $shoksuchna->created_at;
-                    $data['updated_at'] = $shoksuchna->updated_at;
+                    $shoksuchna['image'] = ($exp[0] != "") ? $exp : [];
 
                     return response()->json([
                         'status' => true,
                         'message' => 'Added Successfully',
-                        'data' => $data,
+                        'data' => $shoksuchna,
                     ]);
                 } else {
                     return response()->json([
@@ -144,11 +141,11 @@ class ShokSuchnaController extends Controller
                 $shoksuchna = ShokSuchna::where('id', $id)->first();
                 if (!empty($shoksuchna)) {
                     $validator = Validator::make($request->all(), [
-                        'title' => ['required', 'string'],
+                        'title'       => ['required', 'string'],
                         'description' => ['required', 'string'],
-                        'city_id' => ['required', 'numeric'],
-                        'image' => ['required'],
-                        'image.*' => ['mimes:jpeg,png,jpg']
+                        'city_id'     => ['required', 'numeric'],
+                        'image'       => ['nullable'],
+                        'image.*'     => ['mimes:jpeg,png,jpg']
                     ]);
 
                     if ($validator->fails()) {
@@ -180,6 +177,8 @@ class ShokSuchnaController extends Controller
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $get[0]->image = explode('|', $imp_image);
+
+                    $get[0]->image = ($get[0]->image[0] != "") ? $get[0]->image : [];
 
                     return response()->json([
                         'status' => true,
@@ -220,11 +219,11 @@ class ShokSuchnaController extends Controller
         try {
             if ($id == 1) {
                 $validator = Validator::make($request->all(), [
-                    'title' => ['required', 'string'],
+                    'title'       => ['required', 'string'],
                     'description' => ['required', 'string'],
-                    'city_id' => ['required', 'numeric'],
-                    'image' => ['required'],
-                    'image.*' => ['mimes:jpeg,png,jpg'],
+                    'city_id'     => ['required', 'numeric'],
+                    'image'       => ['nullable'],
+                    'image.*'     => ['mimes:jpeg,png,jpg'],
                 ]);
 
                 if ($validator->fails()) {
@@ -256,16 +255,13 @@ class ShokSuchnaController extends Controller
                     ]);
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|', $imp_image);
-                    $data['title'] = $request->title;
-                    $data['description'] = $request->description;
-                    $data['city_id'] = $request->city_id;
-                    $data['image'] = $exp;
-                    $data['user_id'] = $id;
+
+                    $shoksuchna['image'] = ($exp[0] != "") ? $exp : [];
 
                     return response()->json([
                         'status' => true,
                         'message' => 'Added Successfully By Admin',
-                        'data' => $data,
+                        'data' => $shoksuchna,
                     ]);
                 } else {
                     return response()->json([
@@ -290,12 +286,12 @@ class ShokSuchnaController extends Controller
     {
         try {
             $shoksuchna = ShokSuchna::get()->toArray();
-            // dd($shoksuchna);
             if (!empty($shoksuchna)) {
                 $newarr = [];
                 foreach ($shoksuchna as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -341,10 +337,10 @@ class ShokSuchnaController extends Controller
                             'message' => 'Accepted By Admin',
                             'data' => $shoksuchna,
                         ]);
-                    } elseif ($shoksuchna->status == 2) {
+                    } elseif ($shoksuchna->status == 1) {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Request already denied By Admin so you can not accept',
+                            'message' => 'Request already accepted By Admin so you can not accept again',
                         ]);
                     }
                 } else {
@@ -388,10 +384,10 @@ class ShokSuchnaController extends Controller
                         'message' => 'Request denied By Admin',
                         'data' => $shokSuchna,
                     ]);
-                } elseif ($shokSuchna->status == 1) {
+                } elseif ($shokSuchna->status == 2) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already accepted By Admin so you can not deny',
+                        'message' => 'Request already denied By Admin so you can not deny again',
                     ]);
                 }
             } else {
@@ -417,6 +413,7 @@ class ShokSuchnaController extends Controller
                 foreach ($shokSuchna as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                     ## random ads
                     $ads = Advertisment::all()->random(1);
@@ -450,6 +447,8 @@ class ShokSuchnaController extends Controller
                         foreach ($shokSuchna as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+                            $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                             ## random ads
                             $ads = Advertisment::all()->random(1);

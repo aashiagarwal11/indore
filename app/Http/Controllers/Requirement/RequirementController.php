@@ -24,6 +24,7 @@ class RequirementController extends Controller
                 foreach ($requirement as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -57,10 +58,10 @@ class RequirementController extends Controller
                 if ($role_id != 1) {
                     $validator = Validator::make($request->all(), [
                         'title'         => ['required', 'string'],
-                        'salary'        => ['required'],
-                        'working_time'  => ['required'],
-                        'comment'       => ['required'],
-                        'image'         => ['required'],
+                        'salary'        => ['nullable'],
+                        'working_time'  => ['nullable'],
+                        'comment'       => ['nullable'],
+                        'image'         => ['nullable'],
                         'image.*'       => ['mimes:jpeg,png,jpg']
                     ]);
 
@@ -97,19 +98,13 @@ class RequirementController extends Controller
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $exp = explode('|',  $imp_image);
+                    $requirement['image']  = ($exp[0] != "") ? $exp : [];
 
-                    $data['title'] = $requirement->title;
-                    $data['salary'] = $requirement->salary;
-                    $data['working_time'] = $requirement->working_time;
-                    $data['comment'] = $requirement->comment;
-                    $data['image'] = $exp;
-                    $data['created_at'] = $requirement->created_at;
-                    $data['updated_at'] = $requirement->updated_at;
 
                     return response()->json([
                         'status' => true,
                         'message' => 'Added Successfully',
-                        'data' => $data,
+                        'data' => $requirement,
                     ]);
                 } else {
                     return response()->json([
@@ -151,11 +146,11 @@ class RequirementController extends Controller
                 if (!empty($requirement)) {
                     $validator = Validator::make($request->all(), [
                         'title'          => ['required', 'string'],
-                        'salary'         => ['required'],
+                        'salary'         => ['nullable'],
                         'city_id'        => ['required', 'numeric'],
-                        'working_time'   => ['required'],
-                        'comment'        => ['required'],
-                        'image'          => ['required'],
+                        'working_time'   => ['nullable'],
+                        'comment'        => ['nullable'],
+                        'image'          => ['nullable'],
                         'image.*'        => ['mimes:jpeg,png,jpg']
                     ]);
 
@@ -191,6 +186,8 @@ class RequirementController extends Controller
 
                     $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
                     $get[0]->image = explode('|', $imp_image);
+
+                    $get[0]->image = ($get[0]->image[0] != "") ? $get[0]->image : [];
 
                     return response()->json([
                         'status' => true,
@@ -235,6 +232,7 @@ class RequirementController extends Controller
                 foreach ($requirement as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
                     array_push($newarr, $new);
                 }
                 return response()->json([
@@ -263,11 +261,11 @@ class RequirementController extends Controller
             if ($id == 1) {
                 $validator = Validator::make($request->all(), [
                     'title'          => ['required', 'string'],
-                    'salary'         => ['required'],
+                    'salary'         => ['nullable'],
                     'city_id'        => ['required', 'numeric'],
-                    'working_time'   => ['required'],
-                    'comment'        => ['required'],
-                    'image'          => ['required'],
+                    'working_time'   => ['nullable'],
+                    'comment'        => ['nullable'],
+                    'image'          => ['nullable'],
                     'image.*'        => ['mimes:jpeg,png,jpg']
                 ]);
 
@@ -352,10 +350,10 @@ class RequirementController extends Controller
                             'message' => 'Request is accepted By Admin',
                             'data' => $requirement,
                         ]);
-                    } elseif ($requirement->status == 2) {
+                    } elseif ($requirement->status == 1) {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Request already denied By Admin so you can not accept',
+                            'message' => 'Request already accepted By Admin so you can not accept again',
                         ]);
                     }
                 } else {
@@ -399,10 +397,10 @@ class RequirementController extends Controller
                         'message' => 'Request denied By Admin',
                         'data' => $requirement,
                     ]);
-                } elseif ($requirement->status == 1) {
+                } elseif ($requirement->status == 2) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already accepted By Admin so you can not deny',
+                        'message' => 'Request already denied By Admin so you can not deny again',
                     ]);
                 }
             } else {
@@ -429,6 +427,8 @@ class RequirementController extends Controller
                 foreach ($requirement as $key => $new) {
                     $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                     $new['image'] = explode('|', $new['image']);
+
+                    $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                     ## random ads
                     $ads = Advertisment::all()->random(1);
@@ -461,6 +461,8 @@ class RequirementController extends Controller
                         foreach ($requirement as $key => $new) {
                             $new['image'] = str_replace("public", env('APP_URL') . "public", $new['image']);
                             $new['image'] = explode('|', $new['image']);
+
+                            $new['image'] = ($new['image'][0] != "") ? $new['image'] : [];
 
                             ## random ads
                             $ads = Advertisment::all()->random(1);
