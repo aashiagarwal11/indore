@@ -353,7 +353,7 @@ class RegisteredUserController extends Controller
     public function getUserWithToken($token)
     {
         return [
-            'status' => true,
+            'success' => true,
             'message' => 'Login Successfully',
             'access_token' => $token,
             'token_type' => 'bearer',
