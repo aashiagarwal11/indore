@@ -75,9 +75,13 @@ Route::middleware('jwt.verify')->group(function () {
         Route::get('shownewsViacity', 'shownewsViacity');
         // Route::get('premiumads', 'premiumads');
         Route::get('showallnewsonadmin', 'showallnewsonadmin');
-        Route::post('cityUpdate', 'cityUpdate'); // city update by admin for accept the news
+        Route::post('cityUpdate', 'cityUpdate'); ## city update by admin for accept the news
         Route::post('cityUpdateAcceptStatus', 'cityUpdateAcceptStatus'); // city update by admin for accept the news
-        Route::get('recentNews', 'recentNews'); ## recent news
+        Route::get('recentNews', 'recentNews');  ## recent news
+    });
+    Route::controller(AdvertismentController::class)->group(function () {
+        Route::post('activedeactive', 'activedeactive');
+        Route::get('randomads', 'randomads');
     });
     Route::controller(PremiumAdsController::class)->group(function () {
         Route::get('premiumads', 'premiumads');
