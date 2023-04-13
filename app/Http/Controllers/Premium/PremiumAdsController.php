@@ -21,17 +21,17 @@ class PremiumAdsController extends Controller
                 $newarr = [];
                 foreach ($premiumAds as $key => $new) {
                     $new['premium_ads_image'] = str_replace("public", env('APP_URL') . "public", $new['premium_ads_image']);
-                    $new['premium_ads_image'] = explode('|', $new['premium_ads_image']);
+                    // $new['premium_ads_image'] = explode('|', $new['premium_ads_image']);
                     array_push($newarr, $new);
                 }
                 return response()->json([
-                    'status' => true,
+                    'success' => true,
                     'message' => 'All Premium Ads List',
                     'data' => $newarr,
                 ]);
             } else {
                 return response()->json([
-                    'status' => true,
+                    'success' => true,
                     'message' => 'No Premium Ads Available',
                     'data' => [],
                 ]);
@@ -377,6 +377,40 @@ class PremiumAdsController extends Controller
             ]);
         }
     }
+
+
+
+
+
+    // public function index()
+    // {
+    //     try {
+    //         $premiumAds =  PremiumAds::orderBy('id', 'desc')->get()->toArray();
+    //         if (!empty($premiumAds)) {
+    //             $newarr = [];
+    //             foreach ($premiumAds as $key => $new) {
+    //                 $new['premium_ads_image'] = str_replace("public", env('APP_URL') . "public", $new['premium_ads_image']);
+    //                 $new['premium_ads_image'] = explode('|', $new['premium_ads_image']);
+    //                 array_push($newarr, $new);
+    //             }
+    //             return response()->json([
+    //                 'status' => true,
+    //                 'message' => 'All Premium Ads List',
+    //                 'data' => $newarr,
+    //             ]);
+    //         } else {
+    //             return response()->json([
+    //                 'status' => true,
+    //                 'message' => 'No Premium Ads Available',
+    //                 'data' => [],
+    //             ]);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
 
 
 
