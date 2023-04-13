@@ -81,9 +81,9 @@ Route::middleware('jwt.verify')->group(function () {
     });
     Route::controller(AdvertismentController::class)->group(function () {
         Route::post('activedeactive', 'activedeactive');
-        Route::get('randomads', 'randomads');
     });
     Route::controller(PremiumAdsController::class)->group(function () {
+        Route::post('activedeactivepremiumAds', 'activedeactivepremiumAds');
         Route::get('premiumads', 'premiumads');
     });
     Route::controller(SellSubCategoryController::class)->group(function () {

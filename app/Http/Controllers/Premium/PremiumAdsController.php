@@ -151,8 +151,52 @@ class PremiumAdsController extends Controller
 
     public function update(Request $request, string $id)
     {
+        // $validator =  Validator::make($request->all(), [
+        //     'status' => ['required', 'numeric'],
+        // ]);
+
+        // $status = $request->status;
+
+        // if ($validator->fails()) {
+        //     return response()->json(['status' => false, 'message' => $validator->errors()]);
+        // }
+        // try {
+        //     $user_ads = PremiumAds::where('id', $id)->first();
+        //     if (!empty($user_ads)) {
+        //         $verified['status'] = $status;
+
+        //         $media = PremiumAds::where('id', $id)->update($verified);
+        //         if ($status == 1) {
+        //             return response()->json([
+        //                 'status' => true,
+        //                 'message' => 'Record Active',
+        //             ]);
+        //         } else {
+        //             return response()->json([
+        //                 'status' => true,
+        //                 'message' => 'Record Deactive',
+        //             ]);
+        //         }
+        //     } else {
+        //         return response()->json([
+        //             'status' => false,
+        //             'message' => 'Record ' . $id . ' not exist',
+        //         ]);
+        //     }
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'message' => $e->getMessage(),
+        //     ]);
+        // }
+    }
+
+
+    public function activedeactivepremiumAds(Request $request)
+    {
+        $id = $request->id;
         $validator =  Validator::make($request->all(), [
             'status' => ['required', 'numeric'],
+            'id'     => ['required', 'numeric'],
         ]);
 
         $status = $request->status;
@@ -189,6 +233,7 @@ class PremiumAdsController extends Controller
             ]);
         }
     }
+
 
 
     // public function update(Request $request, string $id)
