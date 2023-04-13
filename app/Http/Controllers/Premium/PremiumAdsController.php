@@ -356,7 +356,7 @@ class PremiumAdsController extends Controller
     {
         ## premium ads api
         try {
-            $ads = PremiumAds::all()->random(1)->toArray();
+            $ads = PremiumAds::where('status', 1)->get()->random(1)->toArray();
             if (!empty($ads)) {
                 $ads[0]['premium_ads_image'] = str_replace("public", env('APP_URL') . "public", $ads[0]['premium_ads_image']);
                 return response()->json([
@@ -382,7 +382,7 @@ class PremiumAdsController extends Controller
 
 
 
-    
+
 
     // public function destroy(Request $request, string $id)
     // {
