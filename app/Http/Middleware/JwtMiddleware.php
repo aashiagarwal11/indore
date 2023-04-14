@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -20,28 +21,30 @@ class JwtMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $_error = '';
-        try {
-            if (!JWTAuth::parseToken()->authenticate()) {
-                throw new TokenInvalidException();
+        if ($request->role_id != 1) {
+            $_error = '';
+            try {
+                if (!JWTAuth::parseToken()->authenticate()) {
+                    throw new TokenInvalidException();
+                }
+            } catch (TokenInvalidException $e) {
+                $_error = 'Token Is Invalid';
+            } catch (TokenExpiredException $e) {
+                $_error = 'Token Expired';
+            } catch (\Exception $e) {
+                // catch on "token not found"
+                $routeName = $request->route()->getName();
+
+                $_error = (!empty($routeName) && strpos($routeName, 'api.guest') === 0)
+                    ? '' : 'Token Not Found';
             }
-        } catch (TokenInvalidException $e) {
-            $_error = 'Token Is Invalid';
-        } catch (TokenExpiredException $e) {
-            $_error = 'Token Expired';
-        } catch (\Exception $e) {
-            // catch on "token not found"
-            $routeName = $request->route()->getName();
 
-            $_error = (!empty($routeName) && strpos($routeName, 'api.guest') === 0)
-                ? '' : 'Token Not Found';
-        }
-
-        if ($_error !== '') {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ]);
-            // return ApiResponse::unauthorized($_error);
+            if ($_error !== '') {
+                return response()->json([
+                    'message' => 'Unauthorized',
+                ]);
+                // return ApiResponse::unauthorized($_error);
+            }
         }
 
         return $next($request);

@@ -20,6 +20,7 @@ use App\Http\Controllers\Requirement\RequirementController;
 use App\Http\Controllers\Directory\DirectoryController;
 use App\Http\Controllers\Premium\PremiumAdsController;
 use App\Http\Controllers\Watermark\WatermarkController;
+use App\Http\Controllers\Admin\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,7 +119,7 @@ Route::middleware('jwt.verify')->group(function () {
 
     Route::controller(BirthdayController::class)->group(function () {
         Route::post('addbirthdayViaAdmin', 'addbirthdayViaAdmin');
-        Route::get('birthdayListOfUser', 'birthdayListOfUser');
+        Route::get('birthdayListOfUser', 'birthdayListOfUser')->name('birthdayListOfUser');
         Route::post('acceptBirthday', 'acceptBirthday');
         Route::post('denyBirthday', 'denyBirthday');
         Route::get('showbBirthdayViacity', 'showbBirthdayViacity');
