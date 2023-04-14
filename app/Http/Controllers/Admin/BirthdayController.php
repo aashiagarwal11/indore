@@ -21,6 +21,7 @@ class BirthdayController extends Controller
         return view('admin.birthday.index', compact('birthdayData'));
     }
 
+    
     public function birthdayImage($id)
     {
         $bdata = Birthday::where('id', $id)->first();
