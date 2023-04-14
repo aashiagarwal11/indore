@@ -29,7 +29,7 @@
                         <div class="card">
 
                             <div class="card-header">
-                                <a href="{{ route('birthdayList') }}" class="btn btn-danger m-1">View
+                                <a href="{{ route('birthdayList') }}" class="btn btn-primary m-1">View
                                     Birthday List</a>
                             </div>
 
@@ -43,8 +43,10 @@
                                         </div>
                                         <!-- form start -->
                                         <form id="quickForm" class="was-validated" action="{{ route('addbirthday') }}"
-                                            method="POST">
+                                            method="POST" enctype="multipart/form-data">
                                             @csrf
+                                            <input type="hidden" name="role_id" class="form-control"
+                                                id="exampleInputEmail1" placeholder="Enter title" value="{{auth()->user()->role_id}}">
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1">Title</label>
@@ -62,8 +64,8 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="exampleInputPassword1">Image</label>
-                                                    <input type="file" name="image" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter image">
+                                                    <input type="file" name="image[]" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter image" multiple>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>City</label>

@@ -27,10 +27,10 @@
     <div class="wrapper">
 
         <!-- Preloader -->
-        <div class="preloader flex-column justify-content-center align-items-center">
+        {{-- <div class="preloader flex-column justify-content-center align-items-center">
             <img class="animation__wobble" src="{{ url('public/admin/img/AdminLTELogo.png') }}" alt="AdminLTELogo"
                 height="60" width="60">
-        </div>
+        </div> --}}
 
         @include('admin.layout.header')
 
@@ -106,6 +106,14 @@
                 "autoWidth": false,
                 "responsive": true,
             });
+        });
+    </script>
+
+    <script>
+        $("document").ready(function() {
+            setTimeout(function() {
+                $("#message_id").remove();
+            }, 3000);
         });
     </script>
 
