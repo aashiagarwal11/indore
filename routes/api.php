@@ -122,7 +122,7 @@ Route::middleware('jwt.verify')->group(function () {
     });
 
     Route::controller(BirthdayController::class)->group(function () {
-        Route::post('addbirthdayViaAdmin', 'addbirthdayViaAdmin');
+        Route::post('addbirthdayViaAdmin', 'addbirthdayViaAdmin')->name('addbirthdayViaAdmin');
         Route::get('birthdayListOfUser', 'birthdayListOfUser')->name('birthdayListOfUser');
         Route::post('acceptBirthday', 'acceptBirthday');
         Route::post('denyBirthday', 'denyBirthday');

@@ -40,10 +40,10 @@ Route::group(['middleware' => ['admin']], function () {
         Route::post('addbirthday', 'addbirthday')->name('addbirthday');
         Route::get('getbirthdayEditForm/{id}', 'getbirthdayEditForm')->name('getbirthdayEditForm');
         Route::any('updatebirthday', 'updatebirthday')->name('updatebirthday');
+        Route::any('acceptBday/{id}', 'acceptBday')->name('acceptBday');
+        Route::any('denyBday/{id}', 'denyBday')->name('denyBday');
 
         // Route::post('editbirthday', 'editbirthday')->name('editbirthday');
-        // Route::post('acceptBirthday', 'acceptBirthday');
-        // Route::post('denyBirthday', 'denyBirthday');
         // Route::get('showbBirthdayViacity', 'showbBirthdayViacity');
     });
 });
