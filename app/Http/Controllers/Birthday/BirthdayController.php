@@ -138,9 +138,10 @@ class BirthdayController extends Controller
     public function update(Request $request, string $id)
     {
         ## add city by admin and edit form of user side
-        $auth_id = auth()->user()->id;
+        // $auth_id = auth()->user()->role_id;
+        // dd($auth_id);
         try {
-            if ($auth_id == 1) {
+            if ($request->role_id == 1) {
                 $birthday = Birthday::where('id', $id)->first();
                 if (!empty($birthday)) {
                     $validator = Validator::make($request->all(), [
@@ -218,9 +219,8 @@ class BirthdayController extends Controller
 
     public function addbirthdayViaAdmin(Request $request)
     {
-        $id = auth()->user()->id;
         try {
-            if ($id == 1) {
+            if ($request->role_id == 1) {
                 $validator = Validator::make($request->all(), [
                     'title'       => ['required', 'string'],
                     'description' => ['required'],
@@ -255,7 +255,7 @@ class BirthdayController extends Controller
                         'description' => $request->description,
                         'image' => $imp_image,
                         'video_url' => $request->video_url ?? null,
-                        'user_id' => $id,
+                        'user_id' => 1,
                         'city_id' => $request->city_id,
                         'status' => 1,
                     ]);
