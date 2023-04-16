@@ -220,74 +220,74 @@ class BirthdayController extends Controller
 
     public function addbirthdayViaAdmin(Request $request)
     {
-        Log::info($request->all());
-        // try {
-        //     if ($request->role_id == 1) {
-        //         $validator = Validator::make($request->all(), [
-        //             'title'       => ['required', 'string'],
-        //             'description' => ['required'],
-        //             'city_id'     => ['required', 'numeric'],
-        //             'image'       => ['nullable'],
-        //             'image.*'     => ['mimes:jpeg,png,jpg'],
-        //             'video_url'   => ['nullable'],
-        //         ]);
+        // Log::info($request->all());
+        try {
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'title'       => ['required', 'string'],
+                    'description' => ['required'],
+                    'city_id'     => ['required', 'numeric'],
+                    'image'       => ['nullable'],
+                    'image.*'     => ['mimes:jpeg,png,jpg'],
+                    'video_url'   => ['nullable'],
+                ]);
 
-        //         if ($validator->fails()) {
-        //             return response()->json(['success' => false, 'message' => $validator->errors()]);
-        //         }
+                if ($validator->fails()) {
+                    return response()->json(['success' => false, 'message' => $validator->errors()]);
+                }
 
-        //         $city = City::where('id', $request->city_id)->first();
-        //         if (!empty($city)) {
-        //             $images = array();
-        //             if ($files = $request->file('image')) {
-        //                 foreach ($files as $file) {
-        //                     $imgname = md5(rand('1000', '10000'));
-        //                     $extension = strtolower($file->getClientOriginalExtension());
-        //                     $img_full_name = $imgname . '.' . $extension;
-        //                     $upload_path = 'public/birthday/';
-        //                     $img_url = $upload_path . $img_full_name;
-        //                     $file->move($upload_path, $img_full_name);
-        //                     array_push($images, $img_url);
-        //                 }
-        //             }
-        //             $imp_image =  implode('|', $images);
+                $city = City::where('id', $request->city_id)->first();
+                if (!empty($city)) {
+                    $images = array();
+                    if ($files = $request->file('image')) {
+                        foreach ($files as $file) {
+                            $imgname = md5(rand('1000', '10000'));
+                            $extension = strtolower($file->getClientOriginalExtension());
+                            $img_full_name = $imgname . '.' . $extension;
+                            $upload_path = 'public/birthday/';
+                            $img_url = $upload_path . $img_full_name;
+                            $file->move($upload_path, $img_full_name);
+                            array_push($images, $img_url);
+                        }
+                    }
+                    $imp_image =  implode('|', $images);
 
-        //             $birthday = Birthday::create([
-        //                 'title' => $request->title,
-        //                 'description' => $request->description,
-        //                 'image' => $imp_image,
-        //                 'video_url' => $request->video_url ?? null,
-        //                 'user_id' => 1,
-        //                 'city_id' => $request->city_id,
-        //                 'status' => 1,
-        //             ]);
-        //             $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
+                    $birthday = Birthday::create([
+                        'title' => $request->title,
+                        'description' => $request->description,
+                        'image' => $imp_image,
+                        'video_url' => $request->video_url ?? null,
+                        'user_id' => 1,
+                        'city_id' => $request->city_id,
+                        'status' => 1,
+                    ]);
+                    $imp_image = str_replace("public", env('APP_URL') . "public", $imp_image);
 
-        //             $exp = explode('|', $imp_image);
-        //             $birthday['image'] = ($exp[0] != "") ? $exp : [];
+                    $exp = explode('|', $imp_image);
+                    $birthday['image'] = ($exp[0] != "") ? $exp : [];
 
-        //             return response()->json([
-        //                 'success' => true,
-        //                 'message' => 'Added Successfully By Admin',
-        //                 'data' => $birthday,
-        //             ]);
-        //         } else {
-        //             return response()->json([
-        //                 'success' => false,
-        //                 'message' => 'City not exist',
-        //             ]);
-        //         }
-        //     } else {
-        //         return response()->json([
-        //             'success' => false,
-        //             'message' => 'Login as admin first',
-        //         ]);
-        //     }
-        // } catch (\Exception $e) {
-        //     return response()->json([
-        //         'message' => $e->getMessage(),
-        //     ]);
-        // }
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Added Successfully By Admin',
+                        'data' => $birthday,
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'City not exist',
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Login as admin first',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
 
