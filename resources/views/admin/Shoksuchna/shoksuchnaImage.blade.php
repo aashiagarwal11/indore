@@ -29,7 +29,8 @@
                             <div class="card-header">
                                 <h3 class="card-title">Birthday Images</h3>
 
-                                <form method="POST" id="imagedata" enctype='multipart/form-data' onchange="myimage()">
+                                <form method="POST" id="imageshoksuchna" enctype='multipart/form-data'
+                                    onchange="myimage()">
                                     @csrf
                                     <input class="d-none" type="file" id="change-profile" name="image[]" multiple>
                                 </form>
@@ -42,7 +43,6 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <div class="row">
-                                    {{-- @dd($exp) --}}
                                     @if (isset($exp))
                                         @forelse ($exp as $expImg)
                                             <div class="col-md-2">
@@ -75,10 +75,10 @@
 
 <script>
     function myimage() {
-        let formData = new FormData($('#imagedata')[0]);
+        let formData = new FormData($('#imageshoksuchna')[0]);
         console.log(formData);
         $.ajax({
-            url: "{{ url('addbirthdayImage/' . $id) }}",
+            url: "{{ url('addshoksuchnaImage/' . $id) }}",
             method: "post",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"

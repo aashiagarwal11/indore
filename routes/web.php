@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Doctrine\DBAL\Driver\Middleware;
 use App\Http\Controllers\Admin\BirthdayController;
+use App\Http\Controllers\Admin\KrishiMandiBhavController;
+use App\Http\Controllers\Admin\ShoksuchnaController;
 
 
 /*
@@ -42,9 +44,30 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('updatebirthday', 'updatebirthday')->name('updatebirthday');
         Route::any('acceptBday/{id}', 'acceptBday')->name('acceptBday');
         Route::any('denyBday/{id}', 'denyBday')->name('denyBday');
+        Route::post('addbirthdayImage/{id}', 'addbirthdayImage')->name('addbirthdayImage');
+    });
 
-        // Route::post('editbirthday', 'editbirthday')->name('editbirthday');
-        // Route::get('showbBirthdayViacity', 'showbBirthdayViacity');
+    Route::controller(KrishiMandiBhavController::class)->group(function () {
+        Route::get('krishiList', 'krishiList')->name('krishiList');
+        Route::get('krishiImage/{id}', 'krishiImage')->name('krishiImage');
+        Route::get('getkrishiForm', 'getkrishiForm')->name('getkrishiForm');
+        Route::post('addkrishi', 'addkrishi')->name('addkrishi');
+        Route::get('getkrishiEditForm/{id}', 'getkrishiEditForm')->name('getkrishiEditForm');
+        Route::any('updatekrishi', 'updatekrishi')->name('updatekrishi');
+        Route::post('addkrishiImage/{id}', 'addkrishiImage')->name('addkrishiImage');
+    });
+
+
+    Route::controller(ShoksuchnaController::class)->group(function () {
+        Route::get('shoksuchnaList', 'shoksuchnaList')->name('shoksuchnaList');
+        Route::get('shoksuchnaImage/{id}', 'shoksuchnaImage')->name('shoksuchnaImage');
+        Route::get('getshoksuchnaForm', 'getshoksuchnaForm')->name('getshoksuchnaForm');
+        Route::post('addshoksuchna', 'addshoksuchna')->name('addshoksuchna');
+        Route::get('getshoksuchnaEditForm/{id}', 'getshoksuchnaEditForm')->name('getshoksuchnaEditForm');
+        Route::any('updateshoksuchna', 'updateshoksuchna')->name('updateshoksuchna');
+        Route::any('acceptshoksuchna/{id}', 'acceptshoksuchna')->name('acceptshoksuchna');
+        Route::any('denyshoksuchna/{id}', 'denyshoksuchna')->name('denyshoksuchna');
+        Route::post('addshoksuchnaImage/{id}', 'addshoksuchnaImage')->name('addshoksuchnaImage');
     });
 });
 

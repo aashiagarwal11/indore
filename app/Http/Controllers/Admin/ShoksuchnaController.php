@@ -6,29 +6,28 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use App\Models\Birthday;
+use App\Models\ShokSuchna;
 use App\Models\City;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 
-class BirthdayController extends Controller
+class ShoksuchnaController extends Controller
 {
-    public function birthdayList()
+    public function shoksuchnaList()
     {
-        $apiurl = env('APP_URL') . 'api/birthdayListOfUser';
+        $apiurl = env('APP_URL') . 'api/showAllOnAdmin';
         $response = Http::get($apiurl, [
             'role_id' => auth()->user()->role_id,
         ]);
         $newdata =  $response->json($key = null, $default = null);
         $birthdayData = $newdata['data'];
-        return view('admin.birthday.index', compact('birthdayData'));
+        return view('admin.Shoksuchna.index', compact('birthdayData'));
     }
 
-
-    public function birthdayImage($id)
+    public function shoksuchnaImage($id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = ShokSuchna::where('id', $id)->first();
         $bdata->image = str_replace("public", env('APP_URL') . "public", $bdata->image);
 
         if ($bdata->image == "") {
@@ -38,25 +37,23 @@ class BirthdayController extends Controller
             $key = array_search("", $exp);
             unset($exp[$key]);
         }
-        return view('admin.birthday.birthdayImage', compact('exp', 'id'));
+        return view('admin.Shoksuchna.shoksuchnaImage', compact('exp', 'id'));
     }
 
-    public function getbirthdayForm()
+    public function getshoksuchnaForm()
     {
         $cityData = City::get();
-        return view('admin.Birthday.birthdayForm', compact('cityData'));
+        return view('admin.Shoksuchna.shoksuchnaForm', compact('cityData'));
     }
 
-    public function addbirthday(Request $request)
+    public function addshoksuchna(Request $request)
     {
-        // if ($request->role_id == 1) {
         $validator = Validator::make($request->all(), [
             'title'       => ['required', 'string'],
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
             'image'       => ['nullable'],
             'image.*'     => ['mimes:jpeg,png,jpg'],
-            'video_url'   => ['nullable'],
         ]);
 
         if ($validator->fails()) {
@@ -71,7 +68,7 @@ class BirthdayController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/shoksuchna/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($images, $img_url);
@@ -79,39 +76,36 @@ class BirthdayController extends Controller
             }
             $imp_image =  implode('|', $images);
 
-            $birthday = Birthday::create([
+            $birthday = ShokSuchna::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'image' => $imp_image ?? null,
-                'video_url' => $request->video_url ?? null,
                 'user_id' => 1,
                 'city_id' => $request->city_id,
                 'status' => 1,
             ]);
 
-            return redirect()->route('birthdayList')->with('message', 'Added Successfully');
+            return redirect()->route('shoksuchnaList')->with('message', 'Added Successfully');
         }
-        // }
     }
 
-    public function getbirthdayEditForm(Request $request, $id)
+    public function getshoksuchnaEditForm(Request $request, $id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = ShokSuchna::where('id', $id)->first();
         $cityData = City::get();
 
-        return view('admin.birthday.birthdayEditForm', compact('bdata', 'cityData'));
+        return view('admin.Shoksuchna.shoksuchnaEditForm', compact('bdata', 'cityData'));
     }
 
-    public function updatebirthday(Request $request)
+    public function updateshoksuchna(Request $request)
     {
         $id = $request->id;
-        $birthday = Birthday::where('id', $id)->first();
+        $birthday = ShokSuchna::where('id', $id)->first();
         if (!empty($birthday)) {
             $validator = Validator::make($request->all(), [
                 'title'       => ['required', 'string'],
                 'description' => ['required'],
                 'city_id'     => ['required', 'numeric'],
-                'video_url'   => ['nullable'],
             ]);
 
             if ($validator->fails()) {
@@ -121,7 +115,6 @@ class BirthdayController extends Controller
             $data['title'] = $request->title;
             $data['description'] = $request->description;
             $data['city_id'] = $request->city_id;
-            $data['video_url'] = $request->video_url ?? null;
             $updatedata = $birthday->update($data);
         }
 
@@ -135,12 +128,12 @@ class BirthdayController extends Controller
         //     'video_url' => $request->video_url,
         // ]);
         // $newdata =  $response->json();
-        return redirect()->route('birthdayList')->with('message', 'Update Successfully');
+        return redirect()->route('shoksuchnaList')->with('message', 'Update Successfully');
     }
 
-    public function acceptBday(Request $request)
+    public function acceptshoksuchna(Request $request)
     {
-        $apiurl = env('APP_URL') . 'api/acceptBirthday';
+        $apiurl = env('APP_URL') . 'api/acceptShokSuchna';
         $response = Http::post($apiurl, [
             'role_id' => auth()->user()->role_id,   ## 1
             'id' => $request->id,
@@ -150,9 +143,9 @@ class BirthdayController extends Controller
         return redirect()->back()->with('message', $message);
     }
 
-    public function denyBday(Request $request)
+    public function denyshoksuchna(Request $request)
     {
-        $apiurl = env('APP_URL') . 'api/denyBirthday';
+        $apiurl = env('APP_URL') . 'api/denyShokSuchna';
         $response = Http::post($apiurl, [
             'role_id' => auth()->user()->role_id,   ## 1
             'id' => $request->id,
@@ -162,9 +155,9 @@ class BirthdayController extends Controller
         return redirect()->back()->with('message', $message);
     }
 
-    public function addbirthdayImage(Request $request, $id)
+    public function addshoksuchnaImage(Request $request, $id)
     {
-        $birthday = Birthday::where('id', $id)->first();
+        $birthday = ShokSuchna::where('id', $id)->first();
         if (!empty($birthday)) {
 
             $exp = explode('|', $birthday->image);
@@ -174,7 +167,7 @@ class BirthdayController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/shoksuchna/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($exp, $img_url);

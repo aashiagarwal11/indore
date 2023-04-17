@@ -6,29 +6,28 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use App\Models\Birthday;
+use App\Models\KrishiMandiBhav;
 use App\Models\City;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 
-class BirthdayController extends Controller
+class KrishiMandiBhavController extends Controller
 {
-    public function birthdayList()
+    public function krishiList()
     {
-        $apiurl = env('APP_URL') . 'api/birthdayListOfUser';
+        $apiurl = env('APP_URL') . 'api/krishiMandiBhav';
         $response = Http::get($apiurl, [
             'role_id' => auth()->user()->role_id,
         ]);
         $newdata =  $response->json($key = null, $default = null);
         $birthdayData = $newdata['data'];
-        return view('admin.birthday.index', compact('birthdayData'));
+        return view('admin.KrishiMandiBhav.index', compact('birthdayData'));
     }
 
 
-    public function birthdayImage($id)
+    public function krishiImage($id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = KrishiMandiBhav::where('id', $id)->first();
         $bdata->image = str_replace("public", env('APP_URL') . "public", $bdata->image);
 
         if ($bdata->image == "") {
@@ -38,18 +37,17 @@ class BirthdayController extends Controller
             $key = array_search("", $exp);
             unset($exp[$key]);
         }
-        return view('admin.birthday.birthdayImage', compact('exp', 'id'));
+        return view('admin.KrishiMandiBhav.krishiImage', compact('exp', 'id'));
     }
 
-    public function getbirthdayForm()
+    public function getkrishiForm()
     {
         $cityData = City::get();
-        return view('admin.Birthday.birthdayForm', compact('cityData'));
+        return view('admin.KrishiMandiBhav.krishiForm', compact('cityData'));
     }
 
-    public function addbirthday(Request $request)
+    public function addkrishi(Request $request)
     {
-        // if ($request->role_id == 1) {
         $validator = Validator::make($request->all(), [
             'title'       => ['required', 'string'],
             'description' => ['required'],
@@ -71,7 +69,7 @@ class BirthdayController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/krishiMandiImage/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($images, $img_url);
@@ -79,34 +77,32 @@ class BirthdayController extends Controller
             }
             $imp_image =  implode('|', $images);
 
-            $birthday = Birthday::create([
+            $krishiMandiBhav = KrishiMandiBhav::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'image' => $imp_image ?? null,
                 'video_url' => $request->video_url ?? null,
                 'user_id' => 1,
                 'city_id' => $request->city_id,
-                'status' => 1,
             ]);
 
-            return redirect()->route('birthdayList')->with('message', 'Added Successfully');
+            return redirect()->route('krishiList')->with('message', 'Added Successfully');
         }
-        // }
     }
 
-    public function getbirthdayEditForm(Request $request, $id)
+    public function getkrishiEditForm(Request $request, $id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = KrishiMandiBhav::where('id', $id)->first();
         $cityData = City::get();
 
-        return view('admin.birthday.birthdayEditForm', compact('bdata', 'cityData'));
+        return view('admin.KrishiMandiBhav.krishiEditForm', compact('bdata', 'cityData'));
     }
 
-    public function updatebirthday(Request $request)
+    public function updatekrishi(Request $request)
     {
         $id = $request->id;
-        $birthday = Birthday::where('id', $id)->first();
-        if (!empty($birthday)) {
+        $KrishiMandiBhav = KrishiMandiBhav::where('id', $id)->first();
+        if (!empty($KrishiMandiBhav)) {
             $validator = Validator::make($request->all(), [
                 'title'       => ['required', 'string'],
                 'description' => ['required'],
@@ -115,17 +111,16 @@ class BirthdayController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['success' => false, 'message' => $validator->errors()]);
+                return response()->json(['status' => false, 'message' => $validator->errors()]);
             }
 
             $data['title'] = $request->title;
             $data['description'] = $request->description;
             $data['city_id'] = $request->city_id;
             $data['video_url'] = $request->video_url ?? null;
-            $updatedata = $birthday->update($data);
+            $updatedata = $KrishiMandiBhav->update($data);
         }
-
-        // $apiurl = env('APP_URL') . 'api/birthday/' . $request->id;
+        // $apiurl = env('APP_URL') . 'api/krishiMandiBhav/' . $request->id;
         // $response = Http::put($apiurl, [
         //     'role_id' => auth()->user()->role_id,
         //     'title' => $request->title,
@@ -135,36 +130,12 @@ class BirthdayController extends Controller
         //     'video_url' => $request->video_url,
         // ]);
         // $newdata =  $response->json();
-        return redirect()->route('birthdayList')->with('message', 'Update Successfully');
+        return redirect()->route('krishiList')->with('message', 'Update Successfully');
     }
 
-    public function acceptBday(Request $request)
+    public function addkrishiImage(Request $request, $id)
     {
-        $apiurl = env('APP_URL') . 'api/acceptBirthday';
-        $response = Http::post($apiurl, [
-            'role_id' => auth()->user()->role_id,   ## 1
-            'id' => $request->id,
-        ]);
-        $newdata =  $response->json();
-        $message = $newdata['message'];
-        return redirect()->back()->with('message', $message);
-    }
-
-    public function denyBday(Request $request)
-    {
-        $apiurl = env('APP_URL') . 'api/denyBirthday';
-        $response = Http::post($apiurl, [
-            'role_id' => auth()->user()->role_id,   ## 1
-            'id' => $request->id,
-        ]);
-        $newdata =  $response->json();
-        $message = $newdata['message'];
-        return redirect()->back()->with('message', $message);
-    }
-
-    public function addbirthdayImage(Request $request, $id)
-    {
-        $birthday = Birthday::where('id', $id)->first();
+        $birthday = KrishiMandiBhav::where('id', $id)->first();
         if (!empty($birthday)) {
 
             $exp = explode('|', $birthday->image);
@@ -174,7 +145,7 @@ class BirthdayController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/krishiMandiImage/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($exp, $img_url);
