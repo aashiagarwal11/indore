@@ -22,7 +22,7 @@ class BirthdayController extends Controller
         ]);
         $newdata =  $response->json($key = null, $default = null);
         $birthdayData = $newdata['data'];
-        return view('admin.birthday.index', compact('birthdayData'));
+        return view('admin.Birthday.index', compact('birthdayData'));
     }
 
 
@@ -38,7 +38,7 @@ class BirthdayController extends Controller
             $key = array_search("", $exp);
             unset($exp[$key]);
         }
-        return view('admin.birthday.birthdayImage', compact('exp', 'id'));
+        return view('admin.Birthday.birthdayImage', compact('exp', 'id'));
     }
 
     public function getbirthdayForm()
@@ -99,7 +99,7 @@ class BirthdayController extends Controller
         $bdata = Birthday::where('id', $id)->first();
         $cityData = City::get();
 
-        return view('admin.birthday.birthdayEditForm', compact('bdata', 'cityData'));
+        return view('admin.Birthday.birthdayEditForm', compact('bdata', 'cityData'));
     }
 
     public function updatebirthday(Request $request)
