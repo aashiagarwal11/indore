@@ -312,7 +312,7 @@
 
                 <li class="nav-header">MODULES</li>
 
-                {{-- aachuki --}}
+                {{-- start aachuki --}}
 
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -326,13 +326,13 @@
                         <li class="nav-item">
                             <a href="{{ route('birthdayList') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>View Birthday List</p>
+                                <p>View</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('getbirthdayForm') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add Birthday</p>
+                                <p>Add</p>
                             </a>
                         </li>
                         {{-- <li class="nav-item">
@@ -353,6 +353,58 @@
                                 <p>jsGrid</p>
                             </a>
                         </li> --}}
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>
+                            Krishi Mandi bhav
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('krishiList') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>View</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('getkrishiForm') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>
+                            Shok Suchna
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('shoksuchnaList') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>View</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('getshoksuchnaForm') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

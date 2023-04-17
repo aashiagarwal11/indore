@@ -25,11 +25,11 @@
                 <!-- Info boxes -->
                 <div class="row">
                     <div class="col-12 col-sm-6 col-md-12">
+
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Birthday Images</h3>
-
-                                <form method="POST" id="imagedata" enctype='multipart/form-data' onchange="myimage()">
+                                <h3 class="card-title">Krishi Mandi Bhav Images</h3>
+                                <form method="POST" id="imagekrishi" enctype='multipart/form-data' onchange="myimage()">
                                     @csrf
                                     <input class="d-none" type="file" id="change-profile" name="image[]" multiple>
                                 </form>
@@ -42,7 +42,6 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <div class="row">
-                                    {{-- @dd($exp) --}}
                                     @if (isset($exp))
                                         @forelse ($exp as $expImg)
                                             <div class="col-md-2">
@@ -56,13 +55,14 @@
                                     @endif
 
                                 </div>
-
                             </div>
                             <!-- /.card-body -->
                         </div>
                         <!-- /.info-box -->
                     </div>
                     <!-- /.col -->
+
+
                 </div>
                 <!-- /.row -->
             </div>
@@ -72,13 +72,11 @@
     </div>
 @endsection
 
-
 <script>
     function myimage() {
-        let formData = new FormData($('#imagedata')[0]);
-        console.log(formData);
+        let formData = new FormData($('#imagekrishi')[0]);
         $.ajax({
-            url: "{{ url('addbirthdayImage/' . $id) }}",
+            url: "{{ url('addkrishiImage/' . $id) }}",
             method: "post",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"

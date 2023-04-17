@@ -315,44 +315,52 @@ class ShokSuchnaController extends Controller
 
     public function acceptShokSuchna(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
+        // $auth_id = auth()->user()->id;
+        // $id = $request->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $shoksuchna = ShokSuchna::where('id', $id)->first();
-            if (!empty($shoksuchna)) {
-                $shokSuchnacity = ShokSuchna::where('id', $id)->where('city_id', '!=', null)->first();
-                if (!empty($shokSuchnacity)) {
-                    if ($shoksuchna->status == 0) {
-                        $shoksuchna->status = 1;
-                        $updateStatus = $shoksuchna->update();
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Accepted By Admin',
-                            'data' => $shoksuchna,
-                        ]);
-                    } elseif ($shoksuchna->status == 1) {
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $shoksuchna = ShokSuchna::where('id', $id)->first();
+                if (!empty($shoksuchna)) {
+                    $shokSuchnacity = ShokSuchna::where('id', $id)->where('city_id', '!=', null)->first();
+                    if (!empty($shokSuchnacity)) {
+                        if ($shoksuchna->status == 0) {
+                            $shoksuchna->status = 1;
+                            $updateStatus = $shoksuchna->update();
+                            return response()->json([
+                                'status' => true,
+                                'message' => 'Request Accepted',
+                                'data' => $shoksuchna,
+                            ]);
+                        } elseif ($shoksuchna->status == 1) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Request already accepted By Admin so you can not accept again',
+                            ]);
+                        }
+                    } else {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Request already accepted By Admin so you can not accept again',
+                            'message' => 'Please Add City First',
                         ]);
                     }
                 } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Please add city first',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -364,36 +372,43 @@ class ShokSuchnaController extends Controller
 
     public function denyShokSuchna(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
+        // $auth_id = auth()->user()->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $shokSuchna = ShokSuchna::where('id', $id)->first();
-            if (!empty($shokSuchna)) {
-                if ($shokSuchna->status == 0) {
-                    $shokSuchna->status = 2;
-                    $updateStatus = $shokSuchna->update();
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Request denied By Admin',
-                        'data' => $shokSuchna,
-                    ]);
-                } elseif ($shokSuchna->status == 2) {
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $shokSuchna = ShokSuchna::where('id', $id)->first();
+                if (!empty($shokSuchna)) {
+                    if ($shokSuchna->status == 0) {
+                        $shokSuchna->status = 2;
+                        $updateStatus = $shokSuchna->update();
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Request Denied',
+                            // 'data' => $shokSuchna,
+                        ]);
+                    } elseif ($shokSuchna->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Request already denied By Admin so you can not deny again',
+                        ]);
+                    }
+                } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already denied By Admin so you can not deny again',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
