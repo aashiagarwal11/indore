@@ -43,15 +43,14 @@
                             <div class="card-body">
                                 <div class="row">
                                     @if (isset($exp))
-                                        @forelse ($exp as $expImg)
-                                            <div class="col-md-2">
-                                                <img src="{{ $expImg }}" alt="" width="100%" height="100%">
-                                            </div>
-                                        @empty
-                                            <h1>No Images Found</h1>
-                                        @endforelse
-                                    @else
-                                        No Image Exist For this Record
+                                        @foreach ($exp as $expImg)
+                                            @if ($expImg != '')
+                                                <div class="col-md-2">
+                                                    <img src="{{ $expImg }}" alt="" width="100%"
+                                                        height="100%">
+                                                </div>
+                                            @endif
+                                        @endforeach
                                     @endif
 
                                 </div>

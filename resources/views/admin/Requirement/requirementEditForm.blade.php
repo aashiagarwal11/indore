@@ -29,7 +29,7 @@
                         <div class="card">
 
                             <div class="card-header">
-                                <a href="{{ route('birthdayList') }}" class="btn btn-primary m-1">View
+                                <a href="{{ route('birthdayList') }}" class="btn btn-danger m-1">View
                                     Birthday List</a>
                             </div>
 
@@ -39,44 +39,44 @@
                                 <div class="col-md-6">
                                     <div class="card card-primary">
                                         <div class="card-header">
-                                            <h3 class="card-title">Birthday <small>Form</small></h3>
+                                            <h3 class="card-title">Edit Birthday <small>Form</small></h3>
                                         </div>
                                         <!-- form start -->
-                                        <form id="quickForm" class="was-validated" action="{{ route('addbirthday') }}"
-                                            method="POST" enctype="multipart/form-data">
+                                        <form id="quickForm" class="was-validated" action="{{ route('updatebirthday') }}"
+                                            method="POST">
+                                            @method('PUT')
                                             @csrf
-                                            <input type="hidden" name="role_id" class="form-control"
-                                                id="exampleInputEmail1" placeholder="Enter title"
-                                                value="{{ auth()->user()->role_id }}">
+                                            <input type="hidden" name="id" value="{{ $bdata->id }}">
                                             <div class="card-body">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1">Title</label>
                                                     <input type="title" name="title" class="form-control"
-                                                        id="exampleInputEmail1" placeholder="Enter title" required>
+                                                        id="exampleInputEmail1" placeholder="Enter title" required
+                                                        value="{{ $bdata->title }}">
                                                     <div class="valid-feedback">Valid.</div>
                                                     <div class="invalid-feedback">Please Enter Title</div>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="exampleInputPassword1">Description</label>
                                                     <input type="description" name="description" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter description" required>
+                                                        id="exampleInputPassword1" placeholder="Enter description" required
+                                                        value="{{ $bdata->description }}">
                                                     <div class="valid-feedback">Valid.</div>
                                                     <div class="invalid-feedback">Please Enter Description</div>
                                                 </div>
-                                                <div class="form-group">
+                                                {{-- <div class="form-group">
                                                     <label for="exampleInputPassword1">Image</label>
-                                                    <input type="file" name="image[]" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter image" multiple>
-                                                    {{-- @error('image')
-                                                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
-                                                    @enderror --}}
-                                                </div>
+                                                    <input type="file" name="image" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter image">
+                                                </div> --}}
                                                 <div class="form-group">
                                                     <label>City</label>
                                                     <select name="city_id" class="form-control" required>
                                                         <option value="">Select</option>
                                                         @foreach ($cityData as $cdata)
-                                                            <option value="{{ $cdata->id }}">{{ $cdata->city_name }}
+                                                            <option value="{{ $cdata->id }}"
+                                                                {{ $cdata->id == $bdata->city_id ? 'selected' : '' }}>
+                                                                {{ $cdata->city_name }}
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -91,7 +91,7 @@
                                             </div>
                                             <!-- /.card-body -->
                                             <div class="card-footer">
-                                                <button type="submit" class="btn btn-primary">Add</button>
+                                                <button type="submit" class="btn btn-primary">Update</button>
                                             </div>
                                         </form>
                                     </div>
