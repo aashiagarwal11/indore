@@ -31,13 +31,10 @@ class BirthdayController extends Controller
         $bdata = Birthday::where('id', $id)->first();
         $bdata->image = str_replace("public", env('APP_URL') . "public", $bdata->image);
 
-        if ($bdata->image == "") {
-            $exp = null;
-        } else {
-            $exp = explode('|', $bdata->image);
-            $key = array_search("", $exp);
-            unset($exp[$key]);
-        }
+
+        $exp = explode('|', $bdata->image);
+        // $key = array_search("", $exp);
+        // unset($exp[$key]);
         return view('admin.Birthday.birthdayImage', compact('exp', 'id'));
     }
 
@@ -49,8 +46,20 @@ class BirthdayController extends Controller
 
     public function addbirthday(Request $request)
     {
-        // if ($request->role_id == 1) {
-        $validator = Validator::make($request->all(), [
+        // $validator = Validator::make($request->all(), [
+        //     'title'       => ['required', 'string'],
+        //     'description' => ['required'],
+        //     'city_id'     => ['required', 'numeric'],
+        //     'image'       => ['nullable'],
+        //     'image.*'     => ['mimes:jpeg,png,jpg'],
+        //     'video_url'   => ['nullable'],
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return response()->json(['success' => false, 'message' => $validator->errors()]);
+        // }
+
+        $validateImageData = $request->validate([
             'title'       => ['required', 'string'],
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
@@ -59,11 +68,8 @@ class BirthdayController extends Controller
             'video_url'   => ['nullable'],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()]);
-        }
-
         $city = City::where('id', $request->city_id)->first();
+
         if (!empty($city)) {
             $images = array();
             if ($files = $request->file('image')) {
@@ -78,7 +84,6 @@ class BirthdayController extends Controller
                 }
             }
             $imp_image =  implode('|', $images);
-
             $birthday = Birthday::create([
                 'title' => $request->title,
                 'description' => $request->description,
@@ -89,9 +94,10 @@ class BirthdayController extends Controller
                 'status' => 1,
             ]);
 
+
+
             return redirect()->route('birthdayList')->with('message', 'Added Successfully');
         }
-        // }
     }
 
     public function getbirthdayEditForm(Request $request, $id)
@@ -142,7 +148,7 @@ class BirthdayController extends Controller
     {
         $apiurl = env('APP_URL') . 'api/acceptBirthday';
         $response = Http::post($apiurl, [
-            'role_id' => auth()->user()->role_id,   ## 1
+            'role_id' => auth()->user()->role_id,
             'id' => $request->id,
         ]);
         $newdata =  $response->json();
@@ -154,7 +160,7 @@ class BirthdayController extends Controller
     {
         $apiurl = env('APP_URL') . 'api/denyBirthday';
         $response = Http::post($apiurl, [
-            'role_id' => auth()->user()->role_id,   ## 1
+            'role_id' => auth()->user()->role_id,
             'id' => $request->id,
         ]);
         $newdata =  $response->json();

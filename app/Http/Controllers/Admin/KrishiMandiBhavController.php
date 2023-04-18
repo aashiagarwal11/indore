@@ -30,13 +30,13 @@ class KrishiMandiBhavController extends Controller
         $bdata = KrishiMandiBhav::where('id', $id)->first();
         $bdata->image = str_replace("public", env('APP_URL') . "public", $bdata->image);
 
-        if ($bdata->image == "") {
-            $exp = null;
-        } else {
-            $exp = explode('|', $bdata->image);
-            $key = array_search("", $exp);
-            unset($exp[$key]);
-        }
+        // if ($bdata->image == "") {
+        //     $exp = null;
+        // } else {
+        $exp = explode('|', $bdata->image);
+        // $key = array_search("", $exp);
+        // unset($exp[$key]);
+        // }
         return view('admin.KrishiMandiBhav.krishiImage', compact('exp', 'id'));
     }
 
@@ -120,16 +120,6 @@ class KrishiMandiBhavController extends Controller
             $data['video_url'] = $request->video_url ?? null;
             $updatedata = $KrishiMandiBhav->update($data);
         }
-        // $apiurl = env('APP_URL') . 'api/krishiMandiBhav/' . $request->id;
-        // $response = Http::put($apiurl, [
-        //     'role_id' => auth()->user()->role_id,
-        //     'title' => $request->title,
-        //     'description' => $request->description,
-        //     'city_id' => $request->city_id,
-        //     'image' => $request->image,
-        //     'video_url' => $request->video_url,
-        // ]);
-        // $newdata =  $response->json();
         return redirect()->route('krishiList')->with('message', 'Update Successfully');
     }
 

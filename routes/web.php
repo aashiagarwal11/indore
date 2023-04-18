@@ -7,6 +7,7 @@ use Doctrine\DBAL\Driver\Middleware;
 use App\Http\Controllers\Admin\BirthdayController;
 use App\Http\Controllers\Admin\KrishiMandiBhavController;
 use App\Http\Controllers\Admin\ShoksuchnaController;
+use App\Http\Controllers\Admin\RequirementController;
 
 
 /*
@@ -68,6 +69,19 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('acceptshoksuchna/{id}', 'acceptshoksuchna')->name('acceptshoksuchna');
         Route::any('denyshoksuchna/{id}', 'denyshoksuchna')->name('denyshoksuchna');
         Route::post('addshoksuchnaImage/{id}', 'addshoksuchnaImage')->name('addshoksuchnaImage');
+    });
+
+
+    Route::controller(RequirementController::class)->group(function () {
+        Route::get('requirementList', 'requirementList')->name('requirementList');
+        Route::get('requirementImage/{id}', 'requirementImage')->name('requirementImage');
+        Route::get('getrequirementForm', 'getrequirementForm')->name('getrequirementForm');
+        Route::post('addrequirement', 'addrequirement')->name('addrequirement');
+        Route::get('getrequirementEditForm/{id}', 'getrequirementEditForm')->name('getrequirementEditForm');
+        Route::any('updaterequirement', 'updaterequirement')->name('updaterequirement');
+        Route::any('acceptrequirement/{id}', 'acceptrequirement')->name('acceptrequirement');
+        Route::any('denyrequirement/{id}', 'denyrequirement')->name('denyrequirement');
+        Route::post('addrequirementImage/{id}', 'addrequirementImage')->name('addrequirementImage');
     });
 });
 
