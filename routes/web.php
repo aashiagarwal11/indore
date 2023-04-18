@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\BirthdayController;
 use App\Http\Controllers\Admin\KrishiMandiBhavController;
 use App\Http\Controllers\Admin\ShoksuchnaController;
 use App\Http\Controllers\Admin\RequirementController;
+use App\Http\Controllers\Admin\ResumeController;
 
 
 /*
@@ -82,6 +83,18 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('acceptrequirement/{id}', 'acceptrequirement')->name('acceptrequirement');
         Route::any('denyrequirement/{id}', 'denyrequirement')->name('denyrequirement');
         Route::post('addrequirementImage/{id}', 'addrequirementImage')->name('addrequirementImage');
+    });
+
+    Route::controller(ResumeController::class)->group(function () {
+        Route::get('resumeList', 'resumeList')->name('resumeList');
+        Route::get('resumeImage/{id}', 'resumeImage')->name('resumeImage');
+        Route::get('getresumeForm', 'getresumeForm')->name('getresumeForm');
+        Route::post('addresume', 'addresume')->name('addresume');
+        Route::get('getresumeEditForm/{id}', 'getresumeEditForm')->name('getresumeEditForm');
+        Route::any('updateresume', 'updateresume')->name('updateresume');
+        Route::any('acceptresume/{id}', 'acceptresume')->name('acceptresume');
+        Route::any('denyresume/{id}', 'denyresume')->name('denyresume');
+        // Route::post('addresumeImage/{id}', 'addresumeImage')->name('addresumeImage');
     });
 });
 

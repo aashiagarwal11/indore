@@ -29,8 +29,8 @@
                         <div class="card">
 
                             <div class="card-header">
-                                <a href="{{ route('birthdayList') }}" class="btn btn-danger m-1">View
-                                    Birthday List</a>
+                                <a href="{{ route('requirementList') }}" class="btn btn-danger m-1">View
+                                    List</a>
                             </div>
 
                             <!-- /.card-header -->
@@ -39,10 +39,10 @@
                                 <div class="col-md-6">
                                     <div class="card card-primary">
                                         <div class="card-header">
-                                            <h3 class="card-title">Edit Birthday <small>Form</small></h3>
+                                            <h3 class="card-title">Edit Requirement <small>Form</small></h3>
                                         </div>
                                         <!-- form start -->
-                                        <form id="quickForm" class="was-validated" action="{{ route('updatebirthday') }}"
+                                        <form id="quickForm" class="was-validated" action="{{ route('updaterequirement') }}"
                                             method="POST">
                                             @method('PUT')
                                             @csrf
@@ -57,18 +57,18 @@
                                                     <div class="invalid-feedback">Please Enter Title</div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="exampleInputPassword1">Description</label>
-                                                    <input type="description" name="description" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter description" required
-                                                        value="{{ $bdata->description }}">
-                                                    <div class="valid-feedback">Valid.</div>
-                                                    <div class="invalid-feedback">Please Enter Description</div>
+                                                    <label for="exampleInputPassword1">Salary</label>
+                                                    <input type="text" name="salary" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter salary"
+                                                        value="{{ $bdata->salary }}">
                                                 </div>
-                                                {{-- <div class="form-group">
-                                                    <label for="exampleInputPassword1">Image</label>
-                                                    <input type="file" name="image" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter image">
-                                                </div> --}}
+                                                <div class="form-group">
+                                                    <label for="exampleInputPassword1">Working Time</label>
+                                                    <input type="text" name="working_time" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter Working Time"
+                                                        value="{{ $bdata->working_time }}">
+                                                </div>
+
                                                 <div class="form-group">
                                                     <label>City</label>
                                                     <select name="city_id" class="form-control" required>
@@ -83,10 +83,11 @@
                                                     <div class="valid-feedback">Valid.</div>
                                                     <div class="invalid-feedback">Please Enter City</div>
                                                 </div>
+
                                                 <div class="form-group">
-                                                    <label for="exampleInputPassword1">Video Url</label>
-                                                    <input type="video" name="video" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter video link">
+                                                    <label for="exampleInputPassword1">Comment</label>
+                                                    <textarea class="form-control" name="comment" id="exampleInputPassword1" cols="30" rows="10"
+                                                        placeholder="Enter Comment">{{ $bdata->comment }}</textarea>
                                                 </div>
                                             </div>
                                             <!-- /.card-body -->

@@ -46,25 +46,12 @@ class BirthdayController extends Controller
 
     public function addbirthday(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'title'       => ['required', 'string'],
-        //     'description' => ['required'],
-        //     'city_id'     => ['required', 'numeric'],
-        //     'image'       => ['nullable'],
-        //     'image.*'     => ['mimes:jpeg,png,jpg'],
-        //     'video_url'   => ['nullable'],
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json(['success' => false, 'message' => $validator->errors()]);
-        // }
-
         $validateImageData = $request->validate([
             'title'       => ['required', 'string'],
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
-            'image'       => ['nullable'],
-            'image.*'     => ['mimes:jpeg,png,jpg'],
+            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            // 'image.*'     => ['mimes:jpeg,png,jpg'],
             'video_url'   => ['nullable'],
         ]);
 
@@ -113,16 +100,12 @@ class BirthdayController extends Controller
         $id = $request->id;
         $birthday = Birthday::where('id', $id)->first();
         if (!empty($birthday)) {
-            $validator = Validator::make($request->all(), [
-                'title'       => ['required', 'string'],
+            $validateImageData = $request->validate([
+                'title'       => ['required'],
                 'description' => ['required'],
-                'city_id'     => ['required', 'numeric'],
+                'city_id'     => ['required'],
                 'video_url'   => ['nullable'],
             ]);
-
-            if ($validator->fails()) {
-                return response()->json(['success' => false, 'message' => $validator->errors()]);
-            }
 
             $data['title'] = $request->title;
             $data['description'] = $request->description;
@@ -170,6 +153,9 @@ class BirthdayController extends Controller
 
     public function addbirthdayImage(Request $request, $id)
     {
+        $validateImageData = $request->validate([
+            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+        ]);
         $birthday = Birthday::where('id', $id)->first();
         if (!empty($birthday)) {
 

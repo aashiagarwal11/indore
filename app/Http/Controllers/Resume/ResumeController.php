@@ -331,44 +331,51 @@ class ResumeController extends Controller
 
     public function acceptResume(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
+        // $auth_id = auth()->user()->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $resume = Resume::where('id', $id)->first();
-            if (!empty($resume)) {
-                $resumecity = Resume::where('id', $id)->where('city_id', '!=', null)->first();
-                if (!empty($resumecity)) {
-                    if ($resume->status == 0) {
-                        $resume->status = 1;
-                        $updateStatus = $resume->update();
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Request is accepted By Admin',
-                            'data' => $resume,
-                        ]);
-                    } elseif ($resume->status == 1) {
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $resume = Resume::where('id', $id)->first();
+                if (!empty($resume)) {
+                    $resumecity = Resume::where('id', $id)->where('city_id', '!=', null)->first();
+                    if (!empty($resumecity)) {
+                        if ($resume->status == 0) {
+                            $resume->status = 1;
+                            $updateStatus = $resume->update();
+                            return response()->json([
+                                'status' => true,
+                                'message' => 'Request Accepted',
+                                'data' => $resume,
+                            ]);
+                        } elseif ($resume->status == 1) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Request already accepted By Admin so you can not accept again',
+                            ]);
+                        }
+                    } else {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Request already accepted By Admin so you can not accept again',
+                            'message' => 'Please add city first',
                         ]);
                     }
                 } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Please add city first',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -380,36 +387,43 @@ class ResumeController extends Controller
 
     public function denyResume(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
+        // $auth_id = auth()->user()->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $resume = Resume::where('id', $id)->first();
-            if (!empty($resume)) {
-                if ($resume->status == 0) {
-                    $resume->status = 2;
-                    $updateStatus = $resume->update();
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Request denied By Admin',
-                        'data' => $resume,
-                    ]);
-                } elseif ($resume->status == 2) {
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $resume = Resume::where('id', $id)->first();
+                if (!empty($resume)) {
+                    if ($resume->status == 0) {
+                        $resume->status = 2;
+                        $updateStatus = $resume->update();
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Request Denied',
+                            'data' => $resume,
+                        ]);
+                    } elseif ($resume->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Request already denied By Admin so you can not deny again',
+                        ]);
+                    }
+                } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already denied By Admin so you can not deny again',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {

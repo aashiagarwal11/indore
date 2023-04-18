@@ -328,44 +328,52 @@ class RequirementController extends Controller
 
     public function acceptRequirement(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
+        // $auth_id = auth()->user()->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $requirement = Requirement::where('id', $id)->first();
-            if (!empty($requirement)) {
-                $requirementcity = Requirement::where('id', $id)->where('city_id', '!=', null)->first();
-                if (!empty($requirementcity)) {
-                    if ($requirement->status == 0) {
-                        $requirement->status = 1;
-                        $updateStatus = $requirement->update();
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Request is accepted By Admin',
-                            'data' => $requirement,
-                        ]);
-                    } elseif ($requirement->status == 1) {
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $requirement = Requirement::where('id', $id)->first();
+                if (!empty($requirement)) {
+                    $requirementcity = Requirement::where('id', $id)->where('city_id', '!=', null)->first();
+                    if (!empty($requirementcity)) {
+                        if ($requirement->status == 0) {
+                            $requirement->status = 1;
+                            $updateStatus = $requirement->update();
+                            return response()->json([
+                                'status' => true,
+                                'message' => 'Request Accepted',
+                                'data' => $requirement,
+                            ]);
+                        } elseif ($requirement->status == 1) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Request already accepted By Admin so you can not accept again',
+                            ]);
+                        }
+                    } else {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Request already accepted By Admin so you can not accept again',
+                            'message' => 'Please add city first',
                         ]);
                     }
                 } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Please add city first',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -377,36 +385,44 @@ class RequirementController extends Controller
 
     public function denyRequirement(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
+        // $auth_id = auth()->user()->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $requirement = Requirement::where('id', $id)->first();
-            if (!empty($requirement)) {
-                if ($requirement->status == 0) {
-                    $requirement->status = 2;
-                    $updateStatus = $requirement->update();
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Request denied By Admin',
-                        'data' => $requirement,
-                    ]);
-                } elseif ($requirement->status == 2) {
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $requirement = Requirement::where('id', $id)->first();
+                if (!empty($requirement)) {
+                    if ($requirement->status == 0) {
+                        $requirement->status = 2;
+                        $updateStatus = $requirement->update();
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Request Denied',
+                            'data' => $requirement,
+                        ]);
+                    } elseif ($requirement->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Request already denied By Admin so you can not deny again',
+                        ]);
+                    }
+                } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already denied By Admin so you can not deny again',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {

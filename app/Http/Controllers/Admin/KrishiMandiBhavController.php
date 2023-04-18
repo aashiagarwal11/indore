@@ -48,18 +48,14 @@ class KrishiMandiBhavController extends Controller
 
     public function addkrishi(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validateImageData = $request->validate([
             'title'       => ['required', 'string'],
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
-            'image'       => ['nullable'],
-            'image.*'     => ['mimes:jpeg,png,jpg'],
+            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            // 'image.*'     => ['mimes:jpeg,png,jpg'],
             'video_url'   => ['nullable'],
         ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()]);
-        }
 
         $city = City::where('id', $request->city_id)->first();
         if (!empty($city)) {
@@ -103,16 +99,12 @@ class KrishiMandiBhavController extends Controller
         $id = $request->id;
         $KrishiMandiBhav = KrishiMandiBhav::where('id', $id)->first();
         if (!empty($KrishiMandiBhav)) {
-            $validator = Validator::make($request->all(), [
-                'title'       => ['required', 'string'],
+            $validateImageData = $request->validate([
+                'title'       => ['required'],
                 'description' => ['required'],
-                'city_id'     => ['required', 'numeric'],
+                'city_id'     => ['required'],
                 'video_url'   => ['nullable'],
             ]);
-
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
 
             $data['title'] = $request->title;
             $data['description'] = $request->description;
@@ -125,6 +117,9 @@ class KrishiMandiBhavController extends Controller
 
     public function addkrishiImage(Request $request, $id)
     {
+        $validateImageData = $request->validate([
+            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+        ]);
         $birthday = KrishiMandiBhav::where('id', $id)->first();
         if (!empty($birthday)) {
 

@@ -28,11 +28,11 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Requirements List</h3>
+                                <h3 class="card-title">Resume List</h3>
                             </div>
 
                             <div class="card-header">
-                                <a href="{{ route('getrequirementForm') }}" class="btn btn-primary m-1">Add
+                                <a href="{{ route('getresumeForm') }}" class="btn btn-primary m-1">Add
                                     New</a>
                                 <div class="row">
                                     <div class="col-md-4"></div>
@@ -54,29 +54,26 @@
                                     <thead>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Salary</th>
-                                            <th>Working Time</th>
-                                            <th>Comment</th>
-                                            <th>View</th>
+                                            <th>Name</th>
+                                            <th>Education</th>
+                                            <th>Job Experience</th>
+                                            <th>Expectation</th>
                                             <th>Edit</th>
                                             <th>Status</th>
+                                            <th>View</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($birthdayData as $bday)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $bday['title'] }}</td>
-                                                <td>{{ $bday['salary'] }}</td>
-                                                <td>{{ $bday['working_time'] }}</td>
-                                                <td>{{ $bday['comment'] }}</td>
+                                                <td>{{ $bday['name'] }}</td>
+                                                <td>{{ $bday['education'] }}</td>
+                                                <td>{{ $bday['job_experience'] }}</td>
+                                                <td>{{ $bday['expectation'] }}</td>
+                                                
                                                 <td>
-                                                    <a href="{{ url('requirementImage/' . $bday['id']) }}"
-                                                        class="btn btn-danger m-1">View</a>
-                                                </td>
-                                                <td>
-                                                    <a href="{{ url('getrequirementEditForm/' . $bday['id']) }}"
+                                                    <a href="{{ url('getresumeEditForm/' . $bday['id']) }}"
                                                         class="btn btn-primary m-1">Edit</a>
                                                 </td>
                                                 <td>
@@ -85,15 +82,22 @@
                                                     @elseif ($bday['status'] == 2)
                                                         <button class="btn btn-secondary m-1">Denied</button>
                                                     @else
-                                                        <a href="{{ url('acceptrequirement/' . $bday['id']) }}"
+                                                        <a href="{{ url('acceptresume/' . $bday['id']) }}"
                                                             class="btn btn-success m-1">
                                                             Accept
                                                         </a>
 
-                                                        <a href="{{ url('denyrequirement/' . $bday['id']) }}"
+                                                        <a href="{{ url('denyresume/' . $bday['id']) }}"
                                                             class="btn btn-danger m-1">
                                                             Deny
                                                         </a>
+                                                    @endif
+                                                </td>
+
+                                                <td>
+                                                    @if ($bday['pdf'] != null || $bday['pdf'] != '')
+                                                        <a class="btn btn-danger m-1" href="{{ $bday['pdf'] }}">View
+                                                            Pdf</a>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -102,13 +106,13 @@
                                     <tfoot>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Salary</th>
-                                            <th>Working Time</th>
-                                            <th>Comment</th>
-                                            <th>View</th>
+                                            <th>Name</th>
+                                            <th>Education</th>
+                                            <th>Job Experience</th>
+                                            <th>Expectation</th>
                                             <th>Edit</th>
                                             <th>Status</th>
+                                            <th>View</th>
                                         </tr>
                                     </tfoot>
                                 </table>

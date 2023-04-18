@@ -34,6 +34,8 @@
                                     @csrf
                                     <input class="d-none" type="file" id="change-profile" name="image[]" multiple>
                                 </form>
+                                <span style="margin-left:150px;color:red" id="errorimg"></span>
+
                                 <label for="change-profile" class="h-110px w-110px -label"
                                     style="float:right
                                 ">
@@ -89,6 +91,10 @@
             processData: false,
             success: function(data) {
                 location.reload();
+            },
+            error: function(data) {
+                const obj = JSON.parse(data.responseText);
+                $('#errorimg').append(obj.message);
             }
         });
     }
