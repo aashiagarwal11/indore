@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use App\Models\Birthday;
+use App\Models\Requirement;
 use App\Models\City;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -16,56 +16,42 @@ class RequirementController extends Controller
 {
     public function requirementList()
     {
-        $apiurl = env('APP_URL') . 'api/birthdayListOfUser';
+        $apiurl = env('APP_URL') . 'api/requirementListOfUser';
         $response = Http::get($apiurl, [
             'role_id' => auth()->user()->role_id,
         ]);
         $newdata =  $response->json($key = null, $default = null);
         $birthdayData = $newdata['data'];
-        return view('admin.Birthday.index', compact('birthdayData'));
+        return view('admin.Requirement.index', compact('birthdayData'));
     }
 
 
     public function requirementImage($id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = Requirement::where('id', $id)->first();
         $bdata->image = str_replace("public", env('APP_URL') . "public", $bdata->image);
 
 
         $exp = explode('|', $bdata->image);
-        // $key = array_search("", $exp);
-        // unset($exp[$key]);
-        return view('admin.Birthday.birthdayImage', compact('exp', 'id'));
+        return view('admin.Requirement.requirementImage', compact('exp', 'id'));
     }
 
     public function getrequirementForm()
     {
         $cityData = City::get();
-        return view('admin.Birthday.birthdayForm', compact('cityData'));
+        return view('admin.Requirement.requirementForm', compact('cityData'));
     }
 
     public function addrequirement(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'title'       => ['required', 'string'],
-        //     'description' => ['required'],
-        //     'city_id'     => ['required', 'numeric'],
-        //     'image'       => ['nullable'],
-        //     'image.*'     => ['mimes:jpeg,png,jpg'],
-        //     'video_url'   => ['nullable'],
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json(['success' => false, 'message' => $validator->errors()]);
-        // }
-
         $validateImageData = $request->validate([
-            'title'       => ['required', 'string'],
-            'description' => ['required'],
-            'city_id'     => ['required', 'numeric'],
-            'image'       => ['nullable'],
-            'image.*'     => ['mimes:jpeg,png,jpg'],
-            'video_url'   => ['nullable'],
+            'title'          => ['required', 'string'],
+            'salary'         => ['nullable'],
+            'city_id'        => ['required', 'numeric'],
+            'working_time'   => ['nullable'],
+            'comment'        => ['nullable'],
+            'image'          => ['nullable', 'mimes:jpeg,png,jpg'],
+            // 'image.*'        => ['mimes:jpeg,png,jpg']
         ]);
 
         $city = City::where('id', $request->city_id)->first();
@@ -77,76 +63,63 @@ class RequirementController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/requirement/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($images, $img_url);
                 }
             }
             $imp_image =  implode('|', $images);
-            $birthday = Birthday::create([
-                'title' => $request->title,
-                'description' => $request->description,
-                'image' => $imp_image ?? null,
-                'video_url' => $request->video_url ?? null,
-                'user_id' => 1,
-                'city_id' => $request->city_id,
-                'status' => 1,
+            $birthday = Requirement::create([
+                'title'          => $request->title,
+                'salary'         => $request->salary,
+                'city_id'        => $request->city_id,
+                'working_time'   => $request->working_time,
+                'comment'        => $request->comment,
+                'status'         => 1,
+                'image'          => $imp_image,
             ]);
 
 
 
-            return redirect()->route('birthdayList')->with('message', 'Added Successfully');
+            return redirect()->route('requirementList')->with('message', 'Added Successfully');
         }
     }
 
     public function getrequirementEditForm(Request $request, $id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = Requirement::where('id', $id)->first();
         $cityData = City::get();
 
-        return view('admin.Birthday.birthdayEditForm', compact('bdata', 'cityData'));
+        return view('admin.Requirement.requirementEditForm', compact('bdata', 'cityData'));
     }
 
     public function updaterequirement(Request $request)
     {
         $id = $request->id;
-        $birthday = Birthday::where('id', $id)->first();
+        $birthday = Requirement::where('id', $id)->first();
         if (!empty($birthday)) {
-            $validator = Validator::make($request->all(), [
-                'title'       => ['required', 'string'],
-                'description' => ['required'],
-                'city_id'     => ['required', 'numeric'],
-                'video_url'   => ['nullable'],
+            $validateImageData = $request->validate([
+                'title'          => ['required'],
+                'salary'         => ['nullable'],
+                'city_id'        => ['required'],
+                'working_time'   => ['nullable'],
+                'comment'        => ['nullable'],
             ]);
 
-            if ($validator->fails()) {
-                return response()->json(['success' => false, 'message' => $validator->errors()]);
-            }
-
             $data['title'] = $request->title;
-            $data['description'] = $request->description;
+            $data['salary'] = $request->salary;
             $data['city_id'] = $request->city_id;
-            $data['video_url'] = $request->video_url ?? null;
+            $data['working_time'] = $request->working_time;
+            $data['comment'] = $request->comment;
             $updatedata = $birthday->update($data);
         }
-
-        // $apiurl = env('APP_URL') . 'api/birthday/' . $request->id;
-        // $response = Http::put($apiurl, [
-        //     'role_id' => auth()->user()->role_id,
-        //     'title' => $request->title,
-        //     'description' => $request->description,
-        //     'city_id' => $request->city_id,
-        //     'image' => $request->image,
-        //     'video_url' => $request->video_url,
-        // ]);
-        // $newdata =  $response->json();
-        return redirect()->route('birthdayList')->with('message', 'Update Successfully');
+        return redirect()->route('requirementList')->with('message', 'Update Successfully');
     }
 
     public function acceptrequirement(Request $request)
     {
-        $apiurl = env('APP_URL') . 'api/acceptBirthday';
+        $apiurl = env('APP_URL') . 'api/acceptRequirement';
         $response = Http::post($apiurl, [
             'role_id' => auth()->user()->role_id,
             'id' => $request->id,
@@ -158,7 +131,7 @@ class RequirementController extends Controller
 
     public function denyrequirement(Request $request)
     {
-        $apiurl = env('APP_URL') . 'api/denyBirthday';
+        $apiurl = env('APP_URL') . 'api/denyRequirement';
         $response = Http::post($apiurl, [
             'role_id' => auth()->user()->role_id,
             'id' => $request->id,
@@ -170,7 +143,11 @@ class RequirementController extends Controller
 
     public function addrequirementImage(Request $request, $id)
     {
-        $birthday = Birthday::where('id', $id)->first();
+
+        $validateImageData = $request->validate([
+            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+        ]);
+        $birthday = Requirement::where('id', $id)->first();
         if (!empty($birthday)) {
 
             $exp = explode('|', $birthday->image);
@@ -180,7 +157,7 @@ class RequirementController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/requirement/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($exp, $img_url);

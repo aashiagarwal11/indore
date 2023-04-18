@@ -65,11 +65,13 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="exampleInputPassword1">Image</label>
-                                                    <input type="file" name="image[]" class="form-control"
+                                                    <input type="file" name="image[]"
+                                                        class="form-control @error('image') is-invalid @enderror"
                                                         id="exampleInputPassword1" placeholder="Enter image" multiple>
-                                                    {{-- @error('image')
-                                                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
-                                                    @enderror --}}
+                                                            @error('image')
+                                                            <div class="text-danger mt-1 mb-1">{{ $message }}</div>
+                                                        @enderror
+                                                    
                                                 </div>
                                                 <div class="form-group">
                                                     <label>City</label>

@@ -27,12 +27,14 @@
                     <div class="col-12 col-sm-6 col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Birthday Images</h3>
+                                <h3 class="card-title">Requirement Images</h3>
 
                                 <form method="POST" id="imagedata" enctype='multipart/form-data' onchange="myimage()">
                                     @csrf
                                     <input class="d-none" type="file" id="change-profile" name="image[]" multiple>
                                 </form>
+                                <span style="margin-left:150px;color:red" id="errorimg"></span>
+
                                 <label for="change-profile" class="h-110px w-110px -label"
                                     style="float:right
                                 ">
@@ -79,7 +81,7 @@
         let formData = new FormData($('#imagedata')[0]);
         console.log(formData);
         $.ajax({
-            url: "{{ url('addbirthdayImage/' . $id) }}",
+            url: "{{ url('addrequirementImage/' . $id) }}",
             method: "post",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
@@ -91,6 +93,10 @@
             processData: false,
             success: function(data) {
                 location.reload();
+            },
+            error: function(data) {
+                const obj = JSON.parse(data.responseText);
+                $('#errorimg').append(obj.message);
             }
         });
     }

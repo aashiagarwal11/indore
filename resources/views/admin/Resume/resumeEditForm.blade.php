@@ -29,7 +29,7 @@
                         <div class="card">
 
                             <div class="card-header">
-                                <a href="{{ route('requirementList') }}" class="btn btn-primary m-1">View
+                                <a href="{{ route('resumeList') }}" class="btn btn-danger m-1">View
                                     List</a>
                             </div>
 
@@ -39,32 +39,44 @@
                                 <div class="col-md-6">
                                     <div class="card card-primary">
                                         <div class="card-header">
-                                            <h3 class="card-title">Requirement <small>Form</small></h3>
+                                            <h3 class="card-title">Edit Resume <small>Form</small></h3>
                                         </div>
                                         <!-- form start -->
-                                        <form id="quickForm" class="was-validated" action="{{ route('addrequirement') }}"
-                                            method="POST" enctype="multipart/form-data">
+                                        <form id="quickForm" class="was-validated" action="{{ route('updateresume') }}"
+                                            method="POST">
+                                            @method('PUT')
                                             @csrf
-                                            <input type="hidden" name="role_id" class="form-control"
-                                                id="exampleInputEmail1" placeholder="Enter title"
-                                                value="{{ auth()->user()->role_id }}">
+                                            <input type="hidden" name="id" value="{{ $bdata->id }}">
                                             <div class="card-body">
                                                 <div class="form-group">
-                                                    <label for="exampleInputEmail1">Title</label>
-                                                    <input type="title" name="title" class="form-control"
-                                                        id="exampleInputEmail1" placeholder="Enter title" required>
+                                                    <label for="exampleInputEmail1">Name</label>
+                                                    <input type="text" name="name" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter name" required
+                                                        value="{{ $bdata->name }}">
+                                                    <div class="valid-feedback">Valid.</div>
+                                                    <div class="invalid-feedback">Please Enter Name</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Education</label>
+                                                    <input type="text" name="education" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter education" required
+                                                        value="{{ $bdata->education }}">
                                                     <div class="valid-feedback">Valid.</div>
                                                     <div class="invalid-feedback">Please Enter Title</div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="exampleInputPassword1">Salary</label>
-                                                    <input type="text" name="salary" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter Salary">
+                                                    <label for="exampleInputEmail1">Job Experience</label>
+                                                    <input type="text" name="job_experience" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter job Experiance" required
+                                                        value="{{ $bdata->job_experience }}">
+                                                    <div class="valid-feedback">Valid.</div>
+                                                    <div class="invalid-feedback">Please Enter job experience</div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="exampleInputPassword1">Working Time</label>
-                                                    <input type="text" name="working_time" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter Working Time">
+                                                    <label for="exampleInputEmail1">Expectation</label>
+                                                    <input type="text" name="expectation" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter expectation"
+                                                        value="{{ $bdata->expectation }}">
                                                 </div>
 
                                                 <div class="form-group">
@@ -72,32 +84,19 @@
                                                     <select name="city_id" class="form-control" required>
                                                         <option value="">Select</option>
                                                         @foreach ($cityData as $cdata)
-                                                            <option value="{{ $cdata->id }}">{{ $cdata->city_name }}
+                                                            <option value="{{ $cdata->id }}"
+                                                                {{ $cdata->id == $bdata->city_id ? 'selected' : '' }}>
+                                                                {{ $cdata->city_name }}
                                                             </option>
                                                         @endforeach
                                                     </select>
                                                     <div class="valid-feedback">Valid.</div>
                                                     <div class="invalid-feedback">Please Enter City</div>
                                                 </div>
-
-                                                <div class="form-group">
-                                                    <label for="exampleInputPassword1">Comment</label>
-                                                    <textarea class="form-control" name="comment" id="exampleInputPassword1" cols="30" rows="10"
-                                                        placeholder="Enter Comment"></textarea>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="exampleInputPassword1">Image</label>
-                                                    <input type="file" name="image[]" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter image" multiple>
-                                                    @error('image')
-                                                        <div class="text-danger mt-1 mb-1">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-
                                             </div>
                                             <!-- /.card-body -->
                                             <div class="card-footer">
-                                                <button type="submit" class="btn btn-primary">Add</button>
+                                                <button type="submit" class="btn btn-primary">Update</button>
                                             </div>
                                         </form>
                                     </div>

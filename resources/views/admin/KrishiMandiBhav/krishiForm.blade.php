@@ -66,6 +66,9 @@
                                                     <label for="exampleInputPassword1">Image</label>
                                                     <input type="file" name="image[]" class="form-control"
                                                         id="exampleInputPassword1" placeholder="Enter image" multiple>
+                                                    @error('image')
+                                                        <div class="text-danger mt-1 mb-1">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
                                                 <div class="form-group">
                                                     <label>City</label>

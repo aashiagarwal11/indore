@@ -29,7 +29,7 @@
                         <div class="card">
 
                             <div class="card-header">
-                                <a href="{{ route('requirementList') }}" class="btn btn-primary m-1">View
+                                <a href="{{ route('resumeList') }}" class="btn btn-primary m-1">View
                                     List</a>
                             </div>
 
@@ -39,10 +39,10 @@
                                 <div class="col-md-6">
                                     <div class="card card-primary">
                                         <div class="card-header">
-                                            <h3 class="card-title">Requirement <small>Form</small></h3>
+                                            <h3 class="card-title">Resume <small>Form</small></h3>
                                         </div>
                                         <!-- form start -->
-                                        <form id="quickForm" class="was-validated" action="{{ route('addrequirement') }}"
+                                        <form id="quickForm" class="was-validated" action="{{ route('addresume') }}"
                                             method="POST" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="role_id" class="form-control"
@@ -50,21 +50,33 @@
                                                 value="{{ auth()->user()->role_id }}">
                                             <div class="card-body">
                                                 <div class="form-group">
-                                                    <label for="exampleInputEmail1">Title</label>
-                                                    <input type="title" name="title" class="form-control"
-                                                        id="exampleInputEmail1" placeholder="Enter title" required>
+                                                    <label for="exampleInputEmail1">Name</label>
+                                                    <input type="text" name="name" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter name" required>
                                                     <div class="valid-feedback">Valid.</div>
-                                                    <div class="invalid-feedback">Please Enter Title</div>
+                                                    <div class="invalid-feedback">Please Enter Name</div>
                                                 </div>
+
                                                 <div class="form-group">
-                                                    <label for="exampleInputPassword1">Salary</label>
-                                                    <input type="text" name="salary" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter Salary">
+                                                    <label for="exampleInputEmail1">Education</label>
+                                                    <input type="text" name="education" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter Education" required>
+                                                    <div class="valid-feedback">Valid.</div>
+                                                    <div class="invalid-feedback">Please Enter Education</div>
                                                 </div>
+
                                                 <div class="form-group">
-                                                    <label for="exampleInputPassword1">Working Time</label>
-                                                    <input type="text" name="working_time" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter Working Time">
+                                                    <label for="exampleInputEmail1">Job Experience</label>
+                                                    <input type="text" name="job_experience" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter Job Experience" required>
+                                                    <div class="valid-feedback">Valid.</div>
+                                                    <div class="invalid-feedback">Please Enter Job Experience</div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Expectation</label>
+                                                    <input type="text" name="expectation" class="form-control"
+                                                        id="exampleInputEmail1" placeholder="Enter Expectation">
                                                 </div>
 
                                                 <div class="form-group">
@@ -81,15 +93,10 @@
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label for="exampleInputPassword1">Comment</label>
-                                                    <textarea class="form-control" name="comment" id="exampleInputPassword1" cols="30" rows="10"
-                                                        placeholder="Enter Comment"></textarea>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="exampleInputPassword1">Image</label>
-                                                    <input type="file" name="image[]" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter image" multiple>
-                                                    @error('image')
+                                                    <label for="exampleInputPassword1">Pdf</label>
+                                                    <input type="file" name="pdf" class="form-control"
+                                                        id="exampleInputPassword1" placeholder="Enter Pdf" multiple>
+                                                    @error('pdf')
                                                         <div class="text-danger mt-1 mb-1">{{ $message }}</div>
                                                     @enderror
                                                 </div>
