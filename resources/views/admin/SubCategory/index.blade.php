@@ -28,18 +28,17 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Shok Suchna List</h3>
+                                <h3 class="card-title">Classified Sub Category List</h3>
                             </div>
 
                             <div class="card-header">
-                                <a href="{{ route('getshoksuchnaForm') }}" class="btn btn-primary m-1">Add
+                                <a href="{{ route('getclassifiedSubCategoryForm') }}" class="btn btn-primary m-1">Add
                                     New</a>
                                 <div class="row">
                                     <div class="col-md-4"></div>
                                     <div class="col-md-4" id="message_id">
                                         @if (Session::has('message'))
-                                            <p
-                                                class="text-center alert {{ Session::get('alert-class', 'alert-primary') }}">
+                                            <p class="text-center alert {{ Session::get('alert-class', 'alert-primary') }}">
                                                 {{ Session::get('message') }}
                                             </p>
                                         @endif
@@ -54,43 +53,26 @@
                                     <thead>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Description</th>
-                                            <th>View</th>
-                                            <th>Edit</th>
-                                            <th>Status</th>
+                                            <th>Category</th>
+                                            <th>Sub Category</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($birthdayData as $bday)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $bday['title'] }}</td>
-                                                <td>{{ $bday['description'] }}</td>
+                                                <td>{{ $bday['type'] }}</td>
+                                                <td>{{ $bday['sub_type'] }}</td>
                                                 <td>
-                                                    <a href="{{ url('shoksuchnaImage/' . $bday['id']) }}"
-                                                        class="btn btn-danger m-1">View</a>
-                                                </td>
-                                                <td>
-                                                    <a href="{{ url('getshoksuchnaEditForm/' . $bday['id']) }}"
-                                                        class="btn btn-primary m-1">Edit</a>
-                                                </td>
-                                                <td>
-                                                    @if ($bday['status'] == 1)
-                                                        <button class="btn btn-secondary m-1">Accepted</button>
-                                                    @elseif ($bday['status'] == 2)
-                                                        <button class="btn btn-secondary m-1">Denied</button>
-                                                    @else
-                                                        <a href="{{ url('acceptshoksuchna/' . $bday['id']) }}"
-                                                            class="btn btn-success m-1">
-                                                            Accept
-                                                        </a>
-
-                                                        <a href="{{ url('denyshoksuchna/' . $bday['id']) }}"
-                                                            class="btn btn-danger m-1">
-                                                            Deny
-                                                        </a>
-                                                    @endif
+                                                    <a href="{{ url('getclassifiedSubCategoryEditForm/' . $bday['id']) }}"
+                                                        class="btn btn-primary m-1">
+                                                        <i class="fas fa-edit right"></i>
+                                                    </a>
+                                                    <a href="{{ url('deleteclassifiedSubCategory/' . $bday['id']) }}"
+                                                        class="btn btn-danger m-1">
+                                                        <i class="fas fa-trash right"></i>
+                                                    </a>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -98,11 +80,9 @@
                                     <tfoot>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Description</th>
-                                            <th>View</th>
-                                            <th>Edit</th>
-                                            <th>Status</th>
+                                            <th>Category</th>
+                                            <th>Sub Category</th>
+                                            <th>Action</th>
                                         </tr>
                                     </tfoot>
                                 </table>
