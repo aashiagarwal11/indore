@@ -48,8 +48,8 @@ class ShoksuchnaController extends Controller
             'title'       => ['required', 'string'],
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
-            // 'image.*'     => ['mimes:jpeg,png,jpg'],
+            // 'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            'image.*'     => ['nullable','mimes:jpeg,png,jpg'],
         ]);
 
         $city = City::where('id', $request->city_id)->first();
@@ -137,7 +137,7 @@ class ShoksuchnaController extends Controller
     {
 
         $validateImageData = $request->validate([
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            'image.*'       => ['nullable', 'mimes:jpeg,png,jpg'],
         ]);
         $birthday = ShokSuchna::where('id', $id)->first();
         if (!empty($birthday)) {

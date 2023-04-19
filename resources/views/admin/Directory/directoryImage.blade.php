@@ -95,7 +95,6 @@
             },
             error: function(data) {
                 const obj = JSON.parse(data.responseText);
-                $('#errorimg').html("");
                 $('#errorimg').append(obj.message);
             }
         });
