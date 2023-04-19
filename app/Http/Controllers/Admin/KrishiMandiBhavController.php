@@ -52,8 +52,8 @@ class KrishiMandiBhavController extends Controller
             'title'       => ['required', 'string'],
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
-            // 'image.*'     => ['mimes:jpeg,png,jpg'],
+            // 'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            'image.*'     => ['nullable', 'mimes:jpeg,png,jpg'],
             'video_url'   => ['nullable'],
         ]);
 
@@ -118,7 +118,7 @@ class KrishiMandiBhavController extends Controller
     public function addkrishiImage(Request $request, $id)
     {
         $validateImageData = $request->validate([
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            'image.*'       => ['nullable', 'mimes:jpeg,png,jpg'],
         ]);
         $birthday = KrishiMandiBhav::where('id', $id)->first();
         if (!empty($birthday)) {

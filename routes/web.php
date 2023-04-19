@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\ResumeController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\ClassifiedCategoryController;
 use App\Http\Controllers\Admin\ClassifiedSubCategoryController;
-
+use App\Http\Controllers\Admin\DirectoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +125,19 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('getclassifiedSubCategoryEditForm/{id}', 'getclassifiedSubCategoryEditForm')->name('getclassifiedSubCategoryEditForm');
         Route::any('updateclassifiedSubCategory', 'updateclassifiedSubCategory')->name('updateclassifiedSubCategory');
         Route::get('deleteclassifiedSubCategory/{id}', 'deleteclassifiedSubCategory')->name('deleteclassifiedSubCategory');
+    });
+
+
+    Route::controller(DirectoryController::class)->group(function () {
+        Route::get('directoryList', 'directoryList')->name('directoryList');
+        Route::get('directoryImage/{id}', 'directoryImage')->name('directoryImage');
+        Route::get('getdirectoryForm', 'getdirectoryForm')->name('getdirectoryForm');
+        Route::post('adddirectory', 'adddirectory')->name('adddirectory');
+        Route::get('getdirectoryEditForm/{id}', 'getdirectoryEditForm')->name('getdirectoryEditForm');
+        Route::any('updatedirectory', 'updatedirectory')->name('updatedirectory');
+        Route::any('acceptdirectory/{id}', 'acceptdirectory')->name('acceptdirectory');
+        Route::any('denydirectory/{id}', 'denydirectory')->name('denydirectory');
+        Route::post('adddirectoryImage/{id}', 'adddirectoryImage')->name('adddirectoryImage');
     });
 });
 

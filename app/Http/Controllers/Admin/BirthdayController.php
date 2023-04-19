@@ -50,8 +50,8 @@ class BirthdayController extends Controller
             'title'       => ['required', 'string'],
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
-            // 'image.*'     => ['mimes:jpeg,png,jpg'],
+            // 'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            'image.*'     => ['nullable','mimes:jpeg,png,jpg'],
             'video_url'   => ['nullable'],
         ]);
 
@@ -154,7 +154,7 @@ class BirthdayController extends Controller
     public function addbirthdayImage(Request $request, $id)
     {
         $validateImageData = $request->validate([
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            'image.*'       => ['nullable', 'mimes:jpeg,png,jpg'],
         ]);
         $birthday = Birthday::where('id', $id)->first();
         if (!empty($birthday)) {
