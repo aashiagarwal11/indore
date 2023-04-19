@@ -37,10 +37,10 @@
                                     <div class="col-md-4"></div>
                                     <div class="col-md-4" id="message_id">
                                         @if (Session::has('message'))
-                                            <h5
+                                            <p
                                                 class="text-center alert {{ Session::get('alert-class', 'alert-primary') }}">
                                                 {{ Session::get('message') }}
-                                            </h5>
+                                            </p>
                                         @endif
                                     </div>
                                     <div class="col-md-4"></div>

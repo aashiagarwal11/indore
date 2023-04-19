@@ -316,6 +316,83 @@
 
                 <li class="nav-item">
                     <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-city"></i>
+                        <p>
+                            City
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('cityList') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>View</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('getcityForm') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-city"></i>
+                        <p>
+                            Classified Category
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('classifiedCategoryList') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>View</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('getclassifiedCategoryForm') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-city"></i>
+                        <p>
+                            Classified Sub Category
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('classifiedSubCategoryList') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>View</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('getclassifiedSubCategoryForm') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+
+
+
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-table"></i>
                         <p>
                             Today Birthday
@@ -455,6 +532,8 @@
                         </li>
                     </ul>
                 </li>
+
+
 
                 {{-- end aachuki --}}
 

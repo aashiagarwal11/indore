@@ -9,6 +9,9 @@ use App\Http\Controllers\Admin\KrishiMandiBhavController;
 use App\Http\Controllers\Admin\ShoksuchnaController;
 use App\Http\Controllers\Admin\RequirementController;
 use App\Http\Controllers\Admin\ResumeController;
+use App\Http\Controllers\Admin\CityController;
+use App\Http\Controllers\Admin\ClassifiedCategoryController;
+use App\Http\Controllers\Admin\ClassifiedSubCategoryController;
 
 
 /*
@@ -95,6 +98,33 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('acceptresume/{id}', 'acceptresume')->name('acceptresume');
         Route::any('denyresume/{id}', 'denyresume')->name('denyresume');
         // Route::post('addresumeImage/{id}', 'addresumeImage')->name('addresumeImage');
+    });
+
+    Route::controller(CityController::class)->group(function () {
+        Route::get('cityList', 'cityList')->name('cityList');
+        Route::get('getcityForm', 'getcityForm')->name('getcityForm');
+        Route::post('addcity', 'addcity')->name('addcity');
+        Route::get('getcityEditForm/{id}', 'getcityEditForm')->name('getcityEditForm');
+        Route::any('updatecity', 'updatecity')->name('updatecity');
+        Route::get('deletecity/{id}', 'deletecity')->name('deletecity');
+    });
+
+    Route::controller(ClassifiedCategoryController::class)->group(function () {
+        Route::get('classifiedCategoryList', 'classifiedCategoryList')->name('classifiedCategoryList');
+        Route::get('getclassifiedCategoryForm', 'getclassifiedCategoryForm')->name('getclassifiedCategoryForm');
+        Route::post('addclassifiedCategory', 'addclassifiedCategory')->name('addclassifiedCategory');
+        Route::get('getclassifiedCategoryEditForm/{id}', 'getclassifiedCategoryEditForm')->name('getclassifiedCategoryEditForm');
+        Route::any('updateclassifiedCategory', 'updateclassifiedCategory')->name('updateclassifiedCategory');
+        Route::get('deleteclassifiedCategory/{id}', 'deleteclassifiedCategory')->name('deleteclassifiedCategory');
+    });
+
+    Route::controller(ClassifiedSubCategoryController::class)->group(function () {
+        Route::get('classifiedSubCategoryList', 'classifiedSubCategoryList')->name('classifiedSubCategoryList');
+        Route::get('getclassifiedSubCategoryForm', 'getclassifiedSubCategoryForm')->name('getclassifiedSubCategoryForm');
+        Route::post('addclassifiedSubCategory', 'addclassifiedSubCategory')->name('addclassifiedSubCategory');
+        Route::get('getclassifiedSubCategoryEditForm/{id}', 'getclassifiedSubCategoryEditForm')->name('getclassifiedSubCategoryEditForm');
+        Route::any('updateclassifiedSubCategory', 'updateclassifiedSubCategory')->name('updateclassifiedSubCategory');
+        Route::get('deleteclassifiedSubCategory/{id}', 'deleteclassifiedSubCategory')->name('deleteclassifiedSubCategory');
     });
 });
 
