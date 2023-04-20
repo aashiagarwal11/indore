@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
-use App\Models\Birthday;
+use App\Models\Directory;
 use App\Models\City;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -17,43 +17,51 @@ class DirectoryController extends Controller
     public function directoryList()
     {
         $apiurl = env('APP_URL') . 'api/directoryListOfUser';
-        dd($apiurl);
         $response = Http::get($apiurl, [
             'role_id' => auth()->user()->role_id,
         ]);
         $newdata =  $response->json($key = null, $default = null);
         $birthdayData = $newdata['data'];
-        return view('admin.Birthday.index', compact('birthdayData'));
+        return view('admin.Directory.index', compact('birthdayData'));
     }
 
 
     public function directoryImage($id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = Directory::where('id', $id)->first();
         $bdata->image = str_replace("public", env('APP_URL') . "public", $bdata->image);
 
 
         $exp = explode('|', $bdata->image);
         // $key = array_search("", $exp);
         // unset($exp[$key]);
-        return view('admin.Birthday.birthdayImage', compact('exp', 'id'));
+        return view('admin.Directory.directoryImage', compact('exp', 'id'));
     }
 
     public function getdirectoryForm()
     {
         $cityData = City::get();
-        return view('admin.Birthday.birthdayForm', compact('cityData'));
+        return view('admin.Directory.directoryForm', compact('cityData'));
     }
 
     public function adddirectory(Request $request)
     {
         $validateImageData = $request->validate([
-            'title'       => ['required', 'string'],
-            'description' => ['required'],
-            'city_id'     => ['required', 'numeric'],
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
-            // 'image.*'     => ['mimes:jpeg,png,jpg'],
-            'video_url'   => ['nullable'],
+            'city_id'      => ['required'],
+            'biz_name'     => ['required'],
+            'contact_per1' => ['nullable'],
+            'number1'      => ['nullable'],
+            'category'     => ['nullable'],
+            'city'         => ['nullable'],
+            'state'        => ['nullable'],
+            'contact_per2' => ['nullable'],
+            'contact_per3' => ['nullable'],
+            'number2'      => ['nullable'],
+            'number3'      => ['nullable'],
+            'address'      => ['nullable'],
+            'detail'       => ['nullable'],
+            // 'image'        => ['nullable'],
+            'image.*'      => ['nullable', 'mimes:jpeg,png,jpg'],
         ]);
 
         $city = City::where('id', $request->city_id)->first();
@@ -65,53 +73,82 @@ class DirectoryController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/directory/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($images, $img_url);
                 }
             }
             $imp_image =  implode('|', $images);
-            $birthday = Birthday::create([
-                'title' => $request->title,
-                'description' => $request->description,
-                'image' => $imp_image ?? null,
-                'video_url' => $request->video_url ?? null,
+            $birthday = Directory::create([
+                'biz_name' => $request->biz_name,
+                'contact_per1' => $request->contact_per1,
+                'number1' => $request->number1,
+                'category' => $request->category,
+                'city' => $request->city,
+                'state' => $request->state,
+                'contact_per2' => $request->contact_per2,
+                'contact_per3' => $request->contact_per3,
+                'number2' => $request->number2,
+                'number3' => $request->number3,
+                'address' => $request->address,
+                'detail' => $request->detail,
                 'user_id' => 1,
+                'image' => $imp_image ?? null,
                 'city_id' => $request->city_id,
                 'status' => 1,
             ]);
 
 
 
-            return redirect()->route('birthdayList')->with('message', 'Added Successfully');
+            return redirect()->route('directoryList')->with('message', 'Added Successfully');
         }
     }
 
     public function getdirectoryEditForm(Request $request, $id)
     {
-        $bdata = Birthday::where('id', $id)->first();
+        $bdata = Directory::where('id', $id)->first();
         $cityData = City::get();
 
-        return view('admin.Birthday.birthdayEditForm', compact('bdata', 'cityData'));
+        return view('admin.Directory.directoryEditForm', compact('bdata', 'cityData'));
     }
 
     public function updatedirectory(Request $request)
     {
         $id = $request->id;
-        $birthday = Birthday::where('id', $id)->first();
+        $birthday = Directory::where('id', $id)->first();
         if (!empty($birthday)) {
             $validateImageData = $request->validate([
-                'title'       => ['required'],
-                'description' => ['required'],
-                'city_id'     => ['required'],
-                'video_url'   => ['nullable'],
+                'city_id'      => ['required'],
+                'biz_name'     => ['required'],
+                'contact_per1' => ['nullable'],
+                'number1'      => ['nullable'],
+                'category'     => ['nullable'],
+                'city'         => ['nullable'],
+                'state'        => ['nullable'],
+                'contact_per2' => ['nullable'],
+                'contact_per3' => ['nullable'],
+                'number2'      => ['nullable'],
+                'number3'      => ['nullable'],
+                'address'      => ['nullable'],
+                'detail'       => ['nullable'],
+                // 'image'        => ['nullable'],
+                'image.*'      => ['nullable', 'mimes:jpeg,png,jpg'],
             ]);
 
-            $data['title'] = $request->title;
-            $data['description'] = $request->description;
+            $data['biz_name'] = $request->biz_name;
+            $data['contact_per1'] = $request->contact_per1;
+            $data['number1'] = $request->number1;
+            $data['category'] = $request->category;
+            $data['city'] = $request->city;
+            $data['state'] = $request->state;
+            $data['contact_per2'] = $request->contact_per2;
+            $data['contact_per3'] = $request->contact_per3;
+            $data['number2'] = $request->number2;
+            $data['number3'] = $request->number3;
+            $data['address'] = $request->address;
+            $data['detail'] = $request->detail;
             $data['city_id'] = $request->city_id;
-            $data['video_url'] = $request->video_url ?? null;
             $updatedata = $birthday->update($data);
         }
 
@@ -125,12 +162,12 @@ class DirectoryController extends Controller
         //     'video_url' => $request->video_url,
         // ]);
         // $newdata =  $response->json();
-        return redirect()->route('birthdayList')->with('message', 'Update Successfully');
+        return redirect()->route('directoryList')->with('message', 'Update Successfully');
     }
 
     public function acceptdirectory(Request $request)
     {
-        $apiurl = env('APP_URL') . 'api/acceptBirthday';
+        $apiurl = env('APP_URL') . 'api/acceptDirectory';
         $response = Http::post($apiurl, [
             'role_id' => auth()->user()->role_id,
             'id' => $request->id,
@@ -142,7 +179,7 @@ class DirectoryController extends Controller
 
     public function denydirectory(Request $request)
     {
-        $apiurl = env('APP_URL') . 'api/denyBirthday';
+        $apiurl = env('APP_URL') . 'api/denyDirectory';
         $response = Http::post($apiurl, [
             'role_id' => auth()->user()->role_id,
             'id' => $request->id,
@@ -155,9 +192,9 @@ class DirectoryController extends Controller
     public function adddirectoryImage(Request $request, $id)
     {
         $validateImageData = $request->validate([
-            'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
+            'image.*'       => ['nullable', 'mimes:jpeg,png,jpg'],
         ]);
-        $birthday = Birthday::where('id', $id)->first();
+        $birthday = Directory::where('id', $id)->first();
         if (!empty($birthday)) {
 
             $exp = explode('|', $birthday->image);
@@ -167,7 +204,7 @@ class DirectoryController extends Controller
                     $imgname = md5(rand('1000', '10000'));
                     $extension = strtolower($file->getClientOriginalExtension());
                     $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
+                    $upload_path = 'public/directory/';
                     $img_url = $upload_path . $img_full_name;
                     $file->move($upload_path, $img_full_name);
                     array_push($exp, $img_url);

@@ -32,8 +32,8 @@
                             </div>
 
                             <div class="card-header">
-                                <a href="{{ route('adddirectory') }}" class="btn btn-primary m-1">Add
-                                    Birthday</a>
+                                <a href="{{ route('getdirectoryForm') }}" class="btn btn-primary m-1">Add
+                                    new</a>
                                 <div class="row">
                                     <div class="col-md-4"></div>
                                     <div class="col-md-4" id="message_id">
@@ -54,25 +54,39 @@
                                     <thead>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Description</th>
+                                            <th>biz_name</th>
+                                            <th>contact_per1</th>
+                                            <th>number1</th>
+                                            <th>city</th>
+                                            <th>state</th>
                                             <th>View</th>
                                             <th>Edit</th>
                                             <th>Status</th>
+                                            <th>category</th>
+                                            <th>contact_per2</th>
+                                            <th>contact_per3</th>
+                                            <th>number2</th>
+                                            <th>number3</th>
+                                            <th>address</th>
+                                            <th>detail</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($birthdayData as $bday)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $bday['title'] }}</td>
-                                                <td>{{ $bday['description'] }}</td>
+                                                <td>{{ $bday['biz_name'] }}</td>
+                                                <td>{{ $bday['contact_per1'] }}</td>
+                                                <td>{{ $bday['number1'] }}</td>
+                                                <td>{{ $bday['city'] }}</td>
+                                                <td>{{ $bday['state'] }}</td>
                                                 <td>
-                                                    <a href="{{ url('birthdayImage/' . $bday['id']) }}"
+                                                    <a href="{{ url('directoryImage/' . $bday['id']) }}"
                                                         class="btn btn-danger m-1">View</a>
                                                 </td>
                                                 <td>
-                                                    <a href="{{ url('getbirthdayEditForm/' . $bday['id']) }}"
+                                                    <a href="{{ url('getdirectoryEditForm/' . $bday['id']) }}"
                                                         class="btn btn-primary m-1">Edit</a>
                                                 </td>
                                                 <td>
@@ -81,28 +95,47 @@
                                                     @elseif ($bday['status'] == 2)
                                                         <button class="btn btn-secondary m-1">Denied</button>
                                                     @else
-                                                        <a href="{{ url('acceptBday/' . $bday['id']) }}"
+                                                        <a href="{{ url('acceptdirectory/' . $bday['id']) }}"
                                                             class="btn btn-success m-1">
                                                             Accept
                                                         </a>
 
-                                                        <a href="{{ url('denyBday/' . $bday['id']) }}"
+                                                        <a href="{{ url('denydirectory/' . $bday['id']) }}"
                                                             class="btn btn-danger m-1">
                                                             Deny
                                                         </a>
                                                     @endif
                                                 </td>
+                                                <td>{{ $bday['category'] }}</td>
+                                                <td>{{ $bday['contact_per2'] }}</td>
+                                                <td>{{ $bday['contact_per3'] }}</td>
+                                                <td>{{ $bday['number2'] }}</td>
+                                                <td>{{ $bday['number3'] }}</td>
+                                                <td>{{ $bday['address'] }}</td>
+                                                <td>{{ $bday['detail'] }}</td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Description</th>
+                                            <th>biz_name</th>
+                                            <th>contact_per1</th>
+                                            <th>number1</th>
+                                            <th>city</th>
+                                            <th>state</th>
                                             <th>View</th>
                                             <th>Edit</th>
                                             <th>Status</th>
+                                            <th>category</th>
+                                            <th>contact_per2</th>
+                                            <th>contact_per3</th>
+                                            <th>number2</th>
+                                            <th>number3</th>
+                                            <th>address</th>
+                                            <th>detail</th>
+
                                         </tr>
                                     </tfoot>
                                 </table>
