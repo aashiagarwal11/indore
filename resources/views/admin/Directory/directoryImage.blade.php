@@ -27,7 +27,7 @@
                     <div class="col-12 col-sm-6 col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Birthday Images</h3>
+                                <h3 class="card-title">Directory Images</h3>
 
                                 <form method="POST" id="imagedata" enctype='multipart/form-data' onchange="myimage()">
                                     @csrf
@@ -80,7 +80,7 @@
         let formData = new FormData($('#imagedata')[0]);
         console.log(formData);
         $.ajax({
-            url: "{{ url('addbirthdayImage/' . $id) }}",
+            url: "{{ url('adddirectoryImage/' . $id) }}",
             method: "post",
             headers: {
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"

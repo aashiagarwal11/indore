@@ -70,8 +70,8 @@ class DirectoryController extends Controller
                         'number3'      => ['nullable'],
                         'address'      => ['nullable', 'string'],
                         'detail'       => ['nullable', 'string'],
-                        'image'        => ['nullable'],
-                        'image.*'      => ['mimes:jpeg,png,jpg'],
+                        // 'image'        => ['nullable'],
+                        'image.*'      => ['nullable', 'mimes:jpeg,png,jpg'],
                     ]);
 
                     if ($validator->fails()) {
@@ -388,36 +388,53 @@ class DirectoryController extends Controller
 
     public function acceptDirectory(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
+        // $auth_id = auth()->user()->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $directory = Directory::where('id', $id)->first();
-            if (!empty($directory)) {
-                if ($directory->status == 0) {
-                    $directory->status = 1;
-                    $updateStatus = $directory->update();
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Request is accepted By Admin',
-                        'data' => $directory,
-                    ]);
-                } elseif ($directory->status == 1) {
+            if ($request->role_id == 1) {
+
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $directory = Directory::where('id', $id)->first();
+                if (!empty($directory)) {
+                    $birthdaycity = Directory::where('id', $id)->where('city_id', '!=', null)->first();
+                    if (!empty($birthdaycity)) {
+                        if ($directory->status == 0) {
+                            $directory->status = 1;
+                            $updateStatus = $directory->update();
+                            return response()->json([
+                                'status' => true,
+                                'message' => 'Request Accepted',
+                                'data' => $directory,
+                            ]);
+                        } elseif ($directory->status == 1) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Request already accepted By Admin so you can not accept again',
+                            ]);
+                        }
+                    } else {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Please Add City First',
+                        ]);
+                    }
+                } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request already accepted By Admin so you can not accept again',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -429,35 +446,43 @@ class DirectoryController extends Controller
 
     public function denyDirectory(Request $request)
     {
-        $auth_id = auth()->user()->id;
-        $id = $request->id;
-        try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+        // $auth_id = auth()->user()->id;
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $directory = Directory::where('id', $id)->first();
-            if (!empty($directory)) {
-                if ($directory->status == 0) {
-                    $directory->status = 2;
-                    $updateStatus = $directory->update();
+        try {
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $directory = Directory::where('id', $id)->first();
+                if (!empty($directory)) {
+                    if ($directory->status == 0) {
+                        $directory->status = 2;
+                        $updateStatus = $directory->update();
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Request Denied',
+                            'data' => $directory,
+                        ]);
+                    } elseif ($directory->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Request already denied By Admin so you can not deny again',
+                        ]);
+                    }
+                } else {
                     return response()->json([
-                        'status' => true,
-                        'message' => 'Request denied By Admin',
-                        'data' => $directory,
-                    ]);
-                } elseif ($directory->status == 2) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Request already denied By Admin so you can not deny again',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {

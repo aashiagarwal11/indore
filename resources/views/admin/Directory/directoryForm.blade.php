@@ -49,47 +49,164 @@
                                                 id="exampleInputEmail1" placeholder="Enter title"
                                                 value="{{ auth()->user()->role_id }}">
                                             <div class="card-body">
-                                                <div class="form-group">
-                                                    <label for="exampleInputEmail1">Title</label>
-                                                    <input type="title" name="title" class="form-control"
-                                                        id="exampleInputEmail1" placeholder="Enter title" required>
-                                                    <div class="valid-feedback">Valid.</div>
-                                                    <div class="invalid-feedback">Please Enter Title</div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="exampleInputPassword1">Description</label>
-                                                    <input type="description" name="description" class="form-control"
-                                                        id="exampleInputPassword1" placeholder="Enter description" required>
-                                                    <div class="valid-feedback">Valid.</div>
-                                                    <div class="invalid-feedback">Please Enter Description</div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="exampleInputPassword1">Image</label>
-                                                    <input type="file" name="image[]"
-                                                        class="form-control @error('image') is-invalid @enderror"
-                                                        id="exampleInputPassword1" placeholder="Enter image" multiple>
-                                                    @error('image')
-                                                        <div class="text-danger mt-1 mb-1">{{ $message }}</div>
-                                                    @enderror
 
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Business Name</label>
+                                                            <input type="text" name="biz_name" class="form-control"
+                                                                id="exampleInputEmail1" placeholder="Enter Business Name"
+                                                                required>
+                                                            <div class="valid-feedback">Valid.</div>
+                                                            <div class="invalid-feedback">Please Enter Business Name</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>City</label>
+                                                            <select name="city_id" class="form-control" required>
+                                                                <option value="">Select</option>
+                                                                @foreach ($cityData as $cdata)
+                                                                    <option value="{{ $cdata->id }}">
+                                                                        {{ $cdata->city_name }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                            <div class="valid-feedback">Valid.</div>
+                                                            <div class="invalid-feedback">Please Enter City</div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>City</label>
-                                                    <select name="city_id" class="form-control" required>
-                                                        <option value="">Select</option>
-                                                        @foreach ($cityData as $cdata)
-                                                            <option value="{{ $cdata->id }}">{{ $cdata->city_name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                    <div class="valid-feedback">Valid.</div>
-                                                    <div class="invalid-feedback">Please Enter City</div>
+
+
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Contact Person1</label>
+                                                            <input type="text" name="contact_per1" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter contact Per1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Number1</label>
+                                                            <input type="text" name="number1" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter Number1">
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="form-group">
+
+                                                <div class="row">
+
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Category</label>
+                                                            <input type="text" name="category" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter category">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">City</label>
+                                                            <input type="text" name="city" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter city">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">State</label>
+                                                            <input type="text" name="state" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter state">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Contact Person2</label>
+                                                            <input type="text" name="contact_per2"
+                                                                class="form-control" id="exampleInputPassword1"
+                                                                placeholder="Enter Contact Person2">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Contact Person3</label>
+                                                            <input type="text" name="contact_per3"
+                                                                class="form-control" id="exampleInputPassword1"
+                                                                placeholder="Enter Contact Person3">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Number2</label>
+                                                            <input type="text" name="number2" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter Number2">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Number3</label>
+                                                            <input type="text" name="number3" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter Number3">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Address</label>
+                                                            <input type="text" name="address" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter Address">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Image</label>
+                                                            <input type="file" name="image[]"
+                                                                class="form-control @error('image') is-invalid @enderror"
+                                                                id="exampleInputPassword1" placeholder="Enter image"
+                                                                multiple>
+                                                            @error('image')
+                                                                <div class="text-danger mt-1 mb-1">{{ $message }}</div>
+                                                            @enderror
+
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputPassword1">Detail</label>
+                                                            <input type="text" name="detail" class="form-control"
+                                                                id="exampleInputPassword1" placeholder="Enter Detail">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+
+
+
+                                                {{-- <div class="form-group">
                                                     <label for="exampleInputPassword1">Video Url</label>
                                                     <input type="video" name="video" class="form-control"
                                                         id="exampleInputPassword1" placeholder="Enter video link">
-                                                </div>
+                                                </div> --}}
                                             </div>
                                             <!-- /.card-body -->
                                             <div class="card-footer">
