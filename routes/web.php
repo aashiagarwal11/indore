@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\ClassifiedCategoryController;
 use App\Http\Controllers\Admin\ClassifiedSubCategoryController;
 use App\Http\Controllers\Admin\DirectoryController;
+use App\Http\Controllers\Admin\SaleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,7 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('acceptBday/{id}', 'acceptBday')->name('acceptBday');
         Route::any('denyBday/{id}', 'denyBday')->name('denyBday');
         Route::post('addbirthdayImage/{id}', 'addbirthdayImage')->name('addbirthdayImage');
+        Route::get('deletebirthdayImage', 'deletebirthdayImage')->name('deletebirthdayImage');
     });
 
     Route::controller(KrishiMandiBhavController::class)->group(function () {
@@ -60,6 +62,7 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('getkrishiEditForm/{id}', 'getkrishiEditForm')->name('getkrishiEditForm');
         Route::any('updatekrishi', 'updatekrishi')->name('updatekrishi');
         Route::post('addkrishiImage/{id}', 'addkrishiImage')->name('addkrishiImage');
+        Route::get('deletekrishiImage', 'deletekrishiImage')->name('deletekrishiImage');
     });
 
 
@@ -73,6 +76,7 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('acceptshoksuchna/{id}', 'acceptshoksuchna')->name('acceptshoksuchna');
         Route::any('denyshoksuchna/{id}', 'denyshoksuchna')->name('denyshoksuchna');
         Route::post('addshoksuchnaImage/{id}', 'addshoksuchnaImage')->name('addshoksuchnaImage');
+        Route::get('deleteshoksuchnaImage', 'deleteshoksuchnaImage')->name('deleteshoksuchnaImage');
     });
 
 
@@ -86,6 +90,7 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('acceptrequirement/{id}', 'acceptrequirement')->name('acceptrequirement');
         Route::any('denyrequirement/{id}', 'denyrequirement')->name('denyrequirement');
         Route::post('addrequirementImage/{id}', 'addrequirementImage')->name('addrequirementImage');
+        Route::get('deleterequirementImage', 'deleterequirementImage')->name('deleterequirementImage');
     });
 
     Route::controller(ResumeController::class)->group(function () {
@@ -138,6 +143,22 @@ Route::group(['middleware' => ['admin']], function () {
         Route::any('acceptdirectory/{id}', 'acceptdirectory')->name('acceptdirectory');
         Route::any('denydirectory/{id}', 'denydirectory')->name('denydirectory');
         Route::post('adddirectoryImage/{id}', 'adddirectoryImage')->name('adddirectoryImage');
+        Route::get('deletedirectoryImage', 'deletedirectoryImage')->name('deletedirectoryImage');
+    });
+
+
+    Route::controller(SaleController::class)->group(function () {
+        Route::get('saleList', 'saleList')->name('saleList');
+        Route::get('saleImage/{id}', 'saleImage')->name('saleImage');
+        Route::get('getsaleForm', 'getsaleForm')->name('getsaleForm');
+        Route::post('getsaleFormajax', 'getsaleFormajax')->name('getsaleFormajax');
+        Route::post('addsale', 'addsale')->name('addsale');
+        Route::get('getsaleEditForm/{id}', 'getsaleEditForm')->name('getsaleEditForm');
+        Route::any('updatesale', 'updatesale')->name('updatesale');
+        Route::any('acceptsale/{id}', 'acceptsale')->name('acceptsale');
+        Route::any('denysale/{id}', 'denysale')->name('denysale');
+        Route::post('addsaleImage/{id}', 'addsaleImage')->name('addsaleImage');
+        Route::get('deletesaleImage', 'deletesaleImage')->name('deletesaleImage');
     });
 });
 

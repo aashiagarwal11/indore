@@ -51,7 +51,7 @@ class BirthdayController extends Controller
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
             // 'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
-            'image.*'     => ['nullable','mimes:jpeg,png,jpg'],
+            'image.*'     => ['nullable', 'mimes:jpeg,png,jpg'],
             'video_url'   => ['nullable'],
         ]);
 
@@ -183,5 +183,16 @@ class BirthdayController extends Controller
                 'message' => 'Image added successfully',
             ]);
         }
+    }
+
+    public function deletebirthdayImage(Request $request)
+    {
+        $get =  Birthday::where('id', $request->id)->first();
+        $exp = explode('|', $get->image);
+        unset($exp[$request->key]);
+        $imp = implode('|', $exp);
+        $get->image = $imp;
+        $data = Birthday::where('id', $request->id)->update(['image' => $imp]);
+        return response()->json(['data' => $data, 'message' => 'Deleted Successfully']);
     }
 }

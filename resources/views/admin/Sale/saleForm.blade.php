@@ -29,8 +29,8 @@
                         <div class="card">
 
                             <div class="card-header">
-                                <a href="{{ route('birthdayList') }}" class="btn btn-primary m-1">View
-                                    Birthday List</a>
+                                <a href="{{ route('saleList') }}" class="btn btn-primary m-1">View
+                                    List</a>
                             </div>
 
                             <!-- /.card-header -->
@@ -39,16 +39,46 @@
                                 <div class="col-md-6">
                                     <div class="card card-primary">
                                         <div class="card-header">
-                                            <h3 class="card-title">Birthday <small>Form</small></h3>
+                                            <h3 class="card-title">Sale <small>Form</small></h3>
                                         </div>
                                         <!-- form start -->
-                                        <form id="quickForm" class="was-validated" action="{{ route('addbirthday') }}"
+                                        <form id="quickForm" class="was-validated" action="{{ route('addsale') }}"
                                             method="POST" enctype="multipart/form-data">
                                             @csrf
+
                                             <input type="hidden" name="role_id" class="form-control"
                                                 id="exampleInputEmail1" placeholder="Enter title"
                                                 value="{{ auth()->user()->role_id }}">
-                                            <div class="card-body">
+
+                                            <div class="form-group">
+                                                <label>Category</label>
+                                                <select name="type" class="form-control" required
+                                                    onchange="categoryfun(this)">
+                                                    <option value="" selected>Select</option>
+                                                    @foreach ($category as $cat)
+                                                        <option value="{{ $cat['id'] }}">
+                                                            {{ $cat['type'] }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="valid-feedback">Valid.</div>
+                                                <div class="invalid-feedback">Please Enter City</div>
+                                            </div>
+
+
+                                            <div class="form-group d-none" id="subcategory">
+                                                <label>Sub Category</label>
+                                                <select name="type" class="form-control" id="inputGroupVendor" required>
+                                                    <option value="" selected>Select</option>
+                                                </select>
+                                                <div class="valid-feedback">Valid.</div>
+                                                <div class="invalid-feedback">Please Enter City</div>
+                                            </div>
+
+                                            <div id="maindiv"></div>
+
+
+                                            {{-- <div class="card-body">
                                                 <div class="form-group">
                                                     <label for="exampleInputEmail1">Title</label>
                                                     <input type="title" name="title" class="form-control"
@@ -90,7 +120,7 @@
                                                     <input type="video" name="video" class="form-control"
                                                         id="exampleInputPassword1" placeholder="Enter video link">
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                             <!-- /.card-body -->
                                             <div class="card-footer">
                                                 <button type="submit" class="btn btn-primary">Add</button>
@@ -120,3 +150,56 @@
         <!-- /.content -->
     </div>
 @endsection
+
+<script>
+    function categoryfun(catid) {
+        // console.log(catid.value);
+        $.ajax({
+            url: "{{ url('getsaleFormajax') }}",
+            method: "post",
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            data: {
+                'catid': catid.value
+            },
+            success: function(data) {
+                console.log(data);
+                if (data != 0){
+                    $('#subcategory').removeClass('d-none');
+                }else{
+                    $('#subcategory').addClass('d-none');
+                    $('#maindiv').addClass('d-none');
+                }
+
+                $('#inputGroupVendor').html("");
+                $.each(data, function(key, val) {
+                    $('#inputGroupVendor').append("<option value ='" + val.id + "'>" + val
+                        .sub_type + "</option>");
+                });
+                if (data[0].sale_id == 3){
+                    $('#maindiv').html("");
+                    $('#maindiv').removeClass('d-none');
+                    $('#maindiv').append(` <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" name="name" class="form-control"
+                                                id="" placeholder="Enter title"
+                                                value="">
+                    </div>`);
+
+                } else {
+                    
+                    $('#maindiv').addClass('d-none');
+                }
+
+
+            },
+            // error: function(data) {
+            //     const obj = JSON.parse(data.responseText);
+            //     $('#errorimg').html("");
+            //     $('#errorimg').append(obj.message);
+            // }
+        });
+
+    }
+</script>

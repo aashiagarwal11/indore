@@ -49,7 +49,7 @@ class ShoksuchnaController extends Controller
             'description' => ['required'],
             'city_id'     => ['required', 'numeric'],
             // 'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
-            'image.*'     => ['nullable','mimes:jpeg,png,jpg'],
+            'image.*'     => ['nullable', 'mimes:jpeg,png,jpg'],
         ]);
 
         $city = City::where('id', $request->city_id)->first();
@@ -166,5 +166,16 @@ class ShoksuchnaController extends Controller
                 'message' => 'Image added successfully',
             ]);
         }
+    }
+
+    public function deleteshoksuchnaImage(Request $request)
+    {
+        $get =  ShokSuchna::where('id', $request->id)->first();
+        $exp = explode('|', $get->image);
+        unset($exp[$request->key]);
+        $imp = implode('|', $exp);
+        $get->image = $imp;
+        $data = ShokSuchna::where('id', $request->id)->update(['image' => $imp]);
+        return response()->json(['data' => $data, 'message' => 'Deleted Successfully']);
     }
 }
