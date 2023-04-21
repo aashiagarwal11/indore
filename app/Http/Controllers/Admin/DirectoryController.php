@@ -222,4 +222,15 @@ class DirectoryController extends Controller
             ]);
         }
     }
+
+    public function deletedirectoryImage(Request $request)
+    {
+        $get =  Directory::where('id', $request->id)->first();
+        $exp = explode('|', $get->image);
+        unset($exp[$request->key]);
+        $imp = implode('|', $exp);
+        $get->image = $imp;
+        $data = Directory::where('id', $request->id)->update(['image' => $imp]);
+        return response()->json(['data' => $data, 'message' => 'Deleted Successfully']);
+    }
 }

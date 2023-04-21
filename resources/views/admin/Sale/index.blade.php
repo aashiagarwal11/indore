@@ -28,19 +28,20 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Krishi Mandi Bhav List</h3>
+                                <h3 class="card-title">Sale List</h3>
                             </div>
 
                             <div class="card-header">
-                                <a href="{{ route('getkrishiForm') }}" class="btn btn-primary m-1">Add New</a>
+                                <a href="{{ route('getsaleForm') }}" class="btn btn-primary m-1">Add
+                                    New</a>
                                 <div class="row">
                                     <div class="col-md-4"></div>
                                     <div class="col-md-4" id="message_id">
                                         @if (Session::has('message'))
-                                            <p
+                                            <h5
                                                 class="text-center alert {{ Session::get('alert-class', 'alert-primary') }}">
                                                 {{ Session::get('message') }}
-                                            </p>
+                                            </h5>
                                         @endif
                                     </div>
                                     <div class="col-md-4"></div>
@@ -53,41 +54,71 @@
                                     <thead>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Description</th>
+                                            <th>Sale Category</th>
+                                            <th>Sale Sub Category</th>
+                                            <th>Vendor Name</th>
+                                            <th>Owner or Broker</th>
+                                            <th>Vehicle Sighting</th>
+                                            <th>Property Location</th>
+                                            <th>Price</th>
+                                            <th>Brand</th>
+                                            <th>Model Name</th>
+                                            <th>Model Year</th>
                                             <th>View</th>
                                             <th>Edit</th>
-                                            {{-- <th>Status</th> --}}
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($birthdayData as $bday)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $bday['title'] }}</td>
-                                                <td>{{ $bday['description'] }}</td>
+                                                <td>{{ $bday['sale_id'] }}</td>
+                                                <td>{{ $bday['sub_cat_id'] }}</td>
                                                 <td>
-                                                    <a href="{{ url('krishiImage/' . $bday['id']) }}"
+                                                    <a href="{{ url('saleImage/' . $bday['id']) }}"
                                                         class="btn btn-danger m-1">View</a>
                                                 </td>
                                                 <td>
-                                                    <a href="{{ url('getkrishiEditForm/' . $bday['id']) }}"
+                                                    <a href="{{ url('getsaleEditForm/' . $bday['id']) }}"
                                                         class="btn btn-primary m-1">Edit</a>
                                                 </td>
-                                                {{-- <td>
-                                                    <button class="btn btn-secondary m-1">Accepted</button>
-                                                </td> --}}
+                                                <td>
+                                                    @if ($bday['status'] == 1)
+                                                        <button class="btn btn-secondary m-1">Accepted</button>
+                                                    @elseif ($bday['status'] == 2)
+                                                        <button class="btn btn-secondary m-1">Denied</button>
+                                                    @else
+                                                        <a href="{{ url('acceptsale/' . $bday['id']) }}"
+                                                            class="btn btn-success m-1">
+                                                            Accept
+                                                        </a>
+
+                                                        <a href="{{ url('denysale/' . $bday['id']) }}"
+                                                            class="btn btn-danger m-1">
+                                                            Deny
+                                                        </a>
+                                                    @endif
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <th>id</th>
-                                            <th>Title</th>
-                                            <th>Description</th>
+                                            <th>Sale Category</th>
+                                            <th>Sale Sub Category</th>
+                                            <th>Vendor Name</th>
+                                            <th>Owner or Broker</th>
+                                            <th>Vehicle Sighting</th>
+                                            <th>Property Location</th>
+                                            <th>Price</th>
+                                            <th>Brand</th>
+                                            <th>Model Name</th>
+                                            <th>Model Year</th>
                                             <th>View</th>
                                             <th>Edit</th>
-                                            {{-- <th>Status</th> --}}
+                                            <th>Status</th>
                                         </tr>
                                     </tfoot>
                                 </table>
