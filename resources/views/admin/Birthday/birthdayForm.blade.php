@@ -71,7 +71,6 @@
                                                     @error('image')
                                                         <div class="text-danger mt-1 mb-1">{{ $message }}</div>
                                                     @enderror
-
                                                 </div>
                                                 <div class="form-group">
                                                     <label>City</label>

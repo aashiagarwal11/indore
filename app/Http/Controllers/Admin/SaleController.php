@@ -10,6 +10,7 @@ use App\Models\Birthday;
 use App\Models\City;
 use App\Models\Sale;
 use App\Models\SaleSubCategory;
+use App\Models\SaleSubCategoryProduct;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -49,51 +50,130 @@ class SaleController extends Controller
 
     public function getsaleFormajax(Request $request)
     {
+        // dd($request->all());
         $data = SaleSubCategory::where('sale_id', $request->catid)->get()->toArray();
+        // dd($data);
+        if (!empty($data)) {
+            $cityData = City::get();
+            return response()->json(['data' => $data, 'cityData' => $cityData]);
+        }
 
-        return response()->json($data);
+        return response()->json(['data' => null]);
     }
 
     public function addsale(Request $request)
     {
-        $validateImageData = $request->validate([
-            'title'       => ['required', 'string'],
-            'description' => ['required'],
-            'city_id'     => ['required', 'numeric'],
-            // 'image'       => ['nullable', 'mimes:jpeg,png,jpg'],
-            'image.*'     => ['nullable', 'mimes:jpeg,png,jpg'],
-            'video_url'   => ['nullable'],
-        ]);
+        // dd($request->all());
+
+
+        // dd($request->all());
 
         $city = City::where('id', $request->city_id)->first();
+        $chksellid = Sale::where('id', $request->sale_id)->first();
+
 
         if (!empty($city)) {
-            $images = array();
-            if ($files = $request->file('image')) {
-                foreach ($files as $file) {
-                    $imgname = md5(rand('1000', '10000'));
-                    $extension = strtolower($file->getClientOriginalExtension());
-                    $img_full_name = $imgname . '.' . $extension;
-                    $upload_path = 'public/birthday/';
-                    $img_url = $upload_path . $img_full_name;
-                    $file->move($upload_path, $img_full_name);
-                    array_push($images, $img_url);
-                }
-            }
-            $imp_image =  implode('|', $images);
-            $birthday = Birthday::create([
-                'title' => $request->title,
-                'description' => $request->description,
-                'image' => $imp_image ?? null,
-                'video_url' => $request->video_url ?? null,
-                'user_id' => 1,
-                'city_id' => $request->city_id,
-                'status' => 1,
+            $validateImageData = $request->validate([
+                'sale_id'           => ['required'],
+                'sub_cat_id'        => ['required'],
+                'city_id'           => ['required'],
+                'vendor_name'       => ['required', 'string', 'max:50'],
+                'owner_or_broker'   => ['nullable', 'string', 'max:255'],
+                'property_location' => ['nullable', 'string', 'max:255'],
+                'price'             => ['nullable'],
+                'image.*'           => ['nullable', 'mimes:jpeg,png,jpg'],
+                'whatsapp_no'       => ['nullable', 'numeric', 'digits:10'],
+                'call_no'           => ['nullable'],
             ]);
 
 
+            if (!empty($chksellid->type)) {
+                $images = array();
+                if ($files = $request->file('image')) {
+                    foreach ($files as $file) {
+                        $imgname = md5(rand('1000', '10000'));
+                        $extension = strtolower($file->getClientOriginalExtension());
+                        $img_full_name = $imgname . '.' . $extension;
+                        $upload_path = 'public/sellImage/';
+                        $img_url = $upload_path . $img_full_name;
+                        $file->move($upload_path, $img_full_name);
+                        array_push($images, $img_url);
+                    }
+                }
+                $imp_image =  implode('|', $images);
 
-            return redirect()->route('birthdayList')->with('message', 'Added Successfully');
+                if ($chksellid->type == 'vehicle') {
+                    $validateImageData = $request->validate([
+                        'vehicle_sighting'  => ['nullable', 'string', 'max:255'],
+                        'brand'             => ['nullable', 'string', 'max:30'],
+                        'model_name'        => ['nullable', 'string', 'max:20'],
+                        'model_year'        => ['nullable', 'numeric'],
+                        'fuel_type'         => ['nullable', 'string', 'max:20'],
+                        'seater'            => ['nullable', 'numeric', 'max:30'],
+                        'kilometer_running' => ['nullable', 'string', 'max:30'],
+                        'insurance_period'  => ['nullable', 'string', 'max:20'],
+                        'color'             => ['nullable', 'string', 'max:20'],
+                    ]);
+                    $sale = SaleSubCategoryProduct::create([
+                        'sale_id'           => $request->sale_id,
+                        'sub_cat_id'        => $request->sub_cat_id,
+                        'vendor_name'       => $request->vendor_name,
+                        'owner_or_broker'   => $request->owner_or_broker,
+                        'property_location' => $request->property_location,
+                        'price'             => $request->price,
+                        'vehicle_sighting'  => $request->vehicle_sighting,
+                        'brand'             => $request->brand,
+                        'model_name'        => $request->model_name,
+                        'model_year'        => $request->model_year,
+                        'fuel_type'         => $request->fuel_type,
+                        'seater'            => $request->seater,
+                        'kilometer_running' => $request->kilometer_running,
+                        'insurance_period'  => $request->insurance_period,
+                        'color'             => $request->color,
+                        'other_information' => $request->other_information ?? null,
+                        'image'             => $imp_image,
+                        'city_id'           => $request->city_id,
+                        'user_id'           => 1,
+                        'status'            => 1,
+                        'whatsapp_no'       => $request->whatsapp_no,
+                        'call_no'           => $request->call_no,
+                    ]);
+                } elseif ($chksellid->type == 'property') {
+                    // dd($request->all());
+                    $validateImageData = $request->validate([
+                        'size_length_width'  => ['nullable'],
+                        'room_qty'           => ['nullable'],
+                        'kitchen'            => ['nullable'],
+                        'hall'               => ['nullable'],
+                        'lat_bath'           => ['nullable'],
+                    ]);
+
+                    $sale = SaleSubCategoryProduct::create([
+                        'sale_id'           => $request->sale_id,
+                        'sub_cat_id'        => $request->sub_cat_id,
+                        'vendor_name'       => $request->vendor_name,
+                        'owner_or_broker'   => $request->owner_or_broker,
+                        'property_location' => $request->property_location,
+                        'price'             => $request->price,
+                        'size_length_width' => $request->size_length_width,
+                        'other_information' => $request->other_information ?? null,
+                        'image'             => $imp_image,
+                        'city_id'           => $request->city_id,
+                        'user_id'           => 1,
+                        'status'            => 1,
+                        'whatsapp_no'       => $request->whatsapp_no,
+                        'call_no'           => $request->call_no,
+                        'room_qty'          => $request->room_qty,
+                        'kitchen'           => $request->kitchen,
+                        'hall'              => $request->hall,
+                        'lat_bath'          => $request->lat_bath,
+                    ]);
+                }
+                // dd($sale);
+                return response()->json($sale);
+            }
+
+            // return redirect()->route('birthdayList')->with('message', 'Added Successfully');
         }
     }
 
