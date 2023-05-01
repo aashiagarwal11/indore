@@ -181,9 +181,12 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Owner or Broker</label>
-                                        <input type="text" name="owner_or_broker" class="form-control"
-                                                            id="" placeholder="Enter Owner or Broker">
+                                        <label>Posted By</label>
+                                        <select name="owner_or_broker" class="form-control">
+                                            <option value="" selected>Select</option>
+                                            <option value="owner">Owner</option>
+                                            <option value="broker">Broker</option>
+                                        </select>
                                         <div id="owner_or_broker" class="text-danger"></div>
                                     </div>
                                 </div>
@@ -243,7 +246,6 @@
                                         <input type="text" name="brand" class="form-control"
                                                             id="" placeholder="Enter Brand">
                                         <div id="brand" class="text-danger"></div>
-
                                     </div>
                                 </div>
                             </div>
@@ -255,7 +257,6 @@
                                         <input type="text" name="model_name" class="form-control"
                                                             id="" placeholder="Enter Model Name">
                                         <div id="model_name" class="text-danger"></div>
-
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -272,9 +273,14 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Fuel Type</label>
-                                        <input type="text" name="fuel_type" class="form-control"
-                                                            id="" placeholder="Enter Fuel Type">
+                                        <label>Fuel Type</label>
+                                        <select name="fuel_type" class="form-control">
+                                            <option value="" selected>Select</option>
+                                            <option value="petrol">Petrol</option>
+                                            <option value="diesel">Diesel</option>
+                                            <option value="cng">CNG</option>
+                                            <option value="ev">Electric Vehicle</option>
+                                        </select>
                                         <div id="fuel_type" class="text-danger"></div>
                                     </div>
                                 </div>
@@ -282,7 +288,7 @@
                                     <div class="form-group">
                                         <label for="exampleInputEmail1">Seater</label>
                                         <input type="text" name="seater" class="form-control"
-                                                            id="" placeholder="Enter Seater">
+                                                            id="" placeholder="Enter Seat">
                                         <div id="seater" class="text-danger"></div>
                                     </div>
                                 </div>
@@ -345,9 +351,12 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Owner or Broker</label>
-                                        <input type="text" name="owner_or_broker" class="form-control"
-                                                            id="" placeholder="Enter Owner or Broker">
+                                        <label>Posted By</label>
+                                        <select name="owner_or_broker" class="form-control">
+                                            <option value="" selected>Select</option>
+                                            <option value="owner">Owner</option>
+                                            <option value="broker">Broker</option>
+                                        </select>
                                         <div id="owner_or_broker" class="text-danger"></div>
                                     </div>
                                 </div>
@@ -434,9 +443,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Lat Bath</label>
-                                        <input type="text" name="lat_bath" class="form-control"
-                                                            id="" placeholder="Enter Lat Bath">
+                                        <label>Lat Bath</label>
+                                        <select name="lat_bath" class="form-control">
+                                            <option value="" selected>Select</option>
+                                            <option value="attached">Attached</option>
+                                            <option value="non_attached">Non Attached</option>
+                                        </select>
                                         <div id="lat_bath" class="text-danger"></div>
                                     </div>
                                 </div>
@@ -457,19 +469,50 @@
                             $('#maindiv').html("");
                             $('#maindiv').removeClass('d-none');
                             $('#maindiv').append(` <div class="form-group">
-                            <div class="row">
+                                <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="exampleInputEmail1">Whatsapp Number</label>
-                                        <input type="text" name="whatsapp_no" class="form-control"
-                                                            id="" placeholder="Enter Whatsapp Number">
+                                        <label for="exampleInputEmail1">Vendor Name</label>
+                                        <input type="text" name="vendor_name" class="form-control"
+                                                            id="" placeholder="Enter Vendor Name">
+                                        <div id="vendor_name" class="text-danger"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label>Posted By</label>
+                                        <select name="owner_or_broker" class="form-control">
+                                            <option value="" selected>Select</option>
+                                            <option value="owner">Owner</option>
+                                            <option value="broker">Broker</option>
+                                        </select>
+                                        <div id="owner_or_broker" class="text-danger"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Price</label>
+                                        <input type="text" name="price" class="form-control"
+                                                            id="" placeholder="Enter Price">
+                                        <div id="price" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Whatsapp Number</label>
+                                        <input type="text" name="whatsapp_no" class="form-control"
+                                                            id="" placeholder="Enter Whatsapp Number">
+                                        <div id="whatsapp_no" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
                                         <label for="exampleInputEmail1">Call Number</label>
                                         <input type="text" name="call_no" class="form-control"
                                                             id="" placeholder="Enter Call Number">
+                                        <div id="call_no" class="text-danger"></div>
                                     </div>
                                 </div>
                             </div>

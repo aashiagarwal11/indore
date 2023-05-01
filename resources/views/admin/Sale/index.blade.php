@@ -57,24 +57,40 @@
                                             <th>Sale Category</th>
                                             <th>Sale Sub Category</th>
                                             <th>Vendor Name</th>
-                                            <th>Owner or Broker</th>
-                                            <th>Vehicle Sighting</th>
+                                            <th>Posted By</th>
+                                            <th>WhatsApp Number</th>
+                                            <th>Call Number</th>
+                                            <th>View</th>
+                                            <th>Edit</th>
+                                            <th>Status</th>
                                             <th>Property Location</th>
                                             <th>Price</th>
                                             <th>Brand</th>
                                             <th>Model Name</th>
                                             <th>Model Year</th>
-                                            <th>View</th>
-                                            <th>Edit</th>
-                                            <th>Status</th>
+                                            <th>Vehicle Sighting</th>
+                                            <th>Fuel Type</th>
+                                            <th>Seater</th>
+                                            <th>Kilometer Running</th>
+                                            <th>Insurance Period</th>
+                                            <th>Other Information</th>
+                                            <th>Size Length Width</th>
+                                            <th>Room Quantity</th>
+                                            <th>Kitchen</th>
+                                            <th>Hall</th>
+                                            <th>Lat Bath</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($birthdayData as $bday)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $bday['sale_id'] }}</td>
-                                                <td>{{ $bday['sub_cat_id'] }}</td>
+                                                <td>{{ $bday['type'] }}</td>
+                                                <td>{{ $bday['sub_type'] }}</td>
+                                                <td>{{ $bday['vendor_name'] }}</td>
+                                                <td>{{ $bday['owner_or_broker'] }}</td>
+                                                <td>{{ $bday['whatsapp_no'] }}</td>
+                                                <td>{{ $bday['call_no'] }}</td>
                                                 <td>
                                                     <a href="{{ url('saleImage/' . $bday['id']) }}"
                                                         class="btn btn-danger m-1">View</a>
@@ -100,6 +116,23 @@
                                                         </a>
                                                     @endif
                                                 </td>
+
+                                                <td>{{ $bday['property_location'] }}</td>
+                                                <td>{{ $bday['price'] }}</td>
+                                                <td>{{ $bday['brand'] }}</td>
+                                                <td>{{ $bday['model_name'] }}</td>
+                                                <td>{{ $bday['model_year'] }}</td>
+                                                <td>{{ $bday['vehicle_sighting'] }}</td>
+                                                <td>{{ $bday['fuel_type'] }}</td>
+                                                <td>{{ $bday['seater'] }}</td>
+                                                <td>{{ $bday['kilometer_running'] }}</td>
+                                                <td>{{ $bday['insurance_period'] }}</td>
+                                                <td>{{ $bday['other_information'] }}</td>
+                                                <td>{{ $bday['size_length_width'] }}</td>
+                                                <td>{{ $bday['room_qty'] }}</td>
+                                                <td>{{ $bday['kitchen'] }}</td>
+                                                <td>{{ $bday['hall'] }}</td>
+                                                <td>{{ $bday['lat_bath'] }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -110,15 +143,27 @@
                                             <th>Sale Sub Category</th>
                                             <th>Vendor Name</th>
                                             <th>Owner or Broker</th>
-                                            <th>Vehicle Sighting</th>
+                                            <th>WhatsApp Number</th>
+                                            <th>Call Number</th>
+                                            <th>View</th>
+                                            <th>Edit</th>
+                                            <th>Status</th>
                                             <th>Property Location</th>
                                             <th>Price</th>
                                             <th>Brand</th>
                                             <th>Model Name</th>
                                             <th>Model Year</th>
-                                            <th>View</th>
-                                            <th>Edit</th>
-                                            <th>Status</th>
+                                            <th>Vehicle Sighting</th>
+                                            <th>Fuel Type</th>
+                                            <th>Seater</th>
+                                            <th>Kilometer Running</th>
+                                            <th>Insurance Period</th>
+                                            <th>Other Information</th>
+                                            <th>Size Length Width</th>
+                                            <th>Room Quantity</th>
+                                            <th>Kitchen</th>
+                                            <th>Hall</th>
+                                            <th>Lat Bath</th>
                                         </tr>
                                     </tfoot>
                                 </table>

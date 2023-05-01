@@ -10,6 +10,9 @@ use App\Models\Birthday;
 use App\Models\City;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Models\Watermark;
+use Image;
+
 
 
 class BirthdayController extends Controller
@@ -66,7 +69,25 @@ class BirthdayController extends Controller
                     $img_full_name = $imgname . '.' . $extension;
                     $upload_path = 'public/birthday/';
                     $img_url = $upload_path . $img_full_name;
-                    $file->move($upload_path, $img_full_name);
+
+                    $wimage = Watermark::first();
+                    // dd($wimage);
+
+                    $waterMarkUrl = $wimage->image;
+                    if (!empty($waterMarkUrl)) {
+                        $imgFile = Image::make($file->getRealPath());
+                        $imgFile->insert($waterMarkUrl, 'bottom-right', 5, 5, function ($font) {
+                            $font->width(10);
+                            $font->hright(2);
+                        });
+                        $imgFile->save($img_url);
+                    }
+
+
+
+
+
+                    // $file->move($upload_path, $img_full_name);
                     array_push($images, $img_url);
                 }
             }
@@ -168,7 +189,22 @@ class BirthdayController extends Controller
                     $img_full_name = $imgname . '.' . $extension;
                     $upload_path = 'public/birthday/';
                     $img_url = $upload_path . $img_full_name;
-                    $file->move($upload_path, $img_full_name);
+
+                    $wimage = Watermark::first();
+                    // dd($wimage);
+
+                    $waterMarkUrl = $wimage->image;
+                    if (!empty($waterMarkUrl)) {
+                        $imgFile = Image::make($file->getRealPath());
+                        $imgFile->insert($waterMarkUrl, 'bottom-right', 5, 5, function ($font) {
+                            $font->width(10);
+                            $font->hright(2);
+                        });
+                        $imgFile->save($img_url);
+                    }
+
+
+                    // $file->move($upload_path, $img_full_name);
                     array_push($exp, $img_url);
                 }
             }

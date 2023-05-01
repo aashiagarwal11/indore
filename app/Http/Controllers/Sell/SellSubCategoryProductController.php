@@ -497,8 +497,9 @@ class SellSubCategoryProductController extends Controller
 
     public function sellFormListOfUser(Request $request)
     {
-        ## all list of selling product form from user side we show this list on admin panel so that admin can accept and deny the product.
         try {
+            $category = Sale::get();
+            dd($category);
             $sellingproduct = SaleSubCategoryProduct::orderBy('id', 'desc')->get()->toArray();
             if (!empty($sellingproduct)) {
                 $newarr = [];
@@ -530,46 +531,51 @@ class SellSubCategoryProductController extends Controller
 
     public function acceptSellProduct(Request $request)
     {
-        ## request accept  by the admin for user sell product form 
-        $auth_id = auth()->user()->id;
+        // $auth_id = auth()->user()->id;
 
-        $id = $request->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
-            if (!empty($eachnews)) {
-                $eachnews = SaleSubCategoryProduct::where('id', $id)->where('city_id', '!=', null)->first();
-                if (!empty($rentcity)) {
-                    if ($eachnews->status == 0) {
-                        $eachnews->status = 1;
-                        $updateStatus = $eachnews->update();
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Selling product request accepted By Admin',
-                            'data' => $eachnews,
-                        ]);
-                    } elseif ($eachnews->status == 1) {
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
+                if (!empty($eachnews)) {
+                    $eachnews = SaleSubCategoryProduct::where('id', $id)->where('city_id', '!=', null)->first();
+                    if (!empty($rentcity)) {
+                        if ($eachnews->status == 0) {
+                            $eachnews->status = 1;
+                            $updateStatus = $eachnews->update();
+                            return response()->json([
+                                'status' => true,
+                                'message' => 'Request Accepted',
+                            ]);
+                        } elseif ($eachnews->status == 1) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Selling product request already accepted By Admin so you can not accept again',
+                            ]);
+                        }
+                    } else {
                         return response()->json([
                             'status' => false,
-                            'message' => 'Selling product request already accepted By Admin so you can not accept again',
+                            'message' => 'Please add city first',
                         ]);
                     }
                 } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Please add city first',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
@@ -582,37 +588,44 @@ class SellSubCategoryProductController extends Controller
     public function denySellProduct(Request $request)
     {
         ## request deny  by the admin for user sell product form 
-        $auth_id = auth()->user()->id;
+        // $auth_id = auth()->user()->id;
 
-        $id = $request->id;
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => ['required', 'numeric'],
-            ]);
+            if ($request->role_id == 1) {
+                $validator = Validator::make($request->all(), [
+                    'id' => ['required', 'numeric'],
+                ]);
 
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()]);
-            }
-            $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
-            if (!empty($eachnews)) {
-                if ($eachnews->status == 0) {
-                    $eachnews->status = 2;
-                    $updateStatus = $eachnews->update();
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Selling product request denied By Admin',
-                        'data' => $eachnews,
-                    ]);
-                } elseif ($eachnews->status == 2) {
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+                $id = $request->id;
+                $eachnews = SaleSubCategoryProduct::where('id', $id)->first();
+                if (!empty($eachnews)) {
+                    if ($eachnews->status == 0) {
+                        $eachnews->status = 2;
+                        $updateStatus = $eachnews->update();
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Request Denied',
+                            'data' => $eachnews,
+                        ]);
+                    } elseif ($eachnews->status == 2) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Renting product request already denied By Admin so you can not deny again',
+                        ]);
+                    }
+                } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Renting product request already denied By Admin so you can not deny again',
+                        'message' => 'Record Not Exist',
                     ]);
                 }
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record Not Exist',
+                    'success' => false,
+                    'message' => 'Login as admin first',
                 ]);
             }
         } catch (\Exception $e) {
