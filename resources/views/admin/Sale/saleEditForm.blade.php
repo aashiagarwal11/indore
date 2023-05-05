@@ -29,8 +29,8 @@
                         <div class="card">
 
                             <div class="card-header">
-                                <a href="{{ route('birthdayList') }}" class="btn btn-danger m-1">View
-                                    Birthday List</a>
+                                <a href="{{ route('saleList') }}" class="btn btn-danger m-1">View
+                                    Sale List</a>
                             </div>
 
                             <!-- /.card-header -->
@@ -39,7 +39,7 @@
                                 <div class="col-md-6">
                                     <div class="card card-primary">
                                         <div class="card-header">
-                                            <h3 class="card-title">Edit Birthday <small>Form</small></h3>
+                                            <h3 class="card-title">Edit Sale <small>Form</small></h3>
                                         </div>
                                         <!-- form start -->
                                         <form id="quickForm" class="was-validated" action="{{ route('updatebirthday') }}"
