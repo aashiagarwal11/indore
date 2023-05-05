@@ -28,6 +28,16 @@
             padding-top: 60px;
             padding-left: 60px;
         }
+
+        .square {
+            background: darkturquoise;
+            border-radius: 5px;
+            transition: transform 1s;
+
+            &:hover {
+                transform: scale(1.1);
+            }
+        }
     </style>
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -75,8 +85,8 @@
                                     @if (isset($exp))
                                         @foreach ($exp as $key => $expImg)
                                             @if ($expImg != '')
-                                                <div class="col-md-2 hoverEffect">
-                                                    <img src="{{ $expImg }}" class="" alt=""
+                                                <div class="col-md-2 hoverEffect ">
+                                                    <img src="{{ $expImg }}" class="square" alt=""
                                                         width="100%" height="100%">
                                                     <div class="imgicon1"
                                                         onclick="imgdelete({{ $key }},{{ $id }})">
